@@ -6,6 +6,7 @@ set(LEXIZE_COMPONENT
 	trie
 	lexicon
 	config
+	processor
 	debugger
 	cnlexizer
 	tools

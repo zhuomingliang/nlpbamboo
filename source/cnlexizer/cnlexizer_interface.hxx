@@ -11,7 +11,7 @@ enum cnlexizer_method {
 #ifdef __cplusplus
 extern "C" {
 #endif	
-size_t cnlexizer_process(void *handle, char *t, const char *s, enum cnlexizer_method method);
+size_t cnlexizer_process(void *handle, char *t, const char *s);
 void *cnlexizer_init(const char *s);
 void cnlexizer_clean(void *handle);
 #ifdef __cplusplus

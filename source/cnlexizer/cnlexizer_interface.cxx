@@ -22,7 +22,7 @@ void cnlexizer_clean(void *handle)
 	if (handle) delete (CNLexizer *)handle;
 }
 
-size_t cnlexizer_process(void *handle, char *t, const char *s, cnlexizer_method method)
+size_t cnlexizer_process(void *handle, char *t, const char *s)
 {
 	size_t length = 0;
 	try {
@@ -33,16 +33,8 @@ size_t cnlexizer_process(void *handle, char *t, const char *s, cnlexizer_method 
 		if (t == NULL)
 			throw new std::runtime_error("empty buffer");
 
-		CNLexizer *cns = (CNLexizer *)handle;
-		if (method == CLX_DEFAULT || method == CLX_UNIGRAM) {
-			length = cns->unigram(t, s);
-		} else if (method == CLX_BIGRAM) {
-			length = cns->bigram(t, s);
-		} else if (method == CLX_MAXFORWARD) {
-			length = cns->maxforward(t, s);
-		} else if (method == CLX_MAXBACKWARD) {
-			length = cns->maxbackward(t, s);
-		}
+		CNLexizer *clx = (CNLexizer *)handle;
+		length = clx->process(t, s);
 		return length;
 	} catch(std::exception &e) {
 		fprintf(stderr, "ERROR: %s\n", e.what());
