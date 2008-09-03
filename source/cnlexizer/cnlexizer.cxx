@@ -33,10 +33,10 @@ CNLexizer::CNLexizer(const char *file)
 size_t CNLexizer::process(char *t, const char *s)
 {
 	std::vector<std::string *>::iterator it;
-	std::pair<std::string, LexAttribute> initial(s, NULL);
 
 	_result.erase();
-	_prod.push_back(initial);	
+	_prod.clear();
+	_prod.push_back(std::pair<std::string, LexAttribute>(s, NULL));
 	for (it = _streamline.begin(); it < _streamline.end(); it++) {
 		if (_processors[**it])
 			_processors[**it]->process(_prod);
