@@ -1,0 +1,138 @@
+#!/usr/bin/env perl
+
+use strict;
+use Data::Dumper;
+use Getopt::Std;
+
+use vars '$opt_w', '$opt_l', '$opt_b', '$opt_s';
+
+if ( !getopts("bl:sw") || (@ARGV < 1)) {
+	print "Usage: ngm_tool [OPTIONS]\n";
+	print "\n";
+	print "OPTIONS:\n";
+	print "        -w FILE           extract words from sentence file\n";
+	print "        -b FILE           extract bigram from sentence file\n";
+	print "        -s FILE           extract sentence from corpus\n";
+	print "\n";
+	print "Author: jianingy <detrox\@gmail.com>\n";
+}
+
+my $corpus = @ARGV[0];
+
+if ( ! -f $corpus) {
+	print STDERR "can not open file $corpus\n";
+	exit 1;
+}
+
+sub collapse
+{
+	my $s = shift @_;
+	$s =~ s/\s+|\/\w+\s*//g;
+	return $s;
+}
+
+if ($opt_w) {
+	my %uni = ();
+	my $cnt = 0;
+	my $stop = 0;
+
+	open FH, "<$corpus";
+	while (<FH>) {
+		my @terms = split(/\s+/, $_);
+		while(@terms) {
+			my $term = shift @terms;
+			$uni{$term}++;
+			$cnt++;
+			print STDERR scalar (keys %uni), " terms processed\n" if ($cnt % 2000 == 0);
+			$stop = 1 if ($opt_l && $opt_l < $cnt);
+		}
+		last if $stop;
+	}
+	close FH;
+	foreach(keys %uni) {
+		print "$uni{$_} $_\n";
+	}
+} elsif ($opt_b) {
+	my %bgm = ();
+	my $cnt = 0;
+	my $stop = 0;
+
+	open FH, "<$corpus";
+	while (<FH>) {
+		my @terms = split(/\s+/, $_);
+		my @bterm = ("<s>", "<s>");
+		my $term;
+		foreach(@terms) {
+			$term = $_;
+			$term =~ s/^\s+|\s+$//g;
+			shift @bterm;push @bterm, $term;
+			$bgm{"@bterm"}++;
+			$cnt++;
+			print STDERR scalar (keys %bgm), " terms processed\n" if ($cnt % 2000 == 0);
+			if ($opt_l && $opt_l <= $cnt) {
+				$stop = 1;
+				last;
+			}
+		}
+		$bgm{"$term </s>"}++;
+		last if $stop;
+	}
+	close FH;
+	foreach(keys %bgm) {
+		print "$bgm{$_} $_\n";
+	}
+} elsif ($opt_s) {
+	my $cnt = 0;
+	my $stop;
+	my $next;
+
+	open FH, "<$corpus";
+	my $quote = 0;
+	while (<FH>) {
+		chomp;
+		s!\[([^]]+)\](\w+)!sprintf("%s", collapse($1))!seg;
+		my @terms = split(/\s+/, $_);
+		my @sent;
+		my %quotes = ();
+		while(@terms) {
+			$_ = shift @terms;
+			my ($term, $type) = split(/\//, $_, 2);
+			if ($type =~ /w/ && $term =~ /“/) {
+				$quote++;
+				$quotes{$quote} = [] if not $quotes{$quote};
+			}
+			if ($type =~ /w/ && $term =~ /”/) {
+				shift @{$quotes{$quote}};
+				print "@{$quotes{$quote}}\n";
+				$quotes{$quote} = [];
+				$quote--;
+			}
+			$next = "";
+			while ($type =~ /nr/) {
+				($next, $type) = split(/\//, shift @terms, 2);
+				$term = "$term$next" if $type =~ /nr/;
+			}
+			next if $type =~ /m/ && $term =~ /^[-0-9]+/;
+			push @sent, $term;
+			push @sent, $next if $next;
+			push @{$quotes{$quote}}, $term if $quote;
+			push @{$quotes{$quote}}, $next if $quote && $next;
+			if ($quote == 0 && $type =~ /w/ && $term =~ /。|！|？|!|\?|（|［|｛|；|：/ && "@sent" !~ /^$/) {
+				pop @sent if $term !~ /。|！|？|!|；|：/;
+				print "@sent\n";
+				$cnt++;
+				print STDERR "$cnt sentences processed\n" if ($cnt % 50 == 0);
+				@sent = ();
+				push @sent, $term if $term !~ /。|！|？|!|；|：/;
+			}
+			$stop = 1 if ($opt_l && $opt_l < $cnt);
+		}
+		if (@sent) {
+			print "@sent\n";
+			$cnt++;
+			print STDERR "$cnt sentences processed\n" if ($cnt % 50 == 0);
+		}
+		last if $stop;
+	}
+	close FH;
+}

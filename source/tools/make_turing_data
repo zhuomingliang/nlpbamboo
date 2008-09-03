@@ -1,0 +1,17 @@
+#!/usr/bin/env perl
+use strict;
+
+
+my %hash;
+my $running = 0;
+
+while(<>) {
+	my ($count) = split(/\s+/, $_, 2);
+	$hash{$count}++;
+	$running++;
+	print STDERR "$running processed.\n" if ($running % 200 == 0)
+}
+
+foreach (keys %hash) {
+	print "$hash{$_} $_\n";
+}

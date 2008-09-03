@@ -1,0 +1,41 @@
+
+-- Adjust this setting to control where the objects get created.
+SET search_path = pg_catalog;
+
+CREATE OR REPLACE FUNCTION chineseprs_start(internal, int4)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+
+CREATE OR REPLACE FUNCTION chineseprs_getlexeme(internal, internal, internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+
+CREATE OR REPLACE FUNCTION chineseprs_end(internal)
+RETURNS void
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+
+CREATE OR REPLACE FUNCTION chineseprs_lextype(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+
+CREATE TEXT SEARCH PARSER chineseparser (
+  START    = chineseprs_start,
+  GETTOKEN = chineseprs_getlexeme,
+  END      = chineseprs_end,
+  HEADLINE = pg_catalog.prsd_headline,
+  LEXTYPES = chineseprs_lextype
+);
+
+CREATE TEXT SEARCH CONFIGURATION chinesecfg (PARSER = chineseparser);
+
+CREATE TEXT SEARCH DICTIONARY chinese_stem (
+  TEMPLATE = snowball,
+  Language = russian,
+  StopWords = chinese_utf8
+);
+
+ALTER TEXT SEARCH CONFIGURATION chinesecfg ADD MAPPING FOR word WITH chinese_stem;

@@ -1,0 +1,40 @@
+Introduction
+------------
+
+Trie是在信息领域常用的一种索引结构。其名称由英文单词Retrieval中抠出，读音为[trai]（就是“揣”）。以其O(1)的搜索效率博得了许多辞典(Lexicon)作者的青睐。
+
+Trie Internal
+----------------
+
+掀开Trie的盖头来，是DFA让你如此快。
+
+Trie结构实际上就是一个确定的有限状态机(Deterministic Finite Automaton)。在图1所表示的状态机中，存储了n单词。<<举例，对一个单词进行查找>>
+
+稍微抽象一点说，对于一个字符串s=a1a2...an。将a1, a2, ..., an依次输入状态机。如果s耗尽，并且状态机达到终结状态则说明字符串s存在。
+
+从这个搜索过程不难看出，Trie的搜索速度只和输入字符串的长度有关系，与它本身存储了多少字符串没有关系。
+
+Trie Implementation Approach
+----------------------------
+
+条条大陆通罗马，实现DFA有好方法。
+
+传统的基于链表的实现空间利用率高且插入快，但由于存储分散造成查找效率降低。俗话说的好，用Trie就是用他快。因此，长久以来很多大牛都致力于用数组来实现Trie结构。1975年，Stephen C. Johnson用四个数组实现了Trie而后又再次努力将其简化到了三个数组。1989年，日本人J.AOE在《An Efficient Digital Search Algorithm By Using a Double-Array Structure》中提出了一种用两个数组来实现Trie的办法，其空间利用率和速度都很好。因此也成为了现在广泛应用的Trie实现。
+
+
+Double Array Trie Implementation
+--------------------------------
+
+Fundamental
+-----------
+
+J.AOE将Trie放入两个数组base和check中。并建立了一个规则：
+
+设当前状态为s，当前输入为字符c。 字符c是一个状态s可以接受的输入并且经过这个输入后状态机进入状态t，需要且仅需要满足以下条件：
+check(base(s) + c) = s;
+t = base(s) + c;
+
+上述状态转移关系可以用图二直观地表现出来：
+
+<< 状态图 >>
+

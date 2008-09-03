@@ -1,0 +1,9 @@
+#!/usr/bin/env perl
+
+while(<>) {
+	chomp $_;
+	@terms = split(/\s+/, $_);
+	$number = pop @terms;
+	unshift @terms, $number;
+	print "@terms\n";
+}
