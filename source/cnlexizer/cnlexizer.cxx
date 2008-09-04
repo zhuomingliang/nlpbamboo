@@ -6,6 +6,7 @@
 
 #include "cnlexizer.hxx"
 #include "ascii_processor.hxx"
+#include "maxforward_processor.hxx"
 #include "unigram_processor.hxx"
 
 const char CNLexizer::_stream_name_prefix[] = "streamline_";
@@ -31,6 +32,7 @@ CNLexizer::CNLexizer(const char *file)
 	}
 	delete []text;
 	_processors["ascii"] = new AsciiProcessor(_config);
+	_processors["maxforward"] = new MaxforwardProcessor(_config);
 	_processors["unigram"] = new UnigramProcessor(_config);
 }
 
