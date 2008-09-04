@@ -38,7 +38,7 @@ Datum cnlexizer(PG_FUNCTION_ARGS)
 
 	if (handle == NULL) elog(ERROR, "can not init segmentor");
 	t = palloc((VARSIZE(in) - VARHDRSZ + 1) * 2 + 1);
-	cnlexizer_process(handle, t, s, CLX_UNIGRAM);
+	cnlexizer_process(handle, t, s);
 
 	PG_RETURN_TEXT_P(DatumGetTextP(DirectFunctionCall1(textin, CStringGetDatum(t))));
 }
