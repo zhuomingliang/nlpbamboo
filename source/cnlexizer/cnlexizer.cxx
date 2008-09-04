@@ -9,7 +9,7 @@
 const char CNLexizer::_stream_name_prefix[] = "streamline_";
 
 CNLexizer::CNLexizer(const char *file)
-:_config(NULL)
+:_config(NULL), _in(&_lex_token[0]), _out(&_lex_token[1])
 {
 	const char *s;
 	char *text, *token, delim[] = ",";
@@ -25,29 +25,40 @@ CNLexizer::CNLexizer(const char *file)
 	text = new char[strlen(s) + 1];
 	strcpy(text, s);
 	for (token = strtok(text, delim); token; token = strtok(NULL, delim)) {
-		_streamline.push_back(new std::string(token));
+		_streamline.push_back(std::string(token));
 	}
 	_processors["unigram"] = new UnigramProcessor(_config);
 }
 
 size_t CNLexizer::process(char *t, const char *s)
 {
-	std::vector<std::string *>::iterator it;
+	char *neo, *p = t;
+	size_t i, length;
 
-	_result.erase();
-	_prod.clear();
-	_prod.push_back(std::pair<std::string, LexAttribute>(s, NULL));
-	for (it = _streamline.begin(); it < _streamline.end(); it++) {
-		if (_processors[**it])
-			_processors[**it]->process(_prod);
-		else
-			std::cerr << "Invalid module name: " << **it << std::endl;
+	_in->clear();
+	_in->push_back(new LexToken(s));
+	length = _streamline.size();
+	for (i = 0; i < length; i++) {
+		if (_processors[_streamline[i]]) {
+			_out->clear();
+			_processors[_streamline[i]]->process(*_in, *_out);
+			/* switch in & out queue */
+			_swap = _out;
+			_out = _in;
+			_in = _swap;
+		} else {
+			std::cerr << "Invalid module name: " << _streamline[i] << std::endl;
+		}
 	}
 
-	std::vector< std::pair<std::string, LexAttribute> >::iterator j;
-	for (j = _prod.begin(); j < _prod.end(); j++) 
-		_result += j->first + " ";
-	strcpy(t, _result.c_str());
-	return _result.length();
+	*p = '\0';
+	length = _in->size();
+	for (i = 0; i < length; i++) {
+		strcpy(p, (*_in)[i]->get_token());
+		p += strlen((*_in)[i]->get_token());
+		*(p++) = ' ';
+		*p = '\0';
+	}
+	return p - t;
 }
 

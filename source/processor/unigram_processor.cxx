@@ -1,6 +1,7 @@
 #include "lexicon_factory.hxx"
 #include "unigram_processor.hxx"
 #include "utf8.hxx"
+#include <cassert>
 #include <iostream>
 
 UnigramProcessor::UnigramProcessor(IConfig *config)
@@ -22,29 +23,14 @@ UnigramProcessor::~UnigramProcessor()
 	delete _lexicon;
 }
 
-int UnigramProcessor::process(std::vector< std::pair<std::string, LexAttribute> > &prod)
-{
-	std::vector< std::pair<std::string, LexAttribute> >::iterator it;
-
-	_out.clear();
-	for (it = prod.begin(); it < prod.end(); it++) {
-		_lexize(*it);
-		prod.erase(it);	
-	}
-
-	for (it = _out.end() - 1; it >= _out.begin(); it--) 
-		prod.push_back(*it);
-}
-
-
-size_t UnigramProcessor::_lexize(std::pair<std::string, LexAttribute> &term)
+void UnigramProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 {
 	size_t i, j, k, length, max_token_length, *backref;
 	double *score, lp;
 	size_t num_terms, num_types;
 	const char *s;
 
-	s = term.first.c_str();
+	s = token->get_token();
 	num_terms = _lexicon->sum_value();
 	num_types = _lexicon->num_insert();
 
@@ -84,13 +70,17 @@ size_t UnigramProcessor::_lexize(std::pair<std::string, LexAttribute> &term)
 			}
 		}
 	}
+
+	assert(stack.empty() == true);
 	for (k = 0, i = length; i > 0;) {
 		k = utf8::sub(_token, s, backref[i], i - backref[i]);
-		_out.push_back(std::pair<std::string, LexAttribute>(_token, NULL));
+		stack.push(new LexToken(_token, LexToken::attr_cword));
 		i = backref[i];
+	}
+	while(!stack.empty()) {
+		out.push_back(stack.top());
+		stack.pop();
 	}
 	delete []score;
 	delete []backref;
-
-	return 0;
 }

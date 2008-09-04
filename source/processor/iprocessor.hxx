@@ -1,24 +1,35 @@
-#ifndef IPROCESSOR_HXX
-#define IPROCESSOR_HXX
+#ifndef PROCESSOR_HXX
+#define PROCESSOR_HXX
 
-#include "config_factory.hxx"
 #include <vector>
+#include "config_factory.hxx"
+#include "lex_token.hxx"
 
-#define TUPLE_TYPE_UNKNOW 0 
+class Processor {
+protected:
+	virtual bool _can_process(LexToken *) = 0;
+	virtual void _process(LexToken *token, std::vector<LexToken *> &out) = 0;
 
-class LexAttribute {
 public:
-	LexAttribute() {};
-	LexAttribute(void *) {};
+	Processor() {};
+	Processor(IConfig *_config) {};
+	virtual ~Processor() {};
+
+	void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
+	{
+		size_t i, length;
+
+		if (in.empty()) return;
+		length = in.size();
+		for (i = 0; i < length; i++) {
+			if (_can_process(in[i])) {
+				_process(in[i], out);
+				delete in[i];
+			} else {
+				out.push_back(in[i]);
+			}
+		}
+	}
 };
 
-class IProcessor {
-public:
-	IProcessor() {};
-	IProcessor(IConfig *_config) {};
-	virtual ~IProcessor() {};
-
-virtual int process(std::vector< std::pair<std::string, LexAttribute> > &prod) = 0;
-};
-
-#endif // IPROCESSOR_HXX
+#endif // PROCESSOR_HXX

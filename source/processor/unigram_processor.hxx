@@ -1,29 +1,35 @@
 #ifndef UNIGRAM_HXX
 #define UNIGRAM_HXX
 
+#include <math.h>
+#include <stack>
+#include "lex_token.hxx"
 #include "iprocessor.hxx"
 #include "ilexicon.hxx"
-#include <math.h>
 
-class UnigramProcessor: public IProcessor {
+class UnigramProcessor: public Processor {
 protected:
-	std::vector< std::pair<std::string, LexAttribute> > _out;
 	ILexicon *_lexicon;
 	double _lambda;
 	int _max_token_length;
 	char *_token;
+	std::stack<LexToken *> stack;
 
 	UnigramProcessor();
-	size_t _lexize(std::pair<std::string, LexAttribute> &term);
+	size_t _unigram_model(LexToken *token);
 	double _ele_estimate(int v, int n, int t)
 	{
 			return log(v + _lambda) - log(n + t * _lambda);
 	}
+	bool _can_process(LexToken *token) 
+	{
+		return (token->get_attr() == LexToken::attr_unknow);
+	}
+	void _process(LexToken *token, std::vector<LexToken *> &out);
 
 public:
 	UnigramProcessor(IConfig *config);
 	~UnigramProcessor();
-	int process(std::vector< std::pair<std::string, LexAttribute> > &in);
 };
 
 #endif // UNIGRAM_HXX
