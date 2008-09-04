@@ -12,5 +12,5 @@ mkdir -p $BUILD_DIR
 mkdir -p $INDEX_DIR
 
 $TOP/bin/ngm_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
-$TOP/bin/lexicon_cli -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt
+$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt
 

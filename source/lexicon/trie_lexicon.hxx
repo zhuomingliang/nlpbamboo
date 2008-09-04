@@ -62,15 +62,17 @@ public:
 
 		assert(filename);
 		fp = fopen(filename, "r");
+		if (verbose)
+			std::clog << "Making Index" << std::endl;
 		for(i = 0; ; i++) {
 			if (fscanf(fp, "%d %4096[^\n]", &val, str) == EOF) break;
 			insert(str, val);
-			if (verbose && i % 2000 == 0) 
-				std::clog << i << " item(s) processed" << std::endl;
+			if (verbose && i % 500 == 0) 
+				std::clog << "\r\t\t" << i << " items processed.";
 		}
 		fclose(fp);
 		if (verbose)
-			std::clog << i << " item(s) processed" << std::endl;
+			std::clog << "\r\t\t" << i << " items processed." << std::endl;
 	}
 
 	void write_to_text(const char *filename)

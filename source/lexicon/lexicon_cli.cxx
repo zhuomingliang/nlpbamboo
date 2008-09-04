@@ -37,14 +37,14 @@ static void _dump(const char *index, const char *target)
 	dc->write_to_text(target);
 }
 
-static void _build(const char *source, const char *index, const char *type)
+static void _build(const char *source, const char *index, const char *type, bool verbose)
 {
 	ILexicon *dc;
 
 	assert(source); assert(index);
 	dc = LexiconFactory::create(type);
 	if (dc == NULL) throw std::runtime_error("can not create lexicon");
-	dc->read_from_text(source, true);
+	dc->read_from_text(source, verbose);
 	dc->save(index);
 }
 
@@ -60,6 +60,7 @@ static void _help_message()
 				 "        -q|--query QUERY      query index, needs -i\n"
 				 "        -t|--type TYPE        index type, default = DATrie\n"
 				 "        -n|--info             index information, needs -i\n"
+				 "        -v|--verbose          verbose\n"
 				 "\n"
 				 "Report bugs to jianing.yang@alibaba-inc.com\n"
 			  << std::endl;
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
 	int c;
 	const char default_type[] = "datrie";
 	const char *index = NULL, *source = NULL, *query = NULL, *type = default_type, *dump = NULL;
+	bool verbose = false;
 	enum action_t {
 		ACTION_NO = 0,
 		ACTION_BUILD = 1,
@@ -89,11 +91,12 @@ int main(int argc, char *argv[])
 			{"source", required_argument, 0, 's'},
 			{"type", required_argument, 0, 't'},
 			{"info", no_argument, 0, 'n'},
+			{"verbose", no_argument, 0, 'v'},
 			{0, 0, 0, 0}
 		};
 		int option_index;
 		
-		c = getopt_long(argc, argv, "hbd:q:i:s:t:n", long_options, &option_index);
+		c = getopt_long(argc, argv, "hbd:q:i:s:t:nv", long_options, &option_index);
 		if (c == -1) break;
 
 		switch(c) {
@@ -123,12 +126,15 @@ int main(int argc, char *argv[])
 			case 't':
 				type = optarg;
 				break;
+			case 'v':
+				verbose = true;
+				break;
 		}
 
 	}
 
 	if (action == ACTION_BUILD && index && source && type) {
-		_build(source, index, type);
+		_build(source, index, type, verbose);
 	} else if (action == ACTION_QUERY && index && query) {
 		_query(index, query);
 	} else if (action == ACTION_DUMP && index && dump) {
