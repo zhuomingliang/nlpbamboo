@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 TAG="people-daily"
 TOP=$(dirname $(which $0))/..
 RAW="$TOP/data_raw/${TAG}.txt"
@@ -10,14 +10,7 @@ BUILD_DIR=$TOP/data_build
 INDEX_DIR=$TOP/index
 mkdir -p $BUILD_DIR
 mkdir -p $INDEX_DIR
-$TOP/bin/ngm_tool -s $RAW > ${BUILD_DIR}/${TAG}.sentences.txt
-$TOP/bin/ngm_tool -w ${BUILD_DIR}/${TAG}.sentences.txt > ${BUILD_DIR}/${TAG}.ugm.txt
-$TOP/bin/ngm_tool -b ${BUILD_DIR}/${TAG}.sentences.txt > ${BUILD_DIR}/${TAG}.bgm.txt
-cat ${BUILD_DIR}/${TAG}.ugm.txt | $TOP/bin/make_turing_data > ${BUILD_DIR}/${TAG}.ugm.sgt.txt
-cat ${BUILD_DIR}/${TAG}.bgm.txt | $TOP/bin/make_turing_data > ${BUILD_DIR}/${TAG}.bgm.sgt.txt
 
+$TOP/bin/ngm_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
 $TOP/bin/lexicon_cli -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt
-$TOP/bin/lexicon_cli -b -i ${INDEX_DIR}/${TAG}.bgm.idx -s ${BUILD_DIR}/${TAG}.bgm.txt
-$TOP/bin/lexicon_cli -b -i ${INDEX_DIR}/${TAG}.ugm.sgt.idx -s ${BUILD_DIR}/${TAG}.ugm.sgt.txt
-$TOP/bin/lexicon_cli -b -i ${INDEX_DIR}/${TAG}.bgm.sgt.idx -s ${BUILD_DIR}/${TAG}.bgm.sgt.txt
 
