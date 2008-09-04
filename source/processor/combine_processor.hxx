@@ -13,10 +13,7 @@ protected:
 	char *_combine;
 
 	CombineProcessor();
-	bool _can_process(LexToken *token) 
-	{
-		return (token->get_attr() == LexToken::attr_unknow);
-	}
+	bool _can_process(LexToken *token) {}
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
 
 public:

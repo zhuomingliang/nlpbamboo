@@ -45,7 +45,7 @@ void CombineProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken
 			out.push_back(new LexToken(_token, LexToken::attr_cword));
 			for (j = i; j < num; j++)
 				delete in[j];
-			i = num - 1;
+			i = num;
 		} else {
 			out.push_back(in[i]);
 		}
