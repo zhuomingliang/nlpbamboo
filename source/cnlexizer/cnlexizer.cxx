@@ -1,9 +1,11 @@
 #include <ctype.h>
+#include <cassert>
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
 
 #include "cnlexizer.hxx"
+#include "ascii_processor.hxx"
 #include "unigram_processor.hxx"
 
 const char CNLexizer::_stream_name_prefix[] = "streamline_";
@@ -27,6 +29,8 @@ CNLexizer::CNLexizer(const char *file)
 	for (token = strtok(text, delim); token; token = strtok(NULL, delim)) {
 		_streamline.push_back(std::string(token));
 	}
+	delete []text;
+	_processors["ascii"] = new AsciiProcessor(_config);
 	_processors["unigram"] = new UnigramProcessor(_config);
 }
 
@@ -35,7 +39,7 @@ size_t CNLexizer::process(char *t, const char *s)
 	char *neo, *p = t;
 	size_t i, length;
 
-	_in->clear();
+	assert(_in->empty());
 	_in->push_back(new LexToken(s));
 	length = _streamline.size();
 	for (i = 0; i < length; i++) {
@@ -58,7 +62,9 @@ size_t CNLexizer::process(char *t, const char *s)
 		p += strlen((*_in)[i]->get_token());
 		*(p++) = ' ';
 		*p = '\0';
+		delete (*_in)[i];
 	}
+	_in->clear();
 	return p - t;
 }
 

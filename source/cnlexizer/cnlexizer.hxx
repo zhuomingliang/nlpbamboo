@@ -8,7 +8,7 @@
 
 #include "lexicon_factory.hxx"
 #include "config_factory.hxx"
-#include "iprocessor.hxx"
+#include "processor.hxx"
 #include "lex_token.hxx"
 
 class CNLexizer {
@@ -19,6 +19,11 @@ public:
 	CNLexizer(const char *file);
 	~CNLexizer()
 	{
+		std::map<std::string, Processor *>::iterator iter;
+
+		for (iter = _processors.begin(); iter != _processors.end(); iter++)
+			delete iter->second;
+
 		delete _config;
 	}
 

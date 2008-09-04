@@ -5,7 +5,6 @@
 #include <iostream>
 
 UnigramProcessor::UnigramProcessor(IConfig *config)
-	:_lambda(0.5), _max_token_length(8)
 {
 	const char *s;
 
@@ -19,7 +18,7 @@ UnigramProcessor::UnigramProcessor(IConfig *config)
 
 UnigramProcessor::~UnigramProcessor()
 {
-	delete _token;
+	delete []_token;
 	delete _lexicon;
 }
 

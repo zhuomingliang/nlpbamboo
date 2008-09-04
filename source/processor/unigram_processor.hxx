@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stack>
 #include "lex_token.hxx"
-#include "iprocessor.hxx"
+#include "processor.hxx"
 #include "ilexicon.hxx"
 
 class UnigramProcessor: public Processor {
@@ -19,7 +19,7 @@ protected:
 	size_t _unigram_model(LexToken *token);
 	double _ele_estimate(int v, int n, int t)
 	{
-			return log(v + _lambda) - log(n + t * _lambda);
+		return log(v + _lambda) - log(n + t * _lambda);
 	}
 	bool _can_process(LexToken *token) 
 	{
