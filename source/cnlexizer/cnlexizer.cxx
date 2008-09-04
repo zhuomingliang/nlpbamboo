@@ -42,6 +42,8 @@ size_t CNLexizer::process(char *t, const char *s)
 	size_t i, length;
 
 	assert(_in->empty());
+	*t = '\0';
+	if (*s == '\0') return 0;
 	_in->push_back(new LexToken(s));
 	length = _streamline.size();
 	for (i = 0; i < length; i++) {
@@ -66,6 +68,7 @@ size_t CNLexizer::process(char *t, const char *s)
 		*p = '\0';
 		delete (*_in)[i];
 	}
+	*(p - 1) = '\0'; //remove trailing space
 	_in->clear();
 	return p - t;
 }

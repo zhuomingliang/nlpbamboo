@@ -18,8 +18,11 @@ static void _help_message()
 
 static int _do(const char *cfg, const char *file)
 {
-	char s[4096], t[8192];
+	char *s, *t;
+	size_t n, m;
+	ssize_t length;
 	FILE *fp = NULL;
+
 	try {
 		std::cerr << "Loading configuration " << cfg << std::endl;
 		CNLexizer clx(cfg);
@@ -33,10 +36,19 @@ static int _do(const char *cfg, const char *file)
 				return 1;
 			}
 		}
-		while (EOF != fscanf(fp, "%4096s", s)) {
+		t = s = NULL;
+		n = 0; m = 0;
+		while ((length = getline(&s, &n, fp)) > 0) {
+			s[length - 1] = '\0';
+			if (m < n) {
+				t = (char *)realloc(t, (n << 2) + 1);
+				m = (n << 2) + 1;
+			}
 			clx.process(t, s);
 			std::cout << t << "\n";	
 		}
+		free(s);
+		free(t);
 	} catch (std::exception &e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
 		return 1;
