@@ -8,12 +8,10 @@
 class MaxforwardProcessor: public Processor {
 protected:
 	ILexicon *_lexicon;
-	double _lambda;
 	int _max_token_length;
 	char *_token;
 
 	MaxforwardProcessor();
-	size_t _unigram_model(LexToken *token);
 	bool _can_process(LexToken *token) 
 	{
 		return (token->get_attr() == LexToken::attr_unknow);

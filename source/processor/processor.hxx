@@ -15,7 +15,7 @@ public:
 	Processor(IConfig *_config) {};
 	virtual ~Processor() {};
 
-	void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
+	virtual void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
 	{
 		size_t i, length;
 

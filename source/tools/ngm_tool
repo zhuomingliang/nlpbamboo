@@ -5,7 +5,7 @@ use Data::Dumper;
 use Getopt::Std;
 use utf8;
 use Encode qw/encode decode/;
-use vars '$opt_u','$opt_v';
+use vars '$opt_c', '$opt_u','$opt_v';
 
 ################################################################################
 #
@@ -28,8 +28,8 @@ sub build_unigram_lexicon
 			my ($lex, $attr) = split(/\//, $_, 2);
 			# omit punctuation, Arab number, time and alpha
 			next if $attr =~ /w|t/;
-			next if $lex =~ /[0123456789０１２３４５６７８９]/;
-			next if $lex =~ /[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ]/;
+			next if $lex =~ /[０１２３４５６７８９]/;
+			next if $lex =~ /[ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ]/;
 			$lexicon{$lex}++;
 			print STDERR "\r\t\t".keys(%lexicon)." items processed." if ($opt_v && keys(%lexicon) % 500 == 0);
 		}
@@ -41,16 +41,57 @@ sub build_unigram_lexicon
 
 ################################################################################
 #
+# build combined word
+#
+################################################################################
+
+sub build_combined_lexicon
+{
+	my $file = shift @_;
+	my %lexicon = ();
+	my $combine = 0;
+	open FH, "<$file";
+	print STDERR "Building Combined Lexicon: \n" if ($opt_v);
+	while (<FH>) {
+		chomp;
+		$_ = decode('UTF-8', $_);
+		(undef, $_) = split(/\s+/, $_, 2);
+		my @stack = ();
+		foreach (split(/\s+/)) {
+			#combined word start 
+			$combine = 1 if ($_ =~ /^\[/);
+			my ($lex, $attr) = split(/\//, $_, 2);
+			$lex =~ s/\[//g; # remove mark
+			$attr =~ s/\]\w+//g;
+			push @stack, "$lex" if ($combine);
+			if ($_ =~ /\]\w+$/) {
+				my $lex = "@stack";
+				$lex =~ s/\s+//g;
+				$lexicon{"$lex"}++;
+				print STDERR "\r\t\t".keys(%lexicon)." items processed." if ($opt_v && keys(%lexicon) % 5 == 0);
+				@stack = ();
+				$combine = 0;
+			}
+		}
+	}
+	print STDERR "\r\t\t".keys(%lexicon)." items processed.\n" if ($opt_v);
+	print encode("UTF-8", "1 $_\n") foreach keys %lexicon;
+	close FH;
+}
+
+################################################################################
+#
 # main
 #
 ################################################################################
 
 
-if ( !getopts("uv") || (@ARGV < 1)) {
+if ( !getopts("cuv") || (@ARGV < 1)) {
 	print "Usage: ngm_tool [OPTIONS] CORPUS\n";
 	print "\n";
 	print "OPTIONS:\n";
 	print "        -u            build unigram lexicon from CORPUS\n";
+	print "        -c            build combined word lexicon from CORPUS\n";
 	print "        -v            verbose\n";
 	print "\n";
 	print "Author: jianingy <detrox\@gmail.com>\n";
@@ -60,3 +101,4 @@ my $file = @ARGV[0];
 die "can not open file $file!\n" if (!-f $file);
 
 &build_unigram_lexicon($file) if ($opt_u);
+&build_combined_lexicon($file) if ($opt_c);
