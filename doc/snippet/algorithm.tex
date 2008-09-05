@@ -1,0 +1,113 @@
+\documentclass[12pt,a4paper]{article}
+\def\pgfsysdriver{pgfsys-dvipdfm.def}
+
+% 加载宏包，格式设定
+\usepackage{fontspec,indentfirst}
+\usepackage{xunicode}               % unicode macros
+\usepackage{xltxtra}                % fixes/extras
+\usepackage[margin=1.5cm] {geometry}
+\usepackage{tikz}
+\usepackage[ruled,vlined]{algorithm2e}
+
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+
+% 字体
+\newfontfamily\mono{Courier New}
+\newfontfamily\serif{Times New Roman}
+\newfontfamily\hei{"黑体"}
+\setmainfont{"宋体"}
+% for algorithm2e
+%\SetAlFnt{\serif\em}
+%\SetAlCapFnt{\serif}
+%\SetAlTitleFnt{\serif}
+
+% 行间距
+\renewcommand{\baselinestretch}{1.2}
+
+% 名词定义
+\def\maxforward{最大正向匹配{\serif(Maximum Forward Matching)}}
+\def\maxbackward{最大逆向匹配{\serif(Maximum Backward Matching)}}
+\def\NGram{N-元语法模型{\serif(N-Gram Model)}}
+\def\UniGram{一元语法模型{\serif(UniGram Model)}}
+
+% 标题定义
+\title{常用中文分词算法简介}
+\author{杨家宁}
+
+% 文章开始
+\begin{document}
+\maketitle
+
+\def\abstractname{\hei 摘~~要}
+\begin{abstract}
+中文分词的研究时至今日已经产生出了很多种方法。
+例如：\maxforward 、\maxbackward 还有基于统计语言模型的\NGram 方法。
+其中\NGram 具有较高的分词准确度，但实现起来确相对复杂。
+而\maxforward 方法虽然准确度不高，但由于实现简单因此有比较广泛的应用。
+本文将先简单介绍\maxforward 和\maxbackward 算法以及他们的一些问题。
+再着重介绍\NGram 中比较简单的一种模型\UniGram 。
+最后，再介绍一些对模型的修正算法。
+\end{abstract}
+
+\section{\maxforward}
+\begin{table}
+\caption{例如：切分句子 “我喜欢奥运会”}
+\label{tbl_maxforward}
+	\begin{center}
+		\begin{tabular}{l|c|l|l}
+			当前处理字符串 & 是否匹配    & 目前最长词 & 当前分词结果   \\
+			\hline
+			我\$           & {\serif Y}  & 我         &                \\
+			我喜\$         & {\serif N}  & 我         &                \\
+			我喜欢\$       & {\serif N}  & 我         &                \\
+			我喜欢奥\$     & {\serif N}  & 我         &                \\
+			我喜欢奥运\$   & {\serif N}  & 我         &                \\
+			我喜欢奥运会\$ & {\serif N}  & 我         &                \\
+			喜\$           & {\serif Y}  & 喜         & 我             \\ 
+			喜欢\$         & {\serif Y}  & 喜欢       & 我             \\ 
+			喜欢奥\$       & {\serif N}  & 喜欢       & 我             \\ 
+			喜欢奥运\$     & {\serif N}  & 喜欢       & 我             \\ 
+			喜欢奥运会\$   & {\serif N}  & 喜欢       & 我             \\ 
+			奥\$           & {\serif Y}  & 奥         & 我 喜欢        \\ 
+			奥运\$         & {\serif Y}  & 奥运       & 我 喜欢        \\ 
+			奥运会\$       & {\serif Y}  & 奥运会     & 我 喜欢        \\ 
+		    \$             &             &            & 我 喜欢 奥运会 \\
+		\end{tabular}
+	\end{center}
+\end{table}
+
+我们先来讲解\maxforward 算法。
+最大正向顾名思义就是从句子开头向结尾搜索，使得每次切分出来的词的长度最大。
+表\ref{tbl_maxforward}一步步演示了\maxforward 的切分过程。算法\ref{alg_maxforward}具体描述了这个算法。
+\incmargin{1em}
+\begin{algorithm}
+	\label{alg_maxforward}
+	\dontprintsemicolon
+	\linesnumbered
+	\SetKwData{Token}{token}
+	\SetKwData{MaxTokenSize}{max}
+	\SetKwData{Result}{result}
+	\SetKwFunction{Strlen}{strlen}
+	\SetKwFunction{Substr}{substr}
+	\SetKwFunction{Concat}{concat}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+
+	\Input{A string in chinese $s$}
+	\Output{A string after Segmentation $t$}
+	\Begin{
+		\For{$i\leftarrow 0$ \KwTo \Strlen{$s$}}{
+			\For{$j\leftarrow$ \MaxTokenSize \KwTo $0$} {
+				\Token$\leftarrow$\Substr{$s$, $i$, $j$}\;
+			}
+			\Concat{$t$, \Token}\;
+			\Concat{$t$, $" "$}\;
+			$i\leftarrow i + j - 1$\;
+		}
+	}
+	\caption{\maxforward}
+\end{algorithm}
+\decmargin{1em}
+
+\end{document}
