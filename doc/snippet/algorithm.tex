@@ -13,23 +13,29 @@
 \XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
 
 % 字体
-\newfontfamily\mono{Courier New}
-\newfontfamily\serif{Times New Roman}
-\newfontfamily\hei{"黑体"}
-\setmainfont{"宋体"}
-% for algorithm2e
-%\SetAlFnt{\serif\em}
-%\SetAlCapFnt{\serif}
-%\SetAlTitleFnt{\serif}
+%\newfontfamily\mono{Courier New}
+%\newfontfamily\serif{Times New Roman}
+\def\chinese{
+	\setmonofont{黑体}
+	\setsansfont{微软雅黑}
+	\setmainfont{宋体}
+}
+\def\english{
+	\setmonofont{Consolas}
+	\setsansfont{Verdana}
+	\setmainfont{Times New Roman}
+}
+\newfontfamily\en{Times New Roman}
+\newfontfamily\cn{"宋体"}
 
 % 行间距
 \renewcommand{\baselinestretch}{1.2}
 
 % 名词定义
-\def\maxforward{最大正向匹配{\serif(Maximum Forward Matching)}}
-\def\maxbackward{最大逆向匹配{\serif(Maximum Backward Matching)}}
-\def\NGram{N-元语法模型{\serif(N-Gram Model)}}
-\def\UniGram{一元语法模型{\serif(UniGram Model)}}
+\def\maxforward{{\cn 最大正向匹配{\en(Maximum Forward Matching)}}}
+\def\maxbackward{{\cn 最大逆向匹配{\en(Maximum Backward Matching)}}}
+\def\NGram{{\cn {\en N}-元语法模型{\en(N-Gram Model)}}}
+\def\UniGram{{\cn 一元语法模型{\en(UniGram Model)}}}
 
 % 标题定义
 \title{常用中文分词算法简介}
@@ -37,9 +43,10 @@
 
 % 文章开始
 \begin{document}
+\chinese
 \maketitle
 
-\def\abstractname{\hei 摘~~要}
+\def\abstractname{\bf 摘~~要}
 \begin{abstract}
 中文分词的研究时至今日已经产生出了很多种方法。
 例如：\maxforward 、\maxbackward 还有基于统计语言模型的\NGram 方法。
@@ -58,20 +65,20 @@
 		\begin{tabular}{l|c|l|l}
 			当前处理字符串 & 是否匹配    & 目前最长词 & 当前分词结果   \\
 			\hline
-			我\$           & {\serif Y}  & 我         &                \\
-			我喜\$         & {\serif N}  & 我         &                \\
-			我喜欢\$       & {\serif N}  & 我         &                \\
-			我喜欢奥\$     & {\serif N}  & 我         &                \\
-			我喜欢奥运\$   & {\serif N}  & 我         &                \\
-			我喜欢奥运会\$ & {\serif N}  & 我         &                \\
-			喜\$           & {\serif Y}  & 喜         & 我             \\ 
-			喜欢\$         & {\serif Y}  & 喜欢       & 我             \\ 
-			喜欢奥\$       & {\serif N}  & 喜欢       & 我             \\ 
-			喜欢奥运\$     & {\serif N}  & 喜欢       & 我             \\ 
-			喜欢奥运会\$   & {\serif N}  & 喜欢       & 我             \\ 
-			奥\$           & {\serif Y}  & 奥         & 我 喜欢        \\ 
-			奥运\$         & {\serif Y}  & 奥运       & 我 喜欢        \\ 
-			奥运会\$       & {\serif Y}  & 奥运会     & 我 喜欢        \\ 
+			我\$           & {\en Y}  & 我         &                \\
+			我喜\$         & {\en N}  & 我         &                \\
+			我喜欢\$       & {\en N}  & 我         &                \\
+			我喜欢奥\$     & {\en N}  & 我         &                \\
+			我喜欢奥运\$   & {\en N}  & 我         &                \\
+			我喜欢奥运会\$ & {\en N}  & 我         &                \\
+			喜\$           & {\en Y}  & 喜         & 我             \\ 
+			喜欢\$         & {\en Y}  & 喜欢       & 我             \\ 
+			喜欢奥\$       & {\en N}  & 喜欢       & 我             \\ 
+			喜欢奥运\$     & {\en N}  & 喜欢       & 我             \\ 
+			喜欢奥运会\$   & {\en N}  & 喜欢       & 我             \\ 
+			奥\$           & {\en Y}  & 奥         & 我 喜欢        \\ 
+			奥运\$         & {\en Y}  & 奥运       & 我 喜欢        \\ 
+			奥运会\$       & {\en Y}  & 奥运会     & 我 喜欢        \\ 
 		    \$             &             &            & 我 喜欢 奥运会 \\
 		\end{tabular}
 	\end{center}
@@ -82,24 +89,29 @@
 表\ref{tbl_maxforward}一步步演示了\maxforward 的切分过程。算法\ref{alg_maxforward}具体描述了这个算法。
 \incmargin{1em}
 \begin{algorithm}
+	\english
 	\label{alg_maxforward}
 	\dontprintsemicolon
 	\linesnumbered
-	\SetKwData{Token}{token}
-	\SetKwData{MaxTokenSize}{max}
-	\SetKwData{Result}{result}
-	\SetKwFunction{Strlen}{strlen}
-	\SetKwFunction{Substr}{substr}
-	\SetKwFunction{Concat}{concat}
-	\SetKwInOut{Input}{Input}
-	\SetKwInOut{Output}{Output}
+	\SetKwData{Token}{\en token}
+	\SetKwData{MaxTokenSize}{\en max}
+	\SetKwData{Result}{\en result}
+	\SetKwFunction{Strlen}{\en strlen}
+	\SetKwFunction{Substr}{\en substr}
+	\SetKwFunction{Concat}{\en concat}
+	\SetKwFunction{Find}{\en find}
+	\SetKwInOut{Input}{\en Input}
+	\SetKwInOut{Output}{\en Output}
 
-	\Input{A string in chinese $s$}
-	\Output{A string after Segmentation $t$}
+	\Input{\en A string in chinese $s$}
+	\Output{\en A string after Segmentation $t$}
 	\Begin{
 		\For{$i\leftarrow 0$ \KwTo \Strlen{$s$}}{
 			\For{$j\leftarrow$ \MaxTokenSize \KwTo $0$} {
 				\Token$\leftarrow$\Substr{$s$, $i$, $j$}\;
+				\If{\Find{\Token}} {
+					break\;
+				}
 			}
 			\Concat{$t$, \Token}\;
 			\Concat{$t$, $" "$}\;
