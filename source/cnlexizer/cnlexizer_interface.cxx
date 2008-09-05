@@ -22,7 +22,7 @@ void cnlexizer_clean(void *handle)
 	if (handle) delete (CNLexizer *)handle;
 }
 
-size_t cnlexizer_process(void *handle, char *t, const char *s)
+ssize_t cnlexizer_process(void *handle, char *t, const char *s)
 {
 	size_t length = 0;
 	try {
@@ -38,6 +38,6 @@ size_t cnlexizer_process(void *handle, char *t, const char *s)
 		return length;
 	} catch(std::exception &e) {
 		fprintf(stderr, "ERROR: %s\n", e.what());
-		return 0;
+		return -1;
 	}
 }
