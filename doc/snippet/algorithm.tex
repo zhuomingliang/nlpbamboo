@@ -35,7 +35,7 @@
 \def\maxforward{{\cn 最大正向匹配{\en(Maximum Forward Matching)}}}
 \def\maxbackward{{\cn 最大逆向匹配{\en(Maximum Backward Matching)}}}
 \def\NGram{{\cn {\en N}-元语法模型{\en(N-Gram Model)}}}
-\def\UniGram{{\cn 一元语法模型{\en(UniGram Model)}}}
+\def\UniGram{{\cn 一元语法模型{\en(Unigram Model)}}}
 
 % 标题定义
 \title{常用中文分词算法简介}
@@ -59,7 +59,7 @@
 
 \section{\maxforward}
 \begin{table}
-\caption{例如：切分句子 “我喜欢奥运会”}
+\caption{切分句子 “我喜欢奥运会”}
 \label{tbl_maxforward}
 	\begin{center}
 		\begin{tabular}{l|c|l|l}
@@ -79,7 +79,7 @@
 			奥\$           & {\en Y}  & 奥         & 我 喜欢        \\ 
 			奥运\$         & {\en Y}  & 奥运       & 我 喜欢        \\ 
 			奥运会\$       & {\en Y}  & 奥运会     & 我 喜欢        \\ 
-		    \$             &             &            & 我 喜欢 奥运会 \\
+		    \$             &          &            & 我 喜欢 奥运会 \\
 		\end{tabular}
 	\end{center}
 \end{table}
@@ -121,5 +121,56 @@
 	\caption{\maxforward}
 \end{algorithm}
 \decmargin{1em}
+
+\maxforward 虽然简单，但很多时候会因为切词过长导致错误。
+例如，句子“研究生命起源”，会被\maxforward 切分成 “研究生 命 起源”。显然是错误的。
+
+
+\section{\maxbackward}
+
+现在让我们把\maxforward 方法反过来，也就是从后向前反向扫描句子。\ref{tbl_maxbackword}向我们展示了这个过程。
+
+\begin{table}
+\caption{切分句子 “研究生命起源”}
+\label{tbl_maxbackward}
+	\begin{center}
+		\begin{tabular}{l|c|l|l}
+			当前处理字符串           & 是否匹配 & 目前最长词 & 当前分词结果   \\
+			\hline
+			源\$                     & {\en Y}  & 源         &                \\
+			起源\$                   & {\en Y}  & 起源       &                \\
+			命起源\$                 & {\en N}  & 起源       &                \\
+			生命起源\$               & {\en N}  & 起源       &                \\
+			研究生命起源\$           & {\en N}  & 起源       &                \\
+
+			命\$                     & {\en Y}  & 命         & 起源           \\
+			生命\$                   & {\en Y}  & 生命       & 起源           \\
+			究生命\$                 & {\en N}  & 生命       & 起源           \\
+			研究生命\$               & {\en N}  & 生命       & 起源           \\
+
+			究\$                     & {\en Y}  & 究         & 生命 起源      \\
+			研究\$                   & {\en Y}  & 研究       & 生命 起源      \\
+
+			\$                       &          &            & 研究 生命 起源 \\
+		\end{tabular}
+	\end{center}
+\end{table}
+
+这种把\maxforward 扫描方向倒转过来的方法被称为\maxbackward
+虽然\maxbackward 把上面这句\maxforward 切分错误的句子正确切分，
+但是我们不难发现单纯翻转扫描方式还是不能解决切词过长的问题，例如：“欢迎来北京”，
+会被\maxbackward 切分成“欢 迎来 北京”。
+
+虽然\maxforward 和\maxbackward 存在都切分过长导致错误的问题，
+但在实践中\maxbackward 的准确率略高于\maxforward
+
+\section{\UniGram}
+
+下面我们来介绍一种稍微复杂一点的算法\UniGram，他有比\maxforward 和\maxbackward 高得多的准确率。
+
+\UniGram 是\NGram 的一种，也是其中最简单的一种。\UniGram 算法力图找到一种切分，
+让被切分后的句子中所有词的概率总和最大。
+
+
 
 \end{document}
