@@ -12,8 +12,8 @@ mkdir -p $BUILD_DIR
 mkdir -p $INDEX_DIR
 echo "" >> ${BUILD_DIR}/combine.txt
 
-$TOP/bin/ngm_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
-$TOP/bin/ngm_tool -v -c ${RAW} > ${BUILD_DIR}/combine.txt
+$TOP/bin/pdc_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
+$TOP/bin/pdc_tool -v -c ${RAW} > ${BUILD_DIR}/combine.txt
 $TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt
 $TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/combine.idx -s ${BUILD_DIR}/combine.txt
 

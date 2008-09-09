@@ -88,7 +88,7 @@ sub build_combined_lexicon
 
 if ( !getopts("cuv") || (@ARGV < 1)) {
 	print "Usage: ngm_tool [OPTIONS] CORPUS\n";
-	print "\n";
+	print "Convert People Daily Corpus to Lexicon\n";
 	print "OPTIONS:\n";
 	print "        -u            build unigram lexicon from CORPUS\n";
 	print "        -c            build combined word lexicon from CORPUS\n";
