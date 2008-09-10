@@ -1,0 +1,63 @@
+#!/usr/bin/env perl
+
+use strict;
+use Data::Dumper;
+use Getopt::Std;
+use utf8;
+use Encode qw/encode decode/;
+use vars '$opt_n','$opt_v';
+
+################################################################################
+#
+# build Ngram lexicon
+#
+################################################################################
+
+sub build_unigram_lexicon
+{
+	my $file = shift @_;
+	my $n = shift @_;
+	my $unknow = '$';
+	my $i;
+
+	my %lexicon = ();
+	open FH, "<$file";
+	print STDERR "Building $n-gram Lexicon: \n" if ($opt_v);
+	while (<FH>) {
+		chomp;
+		$_ = decode('UTF-8', $_);
+		my @ngram = split(/\s/, "$unknow "x$n);
+		foreach (split(/\s+/)) {
+			my $lex = $_;
+			shift @ngram;
+			push @ngram, $lex;
+			$lexicon{"@ngram"}++;
+			print STDERR "\r\t\t".keys(%lexicon)." items generated." if ($opt_v && keys(%lexicon) % 500 == 0);
+		}
+	}
+	print STDERR "\r\t\t".keys(%lexicon)." items generated.\n" if ($opt_v);
+	print encode("UTF-8", "$lexicon{$_} $_\n") foreach keys %lexicon;
+	close FH;
+}
+
+################################################################################
+#
+# main
+#
+################################################################################
+
+
+if (!getopts("n:v")) {
+	print "Usage: ngm_tool [OPTIONS] CORPUS\n";
+	print "Convert People Daily Corpus to Lexicon\n";
+	print "OPTIONS:\n";
+	print "        -n N          build N-gram lexicon from corpus\n";
+	print "        -v            verbose\n";
+	print "\n";
+	print "Author: jianingy <detrox\@gmail.com>\n";
+}
+
+my $file = @ARGV[0];
+$file = "/dev/stdin" if (!-f $file);
+
+&build_unigram_lexicon($file, $opt_n) if ($opt_n);

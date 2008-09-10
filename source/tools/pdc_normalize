@@ -1,0 +1,66 @@
+#!/usr/bin/env perl
+
+use strict;
+use Data::Dumper;
+use Getopt::Std;
+use utf8;
+use Encode qw/encode decode/;
+use vars '$opt_l', '$opt_v','$opt_v';
+
+################################################################################
+#
+# remove space
+#
+################################################################################
+
+sub collapse { $_ = shift @_; s/\s+//g; $_;}
+
+################################################################################
+#
+# normalize people daily corpus
+#
+################################################################################
+
+sub normalize
+{
+	my $file = shift @_;
+	my $long = shift @_;
+	my $count = 0;
+	open FH, "<$file";
+	print STDERR "Normalizing: \n" if ($opt_v);
+	while (<FH>) {
+		chomp;
+		$_ = decode('UTF-8', $_);
+		my (undef, $_) = split(/\s+/, $_, 2);
+		s/\/\w+//g; # remove attr
+		s/\[|\]\w+//g if (!$long); # remove combined word
+		s/\[([^]]+)\]\w+/sprintf("%s", collapse($1))/seg if ($long);
+		print encode('UTF-8', "$_\n");
+		$count++;
+		print STDERR "\r\t\t$count items processed.\n" if ($opt_v && $count % 500 == 1);
+	}
+	print STDERR "\r\t\t$count items processed.\n" if ($opt_v);
+	close FH;
+}
+
+################################################################################
+#
+# main
+#
+################################################################################
+
+
+if (!getopts("lv")) {
+	print "Usage: pdc_normalize [OPTIONS] CORPUS\n";
+	print "Normalize People Daily Corpus for ngm_tool\n";
+	print "OPTIONS:\n";
+	print "        -l            combine long terms\n";
+	print "        -v            verbose\n";
+	print "\n";
+	print "Author: jianingy <detrox\@gmail.com>\n";
+}
+
+my $file = @ARGV[0];
+$file = "/dev/stdin" if (!-f $file);
+
+&normalize($file, $opt_l);

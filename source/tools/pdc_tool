@@ -86,8 +86,8 @@ sub build_combined_lexicon
 ################################################################################
 
 
-if ( !getopts("cuv") || (@ARGV < 1)) {
-	print "Usage: ngm_tool [OPTIONS] CORPUS\n";
+if (!getopts("cuv")) {
+	print "Usage: pdc_tool [OPTIONS] CORPUS\n";
 	print "Convert People Daily Corpus to Lexicon\n";
 	print "OPTIONS:\n";
 	print "        -u            build unigram lexicon from CORPUS\n";
@@ -98,7 +98,7 @@ if ( !getopts("cuv") || (@ARGV < 1)) {
 }
 
 my $file = @ARGV[0];
-die "can not open file $file!\n" if (!-f $file);
+$file = "/dev/stdin" if (!-f $file);
 
 &build_unigram_lexicon($file) if ($opt_u);
 &build_combined_lexicon($file) if ($opt_c);
