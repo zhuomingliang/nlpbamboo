@@ -8,6 +8,8 @@
 AsciiProcessor::AsciiProcessor(IConfig *config)
 {
 	config->get_value("chinese_number_end", _chinese_number_end);
+	config->get_value("chinese_punctuation", _chinese_punctuation);
+	config->get_value("chinese_number", _chinese_number);
 }
 
 void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
@@ -19,6 +21,7 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		state_unknow = 0,
 		state_alpha,
 		state_number,
+		state_punctuation,
 		state_end
 	} state, last;
 
@@ -31,8 +34,11 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		len = utf8::first(s, first);
 		if (isalpha(*first)) state = state_alpha;
 		else if (isdigit(*first)) state = state_number;
+		/* use utf8::strstr to replace */
+		//else if (strstr(_chinese_punctuation, first)) state = state_punctuation;
 		else if (*first == '.' && last == state_number) state = state_number;
-		else if (strstr(_chinese_number_end, first) && last == state_number) state = state_number;
+		else if (utf8::strstr(_chinese_number, first)) state = state_number;
+		else if (utf8::strstr(_chinese_number_end, first) && last == state_number) state = state_number;
 		else if (*first == '\0') state = state_end;
 		else state = state_unknow;
 		if (last != state && subtoken[0]) {

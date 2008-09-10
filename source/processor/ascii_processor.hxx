@@ -7,6 +7,8 @@
 class AsciiProcessor: public Processor {
 protected:
 	const char *_chinese_number_end;
+	const char *_chinese_punctuation;
+	const char *_chinese_number;
 	AsciiProcessor();
 	bool _can_process(LexToken *token)
 	{
