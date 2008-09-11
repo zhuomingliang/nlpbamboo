@@ -1,0 +1,1 @@
+install(FILES 6tag.tmpl DESTINATION ${TRAINING_INSTALL_DIR})

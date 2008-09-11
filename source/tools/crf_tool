@@ -3,13 +3,20 @@
 use strict;
 use utf8;
 use Encode qw/encode decode/;
+use Getopt::Std;
 
-my @tags = qw/B B2 B3 M/;
+use vars '$opt_v';
 
+################################################################################
+#
+# Generate Character Sequence
+#
+################################################################################
 sub generate
 {
 	$_ = shift @_;
 	my @chs = split//;
+	my @tags = qw/B B2 B3 M/;
 
 	my $index = 0;
 	foreach (@chs) {
@@ -20,12 +27,52 @@ sub generate
 	}
 }
 
-while (<>) {
-	s/^\s+|\s+$//g;
-	$_ = decode("UTF-8", $_);
-	foreach(split(/\s+/)) {
-		print "\n" if (/。？！\.\?!/) 
-		&generate($_);
+################################################################################
+#
+# Build Training Set
+#
+################################################################################
+sub build_crf_training_set
+{
+	my $file = shift @_;
+	my $i = 0;
+
+	open FH, "<$file";
+	print STDERR "Building CRF Traning Set from $file: \n" if ($opt_v);
+
+	while (<FH>) {
+		s/^\s+|\s+$//g;
+		$_ = decode("UTF-8", $_);
+		foreach(split(/\s+/)) {
+			print "\n" if (/。？！\.\?!/) 
+			&generate($_);
+			$i++;
+			print STDERR "\r\t\t $i items generated." if ($opt_v && $i % 500 == 0);
+		}
+		print "\n";
 	}
-	print "\n";
+	print STDERR "\r\t\t $i items generated.\n" if ($opt_v);
+	close FH;
 }
+
+################################################################################
+#
+# main
+#
+################################################################################
+
+
+if (!getopts("v")) {
+	print "Usage: crf_tool [OPTIONS] CORPUS\n";
+	print "Convert Corpus to CRF Training Set\n";
+	print "OPTIONS:\n";
+	print "        -v            verbose\n";
+	print "\n";
+	print "Author: jianingy <detrox\@gmail.com>\n";
+}
+
+my $file = @ARGV[0];
+print "file\n";
+$file = "/dev/stdin" if (!-f $file);
+
+&build_crf_training_set($file);

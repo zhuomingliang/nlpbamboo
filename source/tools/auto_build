@@ -13,7 +13,24 @@ mkdir -p $BUILD_DIR
 mkdir -p $INDEX_DIR
 cat $USER_COMBINE | sed -e 's/^/1 /g' > ${BUILD_DIR}/combine.txt
 
-$TOP/bin/pdc_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
+#$TOP/bin/pdc_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
+$TOP/bin/pdc_normalize -v ${RAW} > ${BUILD_DIR}/${TAG}.normalize.txt
+$TOP/bin/ngm_tool -n1 -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.ugm.txt
 $TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt
 $TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/combine.idx -s ${BUILD_DIR}/combine.txt
 
+
+# Building crf
+echo 
+echo "Training CRF Model may take a very long time (5 to 12 hours depend on your system)"
+echo -n "Are you sure you wanna build (y/n)?"
+read choice
+if [ "$choice" == "y" ]; then
+	crf_learn=$(which crf_learn)
+	if [ -z "$crf_learn" ]; then
+		echo "crf_learn not found!"
+		exit
+	fi
+	$TOP/bin/crf_tool -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.crf.training.txt
+	crf_learn $TOP/training/6tag.tmpl ${BUILD_DIR}/${TAG}.crf.training.txt ${INDEX_DIR}/${TAG}.model
+fi

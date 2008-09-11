@@ -22,7 +22,7 @@ sub build_unigram_lexicon
 
 	my %lexicon = ();
 	open FH, "<$file";
-	print STDERR "Building $n-gram Lexicon: \n" if ($opt_v);
+	print STDERR "Building $n-gram Lexicon from $file: \n" if ($opt_v);
 	while (<FH>) {
 		chomp;
 		$_ = decode('UTF-8', $_);
