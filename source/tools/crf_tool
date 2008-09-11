@@ -72,7 +72,6 @@ if (!getopts("v")) {
 }
 
 my $file = @ARGV[0];
-print "file\n";
 $file = "/dev/stdin" if (!-f $file);
 
 &build_crf_training_set($file);
