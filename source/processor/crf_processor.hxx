@@ -12,7 +12,7 @@ protected:
 	CRFPP::Tagger *_tagger;
 	char *_token;
 	const char *_ending_tags;
-	std::stringstream _sstream;
+	std::string _result;
 
 	CRFProcessor();
 	bool _can_process(LexToken *token) 

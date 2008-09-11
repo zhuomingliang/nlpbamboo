@@ -38,14 +38,12 @@ void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
-	_sstream.str("");
+	_result.clear();
 	for (i = 0; i < _tagger->size(); ++i) {
-		for (j = 0; j < _tagger->xsize(); ++j) {
-			_sstream << _tagger->x(i, j);
-		}
+		_result.append(_tagger->x(i, 0));
 		if (strstr(_ending_tags, _tagger->y2(i))) {
-			out.push_back(new LexToken(_sstream.str().c_str(), LexToken::attr_cword));
-			_sstream.str("");
+			out.push_back(new LexToken(_result.c_str(), LexToken::attr_cword));
+			_result.clear();
 		}
 	}
 
