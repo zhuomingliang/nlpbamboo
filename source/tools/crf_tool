@@ -1,0 +1,31 @@
+#!/usr/bin/env perl
+
+use strict;
+use utf8;
+use Encode qw/encode decode/;
+
+my @tags = qw/B B2 B3 M/;
+
+sub generate
+{
+	$_ = shift @_;
+	my @chs = split//;
+
+	my $index = 0;
+	foreach (@chs) {
+		my $tag = (@chs == 1)?"S":$tags[($index >= @tags - 1)?@tags - 1:$index];
+		$tag = 'E' if @chs > 1 && $index == @chs - 1;
+		print encode("UTF-8", "$_ $tag\n");
+		$index++;	
+	}
+}
+
+while (<>) {
+	s/^\s+|\s+$//g;
+	$_ = decode("UTF-8", $_);
+	foreach(split(/\s+/)) {
+		print "\n" if (/。？！\.\?!/) 
+		&generate($_);
+	}
+	print "\n";
+}

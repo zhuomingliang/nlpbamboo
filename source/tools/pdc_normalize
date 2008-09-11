@@ -29,7 +29,7 @@ sub normalize
 	open FH, "<$file";
 	print STDERR "Normalizing: \n" if ($opt_v);
 	while (<FH>) {
-		chomp;
+		s/^\s+|\s+$//g;
 		$_ = decode('UTF-8', $_);
 		my (undef, $_) = split(/\s+/, $_, 2);
 		s/\/\w+//g; # remove attr
