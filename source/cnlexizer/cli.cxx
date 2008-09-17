@@ -41,8 +41,10 @@ static int _do(const char *cfg, const char *file)
 		while ((length = getline(&s, &n, fp)) > 0) {
 			s[length - 1] = '\0';
 			if (m < n) {
-				t = (char *)realloc(t, (n << 2) + 1);
 				m = (n << 2) + 1;
+				t = (char *)realloc(t, m);
+				if (t == NULL) 
+					throw std::bad_alloc();
 			}
 			clx.process(t, s);
 			std::cout << t << "\n";	

@@ -74,6 +74,7 @@ size_t CNLexizer::process(char *t, const char *s)
 	}
 	*(p - 1) = '\0'; //remove trailing space
 	_in->clear();
+	assert(_in->empty());
 	return p - t;
 }
 
