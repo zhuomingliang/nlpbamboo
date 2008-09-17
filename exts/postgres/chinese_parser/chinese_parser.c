@@ -21,6 +21,8 @@
 #include "utils/builtins.h"
 #include "dlfcn.h"
 
+#include "cnlexizer_interface.hxx"
+
 /* Output token categories */
 
 #define ASCIIWORD		1
@@ -1529,14 +1531,33 @@ Datum		chineseprs_lextype(PG_FUNCTION_ARGS);
 /*
  * functions
  */
+
+static void *handle = NULL;
+
+void _PG_init(void);
+void _PG_fini(void);
+
+void _PG_init(void)
+{
+	handle = cnlexizer_init("/etc/cnlexizer.cfg");
+}
+
+void _PG_fini(void)
+{
+	cnlexizer_clean(handle);
+}
+
 Datum
 chineseprs_start(PG_FUNCTION_ARGS)
 {
+	char *t = NULL;
 	TParser *prs = TParserInit((char*)PG_GETARG_POINTER(0), PG_GETARG_INT32(1));
-	char *s;
-	s = (char *)palloc(strlen(prs->trimmed));
-	cnlexizer_process(handle, prs->trimmed
-	prs->sege = cnlexizer(prs->trimmed);
+
+	while(TParserGet(prs))
+		;
+	t = (char *)malloc(strlen(prs->trimmed) * 4);
+	cnlexizer_process(handle, t, prs->trimmed);
+	prs->sege = t;
 	if (prs->sege == NULL) {
 		prs->sege = strdup(" ");
 	}
