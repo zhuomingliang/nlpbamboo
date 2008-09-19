@@ -11,7 +11,7 @@ BUILD_DIR=$TOP/data_build
 INDEX_DIR=$TOP/index
 mkdir -p $BUILD_DIR
 mkdir -p $INDEX_DIR
-[ -f ${BUILD_DIR} ] && cat $USER_COMBINE | sed -e 's/^/1 /g' > ${BUILD_DIR}/combine.txt
+[ -f "${BUILD_DIR}/combine.txt" ] && cat $USER_COMBINE | sed -e 's/^/1 /g' > ${BUILD_DIR}/combine.txt
 
 #$TOP/bin/pdc_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
 $TOP/bin/pdc_normalize -v ${RAW} > ${BUILD_DIR}/${TAG}.normalize.txt
