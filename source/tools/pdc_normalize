@@ -31,7 +31,7 @@ sub normalize
 	while (<FH>) {
 		s/^\s+|\s+$//g;
 		$_ = decode('UTF-8', $_);
-		my (undef, $_) = split(/\s+/, $_, 2);
+		(undef, $_) = split(/\s+/, $_, 2);
 		s/\/\w+//g; # remove attr
 		s/\[|\]\w+//g if (!$long); # remove combined word
 		s/\[([^]]+)\]\w+/sprintf("%s", collapse($1))/seg if ($long);
