@@ -54,13 +54,13 @@ public:
 		size_t i, step, length;
 		
 		length = strlen(needle);
-		if (haystack == NULL || needle == NULL) return 0; 
+		if (haystack == NULL || needle == NULL || length == 0) return -1; 
 		for (i = 0; haystack[i];) {
 			step = (_map[(unsigned char)haystack[i]] > 0)?_map[(unsigned char)haystack[i]]:1;
-			if (strncmp(haystack + i, needle, length) == 0) return i;
+			if (length == step && strncmp(haystack + i, needle, length) == 0) return i;
 			i += step;
 		}
-		return 0;
+		return -1;
 	}
 
 	static int index(const char *s, size_t *index)

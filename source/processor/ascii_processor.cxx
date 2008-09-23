@@ -35,10 +35,10 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		if (isalpha(*first)) state = state_alpha;
 		else if (isdigit(*first)) state = state_number;
 		/* use utf8::strstr to replace */
-		else if (utf8::strstr(_chinese_punctuation, first) || ispunct(*first)) state = state_punctuation;
 		else if (*first == '.' && last == state_number) state = state_number;
-		else if (utf8::strstr(_chinese_number, first)) state = state_number;
-		else if (utf8::strstr(_chinese_number_end, first) && last == state_number) state = state_number;
+		else if (utf8::strstr(_chinese_punctuation, first) >=0 || ispunct(*first)) state = state_punctuation;
+		else if (utf8::strstr(_chinese_number, first) >= 0) state = state_number;
+		else if (utf8::strstr(_chinese_number_end, first) >= 0 && last == state_number) state = state_number;
 		else if (*first == '\0') state = state_end;
 		else state = state_unknow;
 		if (last != state && subtoken[0]) {
