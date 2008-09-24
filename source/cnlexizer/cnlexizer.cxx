@@ -20,6 +20,7 @@ CNLexizer::CNLexizer(const char *file)
 	const char *s;
 	char *text, *token, delim[] = ",";
 	size_t length;
+	std::string str;
 
 	_config = ConfigFactory::create("lua_config", file);
 	_config->get_value("streamline", s);
@@ -31,15 +32,22 @@ CNLexizer::CNLexizer(const char *file)
 	text = new char[strlen(s) + 1];
 	strcpy(text, s);
 	for (token = strtok(text, delim); token; token = strtok(NULL, delim)) {
+		str = token;
 		_streamline.push_back(std::string(token));
+		if (str == "ascii")
+			_processors["ascii"] = new AsciiProcessor(_config);
+		if (str == "maxforward")
+			_processors["maxforward"] = new MaxforwardProcessor(_config);
+		if (str == "unigram")
+			_processors["unigram"] = new UnigramProcessor(_config);
+		if (str == "crf")
+			_processors["crf"] = new CRFProcessor(_config);
+		if (str == "crf2")
+			_processors["crf2"] = new CRF2Processor(_config);
+		if (str == "combine")
+			_processors["combine"] = new CombineProcessor(_config);
 	}
 	delete []text;
-	_processors["ascii"] = new AsciiProcessor(_config);
-	_processors["maxforward"] = new MaxforwardProcessor(_config);
-	_processors["unigram"] = new UnigramProcessor(_config);
-	_processors["crf"] = new CRFProcessor(_config);
-	_processors["crf2"] = new CRF2Processor(_config);
-	_processors["combine"] = new CombineProcessor(_config);
 }
 
 size_t CNLexizer::process(char *t, const char *s)
