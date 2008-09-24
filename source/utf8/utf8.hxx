@@ -1,3 +1,5 @@
+#ifndef UTF8_XXX
+#define UTF8_XXX
 #include <cstring>
 #include <cassert>
 #include <cstdlib>
@@ -126,3 +128,4 @@ public:
 		return j;
 	}
 };
+#endif

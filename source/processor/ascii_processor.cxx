@@ -1,15 +1,19 @@
 #include <ctype.h>
 #include <iostream>
 
-#include "utf8.hxx"
 #include "lex_token.hxx"
 #include "ascii_processor.hxx"
 
 AsciiProcessor::AsciiProcessor(IConfig *config)
 {
-	config->get_value("chinese_number_end", _chinese_number_end);
-	config->get_value("chinese_punctuation", _chinese_punctuation);
-	config->get_value("chinese_number", _chinese_number);
+	const char *s;
+
+	config->get_value("chinese_number_end", s);
+	_load_lexicon(_chinese_number_end, s);
+	config->get_value("chinese_punctuation", s);
+	_load_lexicon(_chinese_punctuation, s);
+	config->get_value("chinese_number", s);
+	_load_lexicon(_chinese_number, s);
 }
 
 void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
@@ -34,11 +38,10 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		len = utf8::first(s, first);
 		if (isalpha(*first)) state = state_alpha;
 		else if (isdigit(*first)) state = state_number;
-		/* use utf8::strstr to replace */
 		else if (*first == '.' && last == state_number) state = state_number;
-		else if (utf8::strstr(_chinese_punctuation, first) >=0 || ispunct(*first)) state = state_punctuation;
-		else if (utf8::strstr(_chinese_number, first) >= 0) state = state_number;
-		else if (utf8::strstr(_chinese_number_end, first) >= 0 && last == state_number) state = state_number;
+		else if (_chinese_punctuation.search(first) > 0 || ispunct(*first)) state = state_punctuation;
+		else if (_chinese_number.search(first) > 0) state = state_number;
+		else if (_chinese_number_end.search(first) > 0 && last == state_number) state = state_number;
 		else if (*first == '\0') state = state_end;
 		else state = state_unknow;
 		if (last != state && subtoken[0]) {
