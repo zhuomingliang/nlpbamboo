@@ -13,18 +13,18 @@ public:
 		attr_number,
 		attr_alpha,
 		attr_cword,
+		attr_punct,
 	};
 	LexToken():_token(NULL), _attr(attr_unknow) {}
 	LexToken(const char *s, int attr = attr_unknow)
 		:_attr(attr)
 	{
-		_token = new char[strlen(s) + 1]; 
-		strcpy(_token, s);
+		_token = strdup(s);
 	}
 	~LexToken()
 	{
 		if (_token) {
-			delete []_token;
+			free(_token);
 			_token = NULL;
 		}
 	}
