@@ -1,6 +1,7 @@
 #ifndef LEX_TOKEN_CXX
 #define LEX_TOKEN_CXX
 
+#include <cstdlib>
 #include <cstring>
 
 class LexToken {
