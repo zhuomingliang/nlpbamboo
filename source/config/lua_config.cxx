@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <cassert>
 #include <string>
+#include <cstdlib>
 #include "lua_config.hxx"
 
 LuaConfig::LuaConfig()
@@ -15,10 +16,17 @@ LuaConfig::LuaConfig(const char *filename, bool can_throw)
 {
 	_lua = lua_open();
 	luaL_openlibs(_lua);
-	luaopen_table(_lua);
 
-	if (luaL_loadfile(_lua, filename) || lua_pcall(_lua, 0, 0, 0)) {
-		throw std::runtime_error("Can not load configuration " + std::string(filename));
+	if (luaL_loadfile(_lua, filename)) {
+		throw std::runtime_error(std::string("Can not load configuration ").append(filename));
+	}
+
+	/* Update root */
+	lua_pushstring(_lua, getenv("PWD"));
+	lua_setglobal(_lua, "root");
+	
+	if (lua_pcall(_lua, 0, 0, 0)) {
+		throw std::runtime_error(std::string("Can not parse configuration ").append(filename));
 	}
 }
 
