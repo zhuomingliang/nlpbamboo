@@ -23,9 +23,9 @@ static int _do(const char *cfg, const char *file)
 	FILE *fp = NULL;
 
 	try {
-		std::cerr << "Loading configuration " << cfg << std::endl;
+		std::cerr << "Loading configuration '" << cfg << "' ..." << std::endl;
 		CNLexizer clx(cfg);
-		std::cerr << "Opening text " << file << std::endl;
+		std::cerr << "Parsing '" << file << "'..." << std::endl;
 		if (strcmp(file, "-") == 0) {
 			fp = stdin;
 		} else {
@@ -38,7 +38,8 @@ static int _do(const char *cfg, const char *file)
 		t = s = NULL;
 		n = 0; m = 0;
 		while ((length = getline(&s, &n, fp)) > 0) {
-			s[length - 1] = '\0';
+			if (s[length - 1] == '\n') s[length - 1] = '\0';
+			if (s[length - 2] == '\r') s[length - 2] = '\0';
 			if (m < n) {
 				m = (n << 2) + 1;
 				t = (char *)realloc(t, m);
@@ -46,7 +47,7 @@ static int _do(const char *cfg, const char *file)
 					throw std::bad_alloc();
 			}
 			clx.process(t, s);
-			std::cout << t << "\n";	
+			std::cout << t << std::endl;
 		}
 		free(s);
 		free(t);
