@@ -10,6 +10,7 @@ set(INC_INSTALL_DIR "/include")
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG -fPIC")
 set(CMAKE_CXX_FLAGS_DEBUG "-pg -O2 -fPIC -fno-reorder-blocks -fno-schedule-insns -fno-inline")
+#set(CMAKE_CXX_FLAGS_DEBUG "-pg -O2")
 
 foreach(subdir cmake source etc training)
 
