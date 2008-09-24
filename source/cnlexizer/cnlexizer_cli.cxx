@@ -6,13 +6,12 @@
 
 static void _help_message()
 {
-	std::cout << "Usage: cnlexizer [OPTIONS] file\n"
+	std::cout << "Usage: cnlexizer_cli [OPTIONS] file\n"
 				 "OPTIONS:\n"
 				 "        -h|--help             help message\n"
-				 "        -c|--config           config file, default=/etc/sgmt_cn.cfg\n"
-				 "                              default to unigram\n"
+				 "        -c|--config           config file, default=./etc/cnlexizer.cfg\n"
 				 "\n"
-				 "Report bugs to jianing.yang@alibaba-inc.com\n"
+				 "Report bugs to detrox@gmail.com\n"
 			  << std::endl;
 }
 
@@ -62,7 +61,7 @@ static int _do(const char *cfg, const char *file)
 int main(int argc, char *argv[])
 {
 	int c;
-	const char default_config[] = "/etc/sgmt_cn.cfg";
+	const char default_config[] = "etc/cnlexizer.cfg";
 	const char default_file[] = "-";
 	const char *config = default_config, *file = default_file;
 	
