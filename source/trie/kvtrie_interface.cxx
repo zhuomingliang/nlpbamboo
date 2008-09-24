@@ -8,7 +8,7 @@ void *kvtrie_open(const char *index, const char *data)
 	return kvt;
 }
 
-const char *kvtire_search(void *handle, const char *k)
+const char *kvtrie_search(void *handle, const char *k)
 {
 	KVTrie *kvt = (KVTrie *)handle;
 	const char *v;
