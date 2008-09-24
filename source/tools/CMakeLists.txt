@@ -7,8 +7,10 @@ SET(cnlexizer_tools
 	make_turing_data
 	auto_build
 	)
+add_executable(kvtrie_cli kvtrie_cli.cxx)
 add_executable(qil qil.cxx)
-target_link_libraries(qil trie ${LUA5_LIBRARIES})
+target_link_libraries(qil trie)
+target_link_libraries(kvtrie_cli kvtrie trie)
 
 install(PROGRAMS ${cnlexizer_tools} DESTINATION ${BIN_INSTALL_DIR})
-install(TARGETS qil DESTINATION ${BIN_INSTALL_DIR})
+install(TARGETS qil kvtrie_cli DESTINATION ${BIN_INSTALL_DIR})
