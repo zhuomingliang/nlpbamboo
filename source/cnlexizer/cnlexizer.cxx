@@ -11,6 +11,7 @@
 #include "crf_processor.hxx"
 #include "crf2_processor.hxx"
 #include "combine_processor.hxx"
+#include "single_combine_processor.hxx"
 
 const char CNLexizer::_stream_name_prefix[] = "streamline_";
 
@@ -36,16 +37,18 @@ CNLexizer::CNLexizer(const char *file)
 		_streamline.push_back(std::string(token));
 		if (str == "ascii")
 			_processors["ascii"] = new AsciiProcessor(_config);
-		if (str == "maxforward")
+		else if (str == "maxforward")
 			_processors["maxforward"] = new MaxforwardProcessor(_config);
-		if (str == "unigram")
+		else if (str == "unigram")
 			_processors["unigram"] = new UnigramProcessor(_config);
-		if (str == "crf")
+		else if (str == "crf")
 			_processors["crf"] = new CRFProcessor(_config);
-		if (str == "crf2")
+		else if (str == "crf2")
 			_processors["crf2"] = new CRF2Processor(_config);
-		if (str == "combine")
+		else if (str == "combine")
 			_processors["combine"] = new CombineProcessor(_config);
+		else if (str == "single_combine")
+			_processors["single_combine"] = new SingleCombineProcessor(_config);
 	}
 	delete []text;
 }

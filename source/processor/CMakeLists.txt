@@ -6,6 +6,7 @@ set( libsrc_processor
 	crf_processor.cxx
 	crf2_processor.cxx
 	combine_processor.cxx
+	single_combine_processor.cxx
 )
 add_library(processor STATIC ${libsrc_processor})
 target_link_libraries(processor -lcrfpp)
