@@ -57,7 +57,7 @@ void CRF2Processor::process(std::vector<LexToken *> &in, std::vector<LexToken *>
 			continue;
 		}
 
-		size_t len = utf8::length(s);
+		size_t len = cur_token->get_length();
 		for(j = 0; j < len; ++j) {
 			size_t tmp_len = utf8::sub(_token, s, j, 1);
 			if(tmp_len==1 && isspace(*_token)) continue;
@@ -85,7 +85,7 @@ void CRF2Processor::_crf2_tagger(std::vector<LexToken *> &in, std::vector<LexTok
 
 	for (i = 0; i < size; ++i) {
 		LexToken *cur_tok = in[i];
-		size_t tok_size = strlen(cur_tok->get_token());
+		size_t tok_size = cur_tok->get_bytes();
 		if(tok_size>max_str_size) tok_size=max_str_size;
 		snprintf(buf, max_buf_size-1, "%.*s %s", tok_size,
 			cur_tok->get_token(), _get_crf2_tag(cur_tok->get_attr()));

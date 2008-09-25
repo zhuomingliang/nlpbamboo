@@ -25,6 +25,8 @@ static int _do(const char *cfg, const char *file)
 	FILE *fp = NULL;
 	struct timeval tv[2];
 	struct timezone tz;
+	size_t consume = 0;
+
 	try {
 		std::cerr << "Loading configuration '" << cfg << "' ..." << std::endl;
 		CNLexizer clx(cfg);
@@ -40,7 +42,6 @@ static int _do(const char *cfg, const char *file)
 		}
 		t = s = NULL;
 		n = 0; m = 0;
-		gettimeofday(&tv[0], &tz);
 		while ((length = getline(&s, &n, fp)) > 0) {
 			if (s[length - 1] == '\n') s[length - 1] = '\0';
 			if (s[length - 2] == '\r') s[length - 2] = '\0';
@@ -50,7 +51,10 @@ static int _do(const char *cfg, const char *file)
 				if (t == NULL) 
 					throw std::bad_alloc();
 			}
+			gettimeofday(&tv[0], &tz);
 			clx.process(t, s);
+			gettimeofday(&tv[1], &tz);
+			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000 + (tv[1].tv_usec - tv[0].tv_usec) / 1000;
 			std::cout << t << std::endl;
 		}
 		free(s);
@@ -59,11 +63,8 @@ static int _do(const char *cfg, const char *file)
 		std::cerr << "ERROR: " << e.what() << std::endl;
 		return 1;
 	}
-	gettimeofday(&tv[1], &tz);
 
-	std::cerr << "Consumed Time: "
-		<< (tv[1].tv_sec - tv[0].tv_sec) * 1000 + (tv[1].tv_usec - tv[0].tv_usec) / 1000
-		<< " ms" << std::endl;
+	std::cerr << "Consumed Time: " << consume << " ms" << std::endl;
 	return 0;
 }
 

@@ -27,7 +27,7 @@ void MaxforwardProcessor::_process(LexToken *token, std::vector<LexToken *> &out
 	char *s;
 
 	s = token->get_token();
-	length = utf8::length(s);
+	length = token->get_length();
 	for (i = 0; i < length; i++) {
 		max_token_length = (_max_token_length < length - i)?_max_token_length:length - i;
 		for (k = 0, j = max_token_length; j > 0; j--) {

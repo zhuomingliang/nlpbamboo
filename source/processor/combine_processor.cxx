@@ -33,7 +33,7 @@ void CombineProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken
 		*_combine = '\0';
 		*_token = '\0';
 		for (j = i; j < length; j++) {
-			if (utf8::length(_combine) + utf8::length(in[j]->get_token()) <= _max_token_length) {
+			if (utf8::length(_combine) + in[j]->get_length() <= _max_token_length) {
 				strcpy(_combine + strlen(_combine), in[j]->get_token());
 				if (_lexicon->search(_combine) > 0) {
 					strcpy(_token, _combine);

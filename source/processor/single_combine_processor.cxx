@@ -31,7 +31,7 @@ void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<Le
 	length = in.size();
 	for (i = 0, last = -1; i < length; i++) {
 		*_combine = '\0';
-		now = utf8::length(in[i]->get_token());
+		now = in[i]->get_length();
 		if (now == 1 && last == 1) {
 			strcpy(_combine, in[i - 1]->get_token());
 			strcpy(_combine + strlen(_combine), in[i]->get_token());

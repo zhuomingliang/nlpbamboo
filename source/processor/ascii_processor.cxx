@@ -18,7 +18,7 @@ AsciiProcessor::AsciiProcessor(IConfig *config)
 
 void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 {
-	const char *s = token->get_token();
+	const char *s;
 	char first[8], *subtoken, *subtoken_ptr;
 	size_t len;
 	enum {
@@ -29,8 +29,8 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		state_end
 	} state, last;
 
-	if (*s == '\0') return;
-	subtoken = new char [strlen(s) + 1];
+	s = token->get_token();
+	subtoken = new char [token->get_bytes() + 1];
 	subtoken[0] = '\0';
 	subtoken_ptr = subtoken;
 	state = last = state_unknow;

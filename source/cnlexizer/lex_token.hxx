@@ -4,10 +4,14 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "utf8.hxx"
+
 class LexToken {
 protected:
 	char *_token;
 	int _attr;
+	size_t _length;
+	size_t _bytes;
 public:
 	enum attr_t {
 		attr_unknow = 0,
@@ -18,9 +22,11 @@ public:
 	};
 	LexToken():_token(NULL), _attr(attr_unknow) {}
 	LexToken(const char *s, int attr = attr_unknow)
-		:_attr(attr)
+		:_attr(attr), _length(0), _bytes(0)
 	{
 		_token = strdup(s);
+		_length = utf8::length(s);
+		_bytes = strlen(s);
 	}
 	~LexToken()
 	{
@@ -31,6 +37,8 @@ public:
 	}
 	int get_attr() {return _attr;}
 	char *get_token() {return _token;}
+	size_t get_length() {return _length;}
+	size_t get_bytes() {return _bytes;}
 };
 
 #endif

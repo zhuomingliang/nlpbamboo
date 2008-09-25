@@ -30,7 +30,7 @@ void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 
 	_tagger->clear();
 	s = token->get_token();
-	length = utf8::length(s);
+	length = token->get_length();
 	for (i = 0; i < length; i++) {
 		utf8::sub(_token, s, i, 1);
 		_tagger->add(_token);

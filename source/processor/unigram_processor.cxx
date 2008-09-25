@@ -33,7 +33,7 @@ void UnigramProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	num_terms = _lexicon->sum_value();
 	num_types = _lexicon->num_insert();
 
-	length = utf8::length(s);
+	length = token->get_length();
 	score = new double[length + 1];
 	backref = new size_t[length + 1];
 
