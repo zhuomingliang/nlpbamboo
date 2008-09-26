@@ -2,6 +2,7 @@
 TAG="people-daily"
 TOP=$(dirname $(which $0))/..
 RAW="$TOP/data_raw/${TAG}.txt"
+NUMBER_TRAILING="$TOP/data_raw/number-trailing.txt"
 USER_COMBINE="$TOP/data_raw/user-combine.txt"
 if [ ! -r "$RAW" ]; then
 	echo "can not find $RAWDIR/${TAG}.txt" >&2
@@ -11,13 +12,15 @@ BUILD_DIR=$TOP/data_build
 INDEX_DIR=$TOP/index
 mkdir -p $BUILD_DIR
 mkdir -p $INDEX_DIR
-[ -f "${BUILD_DIR}/combine.txt" ] && cat $USER_COMBINE | sed -e 's/^/1 /g' > ${BUILD_DIR}/combine.txt
+cat $USER_COMBINE | sed -e 's/^/1 /g' > ${BUILD_DIR}/combine.txt || exit 1
+cat $NUMBER_TRAILING | sed -e 's/^/1 /g' > ${BUILD_DIR}/number-trailing.txt || exit 1
 
 #$TOP/bin/pdc_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
-$TOP/bin/pdc_normalize -v ${RAW} > ${BUILD_DIR}/${TAG}.normalize.txt
-$TOP/bin/ngm_tool -n1 -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.ugm.txt
-$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt
-$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/combine.idx -s ${BUILD_DIR}/combine.txt
+$TOP/bin/pdc_normalize -v ${RAW} > ${BUILD_DIR}/${TAG}.normalize.txt || exit 1
+$TOP/bin/ngm_tool -n1 -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.ugm.txt || exit 1
+$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt || exit 1
+$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/combine.idx -s ${BUILD_DIR}/combine.txt || exit 1
+$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/number-trailing.idx -s ${BUILD_DIR}/number-trailing.txt || exit 1
 
 
 # Building crf
@@ -31,6 +34,6 @@ if [ "$choice" == "y" ]; then
 		echo "crf_learn not found!"
 		exit
 	fi
-	$TOP/bin/crf_tool -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.crf.training.txt
-	crf_learn $TOP/training/6tag.tmpl ${BUILD_DIR}/${TAG}.crf.training.txt ${INDEX_DIR}/${TAG}.model
+	$TOP/bin/crf_tool -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.crf.training.txt || exit 1
+	crf_learn $TOP/training/6tag.tmpl ${BUILD_DIR}/${TAG}.crf.training.txt ${INDEX_DIR}/${TAG}.model || exit 1
 fi

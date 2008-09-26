@@ -54,11 +54,11 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 				switch (last) {
 					case state_alpha: attr = LexToken::attr_alpha; break;
 					case state_number: attr = LexToken::attr_number; break;
+					case state_punctuation: attr = LexToken::attr_punct; break;
 					default: attr = LexToken::attr_unknow; break;
 				}
 				*(chinese.top) = '\0';
 				*(english.top) = '\0';
-				std::cout << "english = " << english.base << std::endl;
 				out.push_back(new LexToken(english.base, chinese.base, attr));
 				chinese.top = chinese.base;
 				english.top = english.base;

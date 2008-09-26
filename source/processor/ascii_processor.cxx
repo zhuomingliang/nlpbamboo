@@ -41,9 +41,9 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		cch = utf8::to_dbc(uch, step);
 		if (isalpha(cch)) state = state_alpha;
 		else if (isdigit(cch)) state = state_number;
-		else if (strcmp(uch, "。") == 0) {state = state_punctuation; cch = '.';}
+		//else if (strcmp(uch, "。") == 0) {state = state_punctuation; cch = '.';}
 		else if (ispunct(cch)) state = state_punctuation;
-		else if (isspace(cch))	state = state_whitespace;
+		else if (isspace(cch)) state = state_whitespace;
 		else if (*uch == '\0') state = state_end;
 		else state = state_unknow;
 
@@ -54,6 +54,7 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 				switch (last) {
 					case state_alpha: attr = LexToken::attr_alpha; break;
 					case state_number: attr = LexToken::attr_number; break;
+					case state_punctuation: attr = LexToken::attr_punct; break;
 					default: attr = LexToken::attr_unknow; break;
 				}
 				*(chinese.top) = '\0';
@@ -67,10 +68,11 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 			}
 			if (state == state_end) break;
 		}
-		strcpy(chinese.top, uch);
-		chinese.top += step;
-		if (cch && state != state_whitespace)
-			*(english.top++) = cch;
+		if (state != state_whitespace) {
+			strcpy(chinese.top, uch);
+			chinese.top += step;
+			if (cch) *(english.top++) = cch;
+		}
 	}
 	delete []chinese.base;
 	delete []english.base;

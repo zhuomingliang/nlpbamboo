@@ -81,8 +81,8 @@ size_t CNLexizer::process(char *t, const char *s)
 
 	length = _in->size();
 	for (i = 0; i < length; i++) {
-		strcpy(p, (*_in)[i]->get_token());
-		p += (*_in)[i]->get_bytes();
+		strcpy(p, (*_in)[i]->get_orig_token());
+		p += (*_in)[i]->get_orig_bytes();
 		*(p++) = ' ';
 		*p = '\0';
 		delete (*_in)[i];

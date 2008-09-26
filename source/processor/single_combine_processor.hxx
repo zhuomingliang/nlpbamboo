@@ -8,12 +8,11 @@
 
 class SingleCombineProcessor: public Processor {
 protected:
-	ILexicon *_lexicon;
+	ILexicon *_lexicon_combine, *_lexicon_number_trailing;
 	int _max_token_length;
 	struct {
 		char *base, *top;
 	} _combine;
-	DATrie _chinese_number_end;
 
 	SingleCombineProcessor();
 	bool _can_process(LexToken *token) {}
