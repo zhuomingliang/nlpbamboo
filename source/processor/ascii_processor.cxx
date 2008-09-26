@@ -40,6 +40,7 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		step = utf8::first(s, uch);
 		cch = utf8::to_dbc(uch, step);
 		if (isalpha(cch)) state = state_alpha;
+		else if (cch == '.' && last == state_number) state = state_number;
 		else if (isdigit(cch)) state = state_number;
 		//else if (strcmp(uch, "。") == 0) {state = state_punctuation; cch = '.';}
 		else if (ispunct(cch)) state = state_punctuation;
