@@ -6,14 +6,6 @@
 
 AsciiProcessor::AsciiProcessor(IConfig *config)
 {
-	const char *s;
-
-	config->get_value("chinese_punctuation", s);
-	_load_lexicon(_chinese_punctuation, s);
-	config->get_value("chinese_number", s);
-	_load_lexicon(_chinese_number, s);
-	config->get_value("chinese_alpha", s);
-	_load_lexicon(_chinese_alpha, s);
 }
 
 void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
@@ -46,30 +38,14 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	for (cch = '\0', state = state_unknow;;s += step, cch = '\0') {
 		last = state;
 		step = utf8::first(s, uch);
-		if (isalpha(*uch)) {
-			cch = *uch;
-			state = state_alpha;
-		} else if (isdigit(*uch)) {
-			cch = *uch;
-			state = state_number;
-		} else if (ispunct(*uch)) {
-			cch = *uch;
-			state = state_punctuation;
-		} else if ((id = _chinese_punctuation.search(uch)) > 0) {
-			state = state_punctuation;
-		} else if ((id = _chinese_number.search(uch)) > 0) {
-			cch = id - 1 + '0';
-			state = state_number;
-		} else if ((id = _chinese_alpha.search(uch)) > 0) {
-			cch = (id > 26)?id - 27 + 'A':id - 1 + 'a';
-			state = state_alpha;
-		} else if (isspace(*uch) || strcmp(uch, "　") == 0) {
-			state = state_whitespace;
-		} else if (*uch == '\0') {
-			state = state_end;
-		} else {
-			state = state_unknow;
-		}
+		cch = utf8::to_dbc(uch, step);
+		if (isalpha(cch)) state = state_alpha;
+		else if (isdigit(cch)) state = state_number;
+		else if (strcmp(uch, "。") == 0) {state = state_punctuation; cch = '.';}
+		else if (ispunct(cch)) state = state_punctuation;
+		else if (isspace(cch))	state = state_whitespace;
+		else if (*uch == '\0') state = state_end;
+		else state = state_unknow;
 
 		if (last != state){
 			if (last == state_whitespace) {
@@ -93,7 +69,7 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		}
 		strcpy(chinese.top, uch);
 		chinese.top += step;
-		if (cch)
+		if (cch && state != state_whitespace)
 			*(english.top++) = cch;
 	}
 	delete []chinese.base;

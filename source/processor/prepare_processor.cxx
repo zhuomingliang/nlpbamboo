@@ -6,14 +6,6 @@
 
 PrepareProcessor::PrepareProcessor(IConfig *config)
 {
-	const char *s;
-
-	config->get_value("chinese_punctuation", s);
-	_load_lexicon(_chinese_punctuation, s);
-	config->get_value("chinese_number", s);
-	_load_lexicon(_chinese_number, s);
-	config->get_value("chinese_alpha", s);
-	_load_lexicon(_chinese_alpha, s);
 }
 
 void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
@@ -66,6 +58,7 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 				}
 				*(chinese.top) = '\0';
 				*(english.top) = '\0';
+				std::cout << "english = " << english.base << std::endl;
 				out.push_back(new LexToken(english.base, chinese.base, attr));
 				chinese.top = chinese.base;
 				english.top = english.base;

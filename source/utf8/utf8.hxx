@@ -112,7 +112,8 @@ public:
 	}
 
 	static char to_dbc(const char *str, size_t len) {
-		if(len!=3) return 0;
+		if ((unsigned char)*str < 128) return *str;
+		if (len != 3) return 0;
 		
 		unsigned char uch1, uch2, uch3, dbc;
 		uch1 = str[0];
