@@ -28,6 +28,7 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		state_alpha,
 		state_number,
 		state_punctuation,
+		state_whitespace,
 		state_end
 	} state, last;
 
@@ -43,34 +44,38 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	english.top = english.base;
 
 	state = state_unknow;
-	while (true) {
+	for (cch = '\0';;s += step, cch = '\0') {
 		last = state;
 		step = utf8::first(s, uch);
-		if (isalpha(*uch)) state = state_alpha;
-		else if (isdigit(*uch)) state = state_number;
-		else if (ispunct(*uch)) state = state_punctuation;
-		else if ((id = _chinese_punctuation.search(uch)) > 0) {
+		if (isalpha(*uch)) {
+			cch = *uch;
+			state = state_alpha;
+		} else if (isdigit(*uch)) {
+			cch = *uch;
+			state = state_number;
+		} else if (ispunct(*uch)) {
+			cch = *uch;
+			state = state_punctuation;
+		} else if ((id = _chinese_punctuation.search(uch)) > 0) {
 			state = state_punctuation;
 		} else if ((id = _chinese_number.search(uch)) > 0) {
-			cch = id - 1;
+			cch = id - 1 + '0';
 			state = state_number;
 		} else if ((id = _chinese_alpha.search(uch)) > 0) {
-			cch = id - 1 + (id > 26)?'A':'a';
+			cch = (id > 26)?id - 27 + 'A':id - 1 + 'a';
 			state = state_alpha;
+		} else if (isspace(*uch) || strcmp(uch, "　") == 0) {
+			state = state_whitespace;
 		} else if (*uch == '\0') {
 			state = state_end;
 		} else {
 			state = state_unknow;
 		}
 
-		if (state == state_unknow) {
-			attr = LexToken::attr_unknow;
-			out.push_back(new LexToken(uch, attr));
-		} else {
-			strcpy(chinese.top, uch);
-			chinese.top += step;
-			*(english.top++) = cch;
-			if (last != state && english.top > english.base) {
+		if (last != state){
+			if (last == state_whitespace) {
+				// do nothing
+			} else if (english.top > english.base) {
 				switch (last) {
 					case state_alpha: attr = LexToken::attr_alpha; break;
 					case state_number: attr = LexToken::attr_number; break;
@@ -80,10 +85,18 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 				out.push_back(new LexToken(english.base, chinese.base, attr));
 				chinese.top = chinese.base;
 				english.top = english.base;
-				if (state == state_end) break;
 			}
+			if (state == state_end) break;
 		}
-		s += step;
+		if (state  == state_unknow) {
+			attr = LexToken::attr_unknow;
+			out.push_back(new LexToken(uch, attr));
+		}
+		if (cch) {
+			strcpy(chinese.top, uch);
+			chinese.top += step;
+			*(english.top++) = cch;
+		}
 	}
 	delete []chinese.base;
 	delete []english.base;
