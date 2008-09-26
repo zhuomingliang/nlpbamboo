@@ -10,10 +10,12 @@ class SingleCombineProcessor: public Processor {
 protected:
 	ILexicon *_lexicon_combine, *_lexicon_number_trailing;
 	int _max_token_length;
+/*	
 	struct {
 		char *base, *top;
 	} _combine;
-
+*/
+	std::string _combine;
 	SingleCombineProcessor();
 	bool _can_process(LexToken *token) {}
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
