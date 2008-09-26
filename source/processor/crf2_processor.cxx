@@ -53,19 +53,19 @@ void CRF2Processor::process(std::vector<LexToken *> &in, std::vector<LexToken *>
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
 	_result.clear();
-	std::string _result_origstr;
+	_result_orig.clear();
 	assert(_tagger->size() == size);
 
 	for (i = 0; i < _tagger->size(); ++i) {
 		_result.append(_tagger->x(i, 0));
-		_result_origstr.append(in[i]->get_orig_token());
+		_result_orig.append(in[i]->get_orig_token());
 		const char * tag = _tagger->y2(i);
 		int attr = in[i]->get_attr();
 		if(attr==LexToken::attr_alpha || attr==LexToken::attr_number || attr==LexToken::attr_punct)	tag = "S";
-		if (strstr(_ending_tags, _tagger->y2(i))) {
-			out.push_back(new LexToken(_result.c_str(), _result_origstr.c_str(), LexToken::attr_cword));
+		if (*tag=='S' || *tag=='E') {
+			out.push_back(new LexToken(_result.c_str(), _result_orig.c_str(), LexToken::attr_cword));
 			_result.clear();
-			_result_origstr.clear();
+			_result_orig.clear();
 		}
 		delete in[i];
 	}

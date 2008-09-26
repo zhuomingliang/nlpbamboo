@@ -13,6 +13,7 @@ protected:
 	char *_token;
 	const char *_ending_tags;
 	std::string _result;
+	std::string _result_orig;
 
 	inline const char *_get_crf2_tag(int attr);
 
