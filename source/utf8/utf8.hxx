@@ -110,5 +110,27 @@ public:
 		*t = '\0';
 		return t - begin;
 	}
+
+	static char to_dbc(const char *str, size_t len) {
+		if(len!=3) return 0;
+		
+		unsigned char uch1, uch2, uch3, dbc;
+		uch1 = str[0];
+		uch2 = str[1];
+		uch3 = str[2];
+
+		if(uch1==0xE3 && uch2==0x80 && uch3==0x80)
+			dbc = 0x20;
+		else if(uch1==0xEF && uch2==0xBC && uch3>=0x81 && uch3 <=0xBF) {
+			dbc = uch3 - 0x60;
+		}
+		else if(uch1==0xEF && uch2==0xBD && uch3>=0x80 && uch3 <=0x9E) {
+			dbc = uch3 - 0x20;
+		}
+		else
+			dbc = 0x0;
+
+		return dbc;
+	}
 };
 #endif
