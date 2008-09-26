@@ -8,8 +8,6 @@ AsciiProcessor::AsciiProcessor(IConfig *config)
 {
 	const char *s;
 
-	config->get_value("chinese_number_end", s);
-	_load_lexicon(_chinese_number_end, s);
 	config->get_value("chinese_punctuation", s);
 	_load_lexicon(_chinese_punctuation, s);
 	config->get_value("chinese_number", s);

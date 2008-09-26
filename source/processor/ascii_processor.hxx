@@ -8,7 +8,6 @@
 
 class AsciiProcessor: public Processor {
 protected:
-	DATrie _chinese_number_end;
 	DATrie _chinese_punctuation;
 	DATrie _chinese_number;
 	DATrie _chinese_alpha;

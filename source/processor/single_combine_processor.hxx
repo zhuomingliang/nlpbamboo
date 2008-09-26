@@ -4,16 +4,31 @@
 #include "lex_token.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
+#include "utf8.hxx"
 
 class SingleCombineProcessor: public Processor {
 protected:
 	ILexicon *_lexicon;
 	int _max_token_length;
-	char *_combine;
+	struct {
+		char *base, *top;
+	} _combine;
+	DATrie _chinese_number_end;
 
 	SingleCombineProcessor();
 	bool _can_process(LexToken *token) {}
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
+	void _load_lexicon(DATrie &trie, const char *s)
+	{
+		size_t length, i;
+		char uch[4];
+
+		length = utf8::length(s);
+		for (i = 0; i < length; i++) {
+			utf8::sub(uch, s, i, 1);
+			trie.insert(uch, i + 1);
+		}
+	}
 
 public:
 	void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out);
