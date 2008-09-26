@@ -63,7 +63,12 @@ size_t CNLexizer::process(char *t, const char *s)
 
 	assert(_in->empty());
 	*t = '\0';
-	if (*s == '\0') return 0;
+	length = utf8::length(s);
+	_in->clear();
+	if (length > _in->capacity()) {
+		_in->reserve(length);
+		_out->reserve(length);
+	}
 	_in->push_back(new LexToken(s));
 	length = _streamline.size();
 	for (i = 0; i < length; i++) {
@@ -87,8 +92,6 @@ size_t CNLexizer::process(char *t, const char *s)
 		*p = '\0';
 		delete (*_in)[i];
 	}
-	_in->clear();
-	assert(_in->empty());
 	return p - t;
 }
 
