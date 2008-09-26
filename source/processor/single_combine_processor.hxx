@@ -31,6 +31,18 @@ protected:
 		}
 	}
 
+	void _make_combine(std::vector<LexToken *> &in, int i, int with)
+	{
+		/* with: a bitmap indicates copy range. 
+		 * binary  :  0        0      0
+		 * position:  ^(i-1)   ^(i)   ^(i + 1)
+		 * */
+		_combine.erase();
+		if (with & 4) _combine.append(in[i - 1]->get_orig_token());
+		if (with & 2) _combine.append(in[i]->get_orig_token());
+		if (with & 1) _combine.append(in[i + 1]->get_orig_token());
+	}
+
 public:
 	void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out);
 	SingleCombineProcessor(IConfig *config);

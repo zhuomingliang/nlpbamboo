@@ -28,65 +28,48 @@ SingleCombineProcessor::~SingleCombineProcessor()
 
 void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
 {
-	size_t i, j, size, num, length;
-	int with;
-	bool check;
+	size_t i, j, size, num, length, match;
 	const char *s;
 
 	size = in.size();
 	for (i = 0; i < size; i++) {
-		check = false;
-		with = 0;
-		if (in[i]) {
-			length = in[i]->get_length();
-			if (i + 1 < size && in[i + 1]
-					  && in[i]->get_attr() == LexToken::attr_number 
-					  && _lexicon_number_trailing->search(in[i + 1]->get_token()))
-			{
-				with = 3;
-				check = false;
-			} else if (length == 1 && i + 1 < size && in[i + 1]) {
-				with = 3;
-				check = true;
-			} else if (length == 1 && i > 0 && i + 1 < size && in[i - 1] && in[i + 1]) {
-				with = 7;
-				check = true;
-			}
+		match = 0;
+		if (!in[i]) continue;
+		length = in[i]->get_length();
+		if (i + 1 < size && in[i + 1]
+				  && in[i]->get_attr() == LexToken::attr_number 
+				  && _lexicon_number_trailing->search(in[i + 1]->get_token()))
+		{
+			_make_combine(in, i, 3);
+			match = 3;
+		}
+		if (!match && length == 1 && i > 0 && i + 1 < size && in[i - 1] && in[i + 1]) {
+			_make_combine(in, i, 7);
+			if (_lexicon_combine->search(s) > 0) match = 7; 
+		}
+		if (!match && length == 1 && i > 0 && in[i - 1]) {
+			_make_combine(in, i, 6);
+			if (_lexicon_combine->search(s) > 0) match = 6;
+		}
+		if (!match && length == 1 && i + 1 < size && in[i + 1]) {
+			_make_combine(in, i, 3);
+			if (_lexicon_combine->search(s) > 0) match = 3;
 		}
 
-//		_combine.top = _combine.base;
-		_combine.erase();
-		if (with & 4) {
-//			strcpy(_combine.top, in[i - 1]->get_orig_token());
-//			_combine.top += in[i - 1]->get_orig_bytes();
-			_combine.append(in[i - 1]->get_orig_token());
-		} 
-		if (with & 2) {
-//			strcpy(_combine.top, in[i]->get_orig_token());
-//			_combine.top += in[i]->get_orig_bytes();
-			_combine.append(in[i]->get_orig_token());
-		} 
-		if (with & 1) {
-//			strcpy(_combine.top, in[i + 1]->get_orig_token());
-//			_combine.top += in[i + 1]->get_orig_bytes();
-			_combine.append(in[i + 1]->get_orig_token());
-		}
-//		*_combine.top = '\0';
 		s = _combine.c_str();
-		if (with && (check == false || (check && _lexicon_combine->search(s) > 0))) {
-			if (with & 4) {
+		if (match) {
+			if (match & 4) {
 				out.pop_back();
 				delete in[i - 1];
 				in[i - 1] = NULL;
 			} 
-			if (with & 2) {
+			if (match & 2) {
 				delete in[i];
 				in[i] = NULL;
 			} 
-			if (with & 1) {
+			if (match & 1) {
 				delete in[i + 1];
 				in[i + 1] = NULL;
-				++i;
 			}
 			out.push_back(new LexToken(s, LexToken::attr_cword));
 		} else {
