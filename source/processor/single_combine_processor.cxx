@@ -36,6 +36,7 @@ void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<Le
 		match = 0;
 		if (!in[i]) continue;
 		length = in[i]->get_length();
+		s = _combine.c_str();
 		if (i + 1 < size && in[i + 1]
 				  && in[i]->get_attr() == LexToken::attr_number 
 				  && _lexicon_number_trailing->search(in[i + 1]->get_token()))
@@ -56,7 +57,6 @@ void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<Le
 			if (_lexicon_combine->search(s) > 0) match = 3;
 		}
 
-		s = _combine.c_str();
 		if (match) {
 			if (match & 4) {
 				out.pop_back();
