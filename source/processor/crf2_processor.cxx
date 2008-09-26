@@ -48,26 +48,37 @@ void CRF2Processor::process(std::vector<LexToken *> &in, std::vector<LexToken *>
 			NULL
 		};
 		_tagger->add(2, data);
+
+		if(*tok_str=='!' || *tok_str=='?' || *tok_str==';' || !strcmp(tok_str, "。")) {
+			size_t offset = i - _tagger->size() + 1;
+			_crf2_tagger(in, offset, out);
+			_tagger->clear();
+		}
 	}
-	
+}
+
+void CRF2Processor::_crf2_tagger(std::vector<LexToken *> &in, size_t offset, std::vector<LexToken *> &out) {
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
 	_result.clear();
 	_result_orig.clear();
-	assert(_tagger->size() == size);
 
-	for (i = 0; i < _tagger->size(); ++i) {
+	for (size_t i = 0; i < _tagger->size(); ++i) {
 		_result.append(_tagger->x(i, 0));
-		_result_orig.append(in[i]->get_orig_token());
+		LexToken *cur_tok = in[offset+i];
+		_result_orig.append(cur_tok->get_orig_token());
 		const char * tag = _tagger->y2(i);
-		int attr = in[i]->get_attr();
+		int attr = cur_tok->get_attr();
+		if(attr==LexToken::attr_unknow) attr = LexToken::attr_cword;
 		if(attr==LexToken::attr_alpha || attr==LexToken::attr_number || attr==LexToken::attr_punct)	tag = "S";
 		if (*tag=='S' || *tag=='E') {
-			out.push_back(new LexToken(_result.c_str(), _result_orig.c_str(), LexToken::attr_cword));
+			out.push_back(new LexToken(_result.c_str(), _result_orig.c_str(), attr));
 			_result.clear();
 			_result_orig.clear();
 		}
-		delete in[i];
+		delete cur_tok;
 	}
+
+	_tagger->clear();
 }
 

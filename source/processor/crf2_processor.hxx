@@ -20,6 +20,7 @@ protected:
 	CRF2Processor();
 	bool _can_process(LexToken *token) {};
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
+	void _crf2_tagger(std::vector<LexToken *> &in, size_t offset, std::vector<LexToken *> &out);
 
 public:
 	CRF2Processor(IConfig *config);
