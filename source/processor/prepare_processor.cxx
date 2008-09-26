@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "lex_token.hxx"
-#include "pretag_processor.hxx"
+#include "prepare_processor.hxx"
 
 PrepareProcessor::PrepareProcessor(IConfig *config)
 {
@@ -77,7 +77,7 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 				}
 				*(chinese.top) = '\0';
 				*(english.top) = '\0';
-				out.push_back(new LexToken(english.stack, chinese.stack, attr));
+				out.push_back(new LexToken(english.base, chinese.base, attr));
 				chinese.top = chinese.base;
 				english.top = english.base;
 				if (state == state_end) break;
@@ -85,5 +85,6 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		}
 		s += step;
 	}
-	delete []subtoken;
+	delete []chinese.base;
+	delete []english.base;
 }
