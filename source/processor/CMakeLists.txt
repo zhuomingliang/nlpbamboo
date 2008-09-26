@@ -1,6 +1,7 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set( libsrc_processor
 	ascii_processor.cxx
+	prepare_processor.cxx
 	maxforward_processor.cxx
 	unigram_processor.cxx
 	crf_processor.cxx

@@ -8,8 +8,8 @@
 
 class LexToken {
 protected:
-	char *_token;
 	char *_orig_token;
+	char *_token;
 	int _attr;
 	size_t _length;
 	size_t _bytes;
@@ -22,6 +22,14 @@ public:
 		attr_punct,
 	};
 	LexToken():_token(NULL), _orig_token(NULL), _attr(attr_unknow), _length(0), _bytes(0) {}
+	LexToken(const char *s, const char *os, int attr = attr_unknow)
+		:_orig_token(NULL), _attr(attr), _length(0), _bytes(0)
+	{
+		_token = strdup(s);
+		_orig_token = strdup(os);
+		_length = utf8::length(s);
+		_bytes = strlen(s);
+	}
 	LexToken(const char *s, int attr = attr_unknow)
 		:_orig_token(NULL), _attr(attr), _length(0), _bytes(0)
 	{
