@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "cnlexizer.hxx"
+#include "prepare_processor.hxx"
 #include "ascii_processor.hxx"
 #include "maxforward_processor.hxx"
 #include "unigram_processor.hxx"
@@ -37,6 +38,8 @@ CNLexizer::CNLexizer(const char *file)
 		_streamline.push_back(std::string(token));
 		if (str == "ascii")
 			_processors["ascii"] = new AsciiProcessor(_config);
+		else if (str == "prepare")
+			_processors["prepare"] = new PrepareProcessor(_config);
 		else if (str == "maxforward")
 			_processors["maxforward"] = new MaxforwardProcessor(_config);
 		else if (str == "unigram")
