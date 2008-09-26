@@ -41,7 +41,7 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		cch = utf8::to_dbc(uch, step);
 		if (isalpha(cch)) state = state_alpha;
 		else if (isdigit(cch)) state = state_number;
-		else if (strcmp(uch, "。") == 0) {state = state_punctuation; cch = '.';}
+		else if (strcmp(uch, "。") == 0) {state = state_punctuation; /*cch = '.';*/}
 		else if (ispunct(cch)) state = state_punctuation;
 		else if (isspace(cch))	state = state_whitespace;
 		else if (*uch == '\0') state = state_end;
@@ -67,6 +67,10 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		}
 		if (state  == state_unknow) {
 			attr = LexToken::attr_unknow;
+			out.push_back(new LexToken(uch, attr));
+		}
+		if (!strcmp(uch, "。")) {
+			attr = LexToken::attr_punct;
 			out.push_back(new LexToken(uch, attr));
 		}
 		if (cch && state != state_whitespace) {
