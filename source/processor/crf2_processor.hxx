@@ -14,12 +14,11 @@ protected:
 	const char *_ending_tags;
 	std::string _result;
 
-	const char *_get_crf2_tag(int attr);
+	inline const char *_get_crf2_tag(int attr);
 
 	CRF2Processor();
 	bool _can_process(LexToken *token) {};
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
-	void _crf2_tagger(std::vector<LexToken *> &in, std::vector<LexToken *> &out);
 
 public:
 	CRF2Processor(IConfig *config);

@@ -20,7 +20,7 @@ CRF2Processor::~CRF2Processor()
 	delete _tagger;
 }
 
-const char *CRF2Processor::_get_crf2_tag(int attr) {
+inline const char *CRF2Processor::_get_crf2_tag(int attr) {
 	switch(attr) {
 	case LexToken::attr_number:
 	case LexToken::attr_alpha:
@@ -35,54 +35,9 @@ const char *CRF2Processor::_get_crf2_tag(int attr) {
 }
 
 void CRF2Processor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out) {
-	size_t i, j, length;
-	std::vector<LexToken *> atom_tok;
-
-	if (in.empty()) return;
-	length = in.size();
-	atom_tok.reserve(length);
-
-	for (i = 0; i < length; i++) {
-		if(atom_tok.size() == atom_tok.capacity())
-			atom_tok.reserve(atom_tok.size()+length);
-
-		LexToken *cur_token = in[i];
-		int tok_attr = cur_token->get_attr();
-		const char *s = cur_token->get_token();
-
-		if(tok_attr==LexToken::attr_alpha
-		|| tok_attr==LexToken::attr_number
-		|| tok_attr==LexToken::attr_punct) {
-			atom_tok.push_back(cur_token);
-			continue;
-		}
-
-		size_t len = cur_token->get_length();
-		for(j = 0; j < len; ++j) {
-			size_t tmp_len = utf8::sub(_token, s, j, 1);
-			if(tmp_len==1 && isspace(*_token)) continue;
-			
-			LexToken *t = new LexToken(_token, LexToken::attr_cword);
-			atom_tok.push_back(t);
-		}
-		delete in[i];
-
-		/*
-		 * if punct_cnt > threshold
-		 * _crf2_tagger(atom_tok, out);
-		 * atom_tok.clear();
-		 */
-	}
-	_crf2_tagger(atom_tok, out);
-}
-
-void CRF2Processor::_crf2_tagger(std::vector<LexToken *> &in, std::vector<LexToken *> &out) {
 	size_t i, size = in.size();
-	enum {max_str_size=32, max_buf_size=40};
-	char buf[max_buf_size];
 
 	_tagger->clear();
-
 	for (i = 0; i < size; ++i) {
 		LexToken *cur_tok = in[i];
 		const char *data[] = {
