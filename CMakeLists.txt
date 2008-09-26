@@ -8,9 +8,10 @@ set(ETC_INSTALL_DIR "/etc")
 set(TRAINING_INSTALL_DIR "/training")
 set(INC_INSTALL_DIR "/include")
 
+set(CMAKE_CXX_FLAGS "-g")
+set(CMAKE_CXX_FLAGS_DEBUG "-pg")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG -fPIC")
-set(CMAKE_CXX_FLAGS_DEBUG "-pg -O2 -fPIC -fno-reorder-blocks -fno-schedule-insns -fno-inline")
-#set(CMAKE_CXX_FLAGS_DEBUG "-pg -O2")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O2 -DNDEBUG -fPIC")
 
 foreach(subdir cmake source etc training)
 
