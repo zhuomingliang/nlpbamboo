@@ -43,8 +43,7 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	english.base = new char [token->get_bytes() + 1];
 	english.top = english.base;
 
-	state = state_unknow;
-	for (cch = '\0';;s += step, cch = '\0') {
+	for (cch = '\0', state = state_unknow;;s += step, cch = '\0') {
 		last = state;
 		step = utf8::first(s, uch);
 		if (isalpha(*uch)) {
@@ -79,6 +78,7 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 				switch (last) {
 					case state_alpha: attr = LexToken::attr_alpha; break;
 					case state_number: attr = LexToken::attr_number; break;
+					default: attr = LexToken::attr_unknow; break;
 				}
 				*(chinese.top) = '\0';
 				*(english.top) = '\0';

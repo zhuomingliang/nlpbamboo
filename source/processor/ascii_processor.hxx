@@ -11,6 +11,8 @@ protected:
 	DATrie _chinese_number_end;
 	DATrie _chinese_punctuation;
 	DATrie _chinese_number;
+	DATrie _chinese_alpha;
+
 	AsciiProcessor();
 	bool _can_process(LexToken *token)
 	{
@@ -20,12 +22,12 @@ protected:
 	void _load_lexicon(DATrie &trie, const char *s)
 	{
 		size_t length, i;
-		char token[8];
+		char uch[4];
 
 		length = utf8::length(s);
 		for (i = 0; i < length; i++) {
-			utf8::sub(token, s, i, 1);
-			trie.insert(token, 1);
+			utf8::sub(uch, s, i, 1);
+			trie.insert(uch, i + 1);
 		}
 	}
 public:
