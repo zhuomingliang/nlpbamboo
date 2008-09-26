@@ -19,8 +19,8 @@ AsciiProcessor::AsciiProcessor(IConfig *config)
 void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 {
 	const char *s;
-	char first[8], *subtoken, *subtoken_ptr;
-	size_t len;
+	char uch[4], *stack, *top;
+	size_t step;
 	enum {
 		state_unknow = 0,
 		state_alpha,
@@ -30,34 +30,35 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	} state, last;
 
 	s = token->get_token();
-	subtoken = new char [token->get_bytes() + 1];
-	subtoken[0] = '\0';
-	subtoken_ptr = subtoken;
-	state = last = state_unknow;
+	stack = new char [token->get_bytes() + 1];
+	*stack = '\0';
+	top = stack;
+	state = state_unknow;
+
 	while (true) {
-		len = utf8::first(s, first);
-		if (isalpha(*first)) state = state_alpha;
-		else if (isdigit(*first)) state = state_number;
-		else if (*first == '.' && last == state_number) state = state_number;
-		else if (_chinese_punctuation.search(first) > 0 || ispunct(*first)) state = state_punctuation;
-		else if (_chinese_number.search(first) > 0) state = state_number;
-		else if (_chinese_number_end.search(first) > 0 && last == state_number) state = state_number;
-		else if (*first == '\0') state = state_end;
+		last = state;
+		step = utf8::first(s, uch);
+		if (isalpha(*uch)) state = state_alpha;
+		else if (isdigit(*uch)) state = state_number;
+		else if (*uch == '.' && last == state_number) state = state_number; /* should before punctuation */
+		else if (_chinese_punctuation.search(uch) > 0 || ispunct(*uch)) state = state_punctuation;
+		else if (_chinese_number.search(uch) > 0) state = state_number;
+		else if (_chinese_number_end.search(uch) > 0 && last == state_number) state = state_number;
+		else if (*uch == '\0') state = state_end;
 		else state = state_unknow;
-		if (last != state && subtoken[0]) {
+		if (last != state && *stack) {
 			LexToken::attr_t attr = LexToken::attr_unknow;
 			if (last == state_alpha) attr = LexToken::attr_alpha;
 			else if (last == state_number) attr = LexToken::attr_number;
-			*subtoken_ptr = '\0';
-			out.push_back(new LexToken(subtoken, attr));
-			subtoken_ptr = subtoken;
-			subtoken[0] = '\0';
+			*top = '\0';
+			out.push_back(new LexToken(stack, attr));
+			top = stack;
+			*stack = '\0';
 			if (state == state_end) break;
 		}
-		memcpy(subtoken_ptr, first, len);
-		subtoken_ptr += len;
-		s += len;
-		last = state;
+		strcpy(top, uch);
+		top += step;
+		s += step;
 	}
-	delete []subtoken;
+	delete []stack;
 }
