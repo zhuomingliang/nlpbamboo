@@ -35,7 +35,7 @@ inline const char *CRF2Processor::_get_crf2_tag(int attr) {
 }
 
 void CRF2Processor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out) {
-	size_t i, size = in.size();
+	size_t i, offset, size = in.size();
 
 	_tagger->clear();
 	for (i = 0; i < size; ++i) {
@@ -50,11 +50,13 @@ void CRF2Processor::process(std::vector<LexToken *> &in, std::vector<LexToken *>
 		_tagger->add(2, data);
 
 		if(*tok_str=='!' || *tok_str=='?' || *tok_str==';' || !strcmp(tok_str, "。")) {
-			size_t offset = i - _tagger->size() + 1;
+			offset = i - _tagger->size() + 1;
 			_crf2_tagger(in, offset, out);
 			_tagger->clear();
 		}
 	}
+	offset = i - _tagger->size();
+	_crf2_tagger(in, offset, out);
 }
 
 void CRF2Processor::_crf2_tagger(std::vector<LexToken *> &in, size_t offset, std::vector<LexToken *> &out) {
