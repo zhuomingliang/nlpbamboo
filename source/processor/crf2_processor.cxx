@@ -85,11 +85,12 @@ void CRF2Processor::_crf2_tagger(std::vector<LexToken *> &in, std::vector<LexTok
 
 	for (i = 0; i < size; ++i) {
 		LexToken *cur_tok = in[i];
-		size_t tok_size = cur_tok->get_bytes();
-		if(tok_size>max_str_size) tok_size=max_str_size;
-		snprintf(buf, max_buf_size-1, "%.*s %s", tok_size,
-			cur_tok->get_token(), _get_crf2_tag(cur_tok->get_attr()));
-		_tagger->add(buf);
+		const char *data[] = {
+			cur_tok->get_token(),
+			_get_crf2_tag(cur_tok->get_attr()),
+			NULL
+		};
+		_tagger->add(2, data);
 	}
 	
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
