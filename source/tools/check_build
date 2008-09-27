@@ -6,10 +6,13 @@ src="$top/$date/src"
 build="$top/$date/build"
 inst="$top/$date/inst"
 log="$top/$date/log"
+mail="jianing.yang@alibaba-inc.com"
 
+rm -rf "$top/$date"
 mkdir -pv $(dirname $src) $build $inst $log
+trap "rm -rf $top/$date" EXIT
 
-exec 2>"$log/everything"
+exec 2>"$log/00-everything"
 
 info()
 {
@@ -19,7 +22,7 @@ info()
 fatal()
 {
 	echo "[$(date)] FATAL: $1" >&2
-	find $log/* -type f -printf "\n===\n\n%f:\n" -exec cat {} \; | mail -s "[CNLEXIZER-TEST] FAIL: $(hostname -a)" $mail
+	find $log/* -type f -printf "\n===\n\n%f:\n" -exec cat {} \; | mail -s "[CNLEXIZER-TEST] FAIL: $(hostname -f)" $mail
 	exit 1
 }
 
@@ -32,18 +35,16 @@ cmake --version >&2 || fatal "can not execute cmake"
 make --version >&2 || fatal "can not execute make"
 gcc --version >&2 || fatal "can not execute gcc"
 info "svn checkout"
-svn checkout http://cnlexizer.googlecode.com/svn/trunk/ $src &>"$log/subversion" || fatal "subversion checkout error"
+svn checkout http://cnlexizer.googlecode.com/svn/trunk/ $src &>"$log/10-subversion" || fatal "subversion checkout error"
 
 info "entering $build directory"
 pushd "$build" || fatal "entering $build directory"
 
 info "cmake"
-cmake $src -DCMAKE_BUILD_TYPE=release &>"$log/cmake" || fatal "cmake failed"
+cmake $src -DCMAKE_BUILD_TYPE=release &>"$log/20-cmake" || fatal "cmake failed"
 info "make all" 
-make all &>"$log/make" || fatal "make failed"
+make all &>"$log/30-make" || fatal "make failed"
 info "make install"
-make DESTDIR=$inst install &>"$log/make.install" || fatal "make install failed"
+make DESTDIR=$inst install &>"$log/40-make.install" || fatal "make install failed"
 popd
-
-echo -e "Host: $(hostname -a)\nSystem: $(uname -a)" | mail -s "[CNLEXIZER-TEST] OK: $(hostname -a)" $mail
-
+echo -e "Host: $(hostname -f)\nSystem: $(uname -a)" | mail -s "[CNLEXIZER-TEST] OK: $(hostname -f)" $mail
