@@ -1,0 +1,49 @@
+#!/bin/bash
+
+top=$(readlink -f -- "$(dirname -- "$0")")
+date=$(date "+%Y%m%d")
+src="$top/$date/src"
+build="$top/$date/build"
+inst="$top/$date/inst"
+log="$top/$date/log"
+
+mkdir -pv $(dirname $src) $build $inst $log
+
+exec 2>"$log/everything"
+
+info()
+{
+	echo "[$(date)] INFO: $1" >&2
+}
+
+fatal()
+{
+	echo "[$(date)] FATAL: $1" >&2
+	find $log/* -type f -printf "\n===\n\n%f:\n" -exec cat {} \; | mail -s "[CNLEXIZER-TEST] FAIL: $(hostname -a)" $mail
+	exit 1
+}
+
+# check prerequisites
+info "checking system"
+cmake=$(which cmake)
+[ -z "$cmake" ] && fatal "can not found cmake"
+uname -a >&2 || fatal "can not execute uname"
+cmake --version >&2 || fatal "can not execute cmake"
+make --version >&2 || fatal "can not execute make"
+gcc --version >&2 || fatal "can not execute gcc"
+info "svn checkout"
+svn checkout http://cnlexizer.googlecode.com/svn/trunk/ $src &>"$log/subversion" || fatal "subversion checkout error"
+
+info "entering $build directory"
+pushd "$build" || fatal "entering $build directory"
+
+info "cmake"
+cmake $src -DCMAKE_BUILD_TYPE=release &>"$log/cmake" || fatal "cmake failed"
+info "make all" 
+make all &>"$log/make" || fatal "make failed"
+info "make install"
+make DESTDIR=$inst install &>"$log/make.install" || fatal "make install failed"
+popd
+
+echo -e "Host: $(hostname -a)\nSystem: $(uname -a)" | mail -s "[CNLEXIZER-TEST] OK: $(hostname -a)" $mail
+
