@@ -6,12 +6,8 @@
 #include <cstdio>
 #include <stdexcept>
 
-extern "C" {
-	Processor *create(IConfig *config) 
-	{
-		return new CRFProcessor(config);
-	}
-}
+PROCESSOR_MAGIC
+PROCESSOR_MODULE(CRFProcessor)
 
 CRFProcessor::CRFProcessor(IConfig *config)
 {

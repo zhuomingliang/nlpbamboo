@@ -4,12 +4,8 @@
 #include "lex_token.hxx"
 #include "ascii_processor.hxx"
 
-extern "C" {
-	Processor *create(IConfig *config) 
-	{
-		return new AsciiProcessor(config);
-	}
-}
+PROCESSOR_MAGIC
+PROCESSOR_MODULE(AsciiProcessor)
 
 AsciiProcessor::AsciiProcessor(IConfig *config)
 {

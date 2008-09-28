@@ -4,12 +4,8 @@
 #include <cassert>
 #include <iostream>
 
-extern "C" {
-	Processor *create(IConfig *config) 
-	{
-		return new CombineProcessor(config);
-	}
-}
+PROCESSOR_MAGIC
+PROCESSOR_MODULE(CombineProcessor)
 
 CombineProcessor::CombineProcessor(IConfig *config)
 {

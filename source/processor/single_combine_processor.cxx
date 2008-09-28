@@ -5,12 +5,8 @@
 #include "single_combine_processor.hxx"
 #include "utf8.hxx"
 
-extern "C" {
-	Processor *create(IConfig *config) 
-	{
-		return new SingleCombineProcessor(config);
-	}
-}
+PROCESSOR_MAGIC
+PROCESSOR_MODULE(SingleCombineProcessor)
 
 SingleCombineProcessor::SingleCombineProcessor(IConfig *config)
 {

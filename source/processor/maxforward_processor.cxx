@@ -4,12 +4,8 @@
 #include <cassert>
 #include <iostream>
 
-extern "C" {
-	Processor *create(IConfig *config) 
-	{
-		return new MaxforwardProcessor(config);
-	}
-}
+PROCESSOR_MAGIC
+PROCESSOR_MODULE(MaxforwardProcessor)
 
 MaxforwardProcessor::MaxforwardProcessor(IConfig *config)
 {

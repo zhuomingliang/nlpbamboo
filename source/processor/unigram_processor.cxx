@@ -4,13 +4,8 @@
 #include <cassert>
 #include <iostream>
 
-extern "C" {
-	Processor *create(IConfig *config) 
-	{
-		return new UnigramProcessor(config);
-	}
-}
-
+PROCESSOR_MAGIC
+PROCESSOR_MODULE(UnigramProcessor)
 
 UnigramProcessor::UnigramProcessor(IConfig *config)
 {

@@ -5,6 +5,9 @@
 #include "config_factory.hxx"
 #include "lex_token.hxx"
 
+#define PROCESSOR_MAGIC /* Nothing */
+#define PROCESSOR_MODULE(NAME) extern "C" {Processor *create(IConfig *config) {return new NAME(config);}}
+
 class Processor {
 protected:
 	virtual bool _can_process(LexToken *) = 0;
