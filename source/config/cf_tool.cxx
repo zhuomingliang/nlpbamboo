@@ -23,7 +23,7 @@ void _query(const char *cf, const char *key, const char *type)
 	IConfig *icf;
 	int int_val;
 	const char *str_val;
-	icf = ConfigFactory::create("simple_config", cf);
+	icf = ConfigFactory::create(cf);
 	if (strcmp(type, "int") == 0) {
 		icf->get_value(key, int_val);
 		std::cout << key << " = " << int_val << std::endl;

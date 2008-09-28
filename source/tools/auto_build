@@ -18,9 +18,9 @@ cat $NUMBER_TRAILING | sed -e 's/^/1 /g' > ${BUILD_DIR}/number-trailing.txt || e
 #$TOP/bin/pdc_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
 $TOP/bin/pdc_normalize -v ${RAW} > ${BUILD_DIR}/${TAG}.normalize.txt || exit 1
 $TOP/bin/ngm_tool -n1 -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.ugm.txt || exit 1
-$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt || exit 1
-$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/combine.idx -s ${BUILD_DIR}/combine.txt || exit 1
-$TOP/bin/lexicon_cli -v -b -i ${INDEX_DIR}/number-trailing.idx -s ${BUILD_DIR}/number-trailing.txt || exit 1
+$TOP/bin/lexicon -v -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt || exit 1
+$TOP/bin/lexicon -v -b -i ${INDEX_DIR}/combine.idx -s ${BUILD_DIR}/combine.txt || exit 1
+$TOP/bin/lexicon -v -b -i ${INDEX_DIR}/number-trailing.idx -s ${BUILD_DIR}/number-trailing.txt || exit 1
 
 
 # Building crf

@@ -19,7 +19,7 @@ public:
 	~CNLexizer();
 protected:
 	IConfig *_config;
-	const char *_module_root;
+	const char *processor_root;
 	std::vector<std::string> _process_chain;
 	std::vector<LexToken *> _token_fifo[2];
 	std::vector<LexToken *> *_in, *_out, *_swap;

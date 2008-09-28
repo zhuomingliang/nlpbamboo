@@ -10,9 +10,9 @@ CNLexizer::CNLexizer(const char *file)
 	std::vector<std::string>::iterator it;
 	std::string module;
 
-	_config = ConfigFactory::create("simple_config", file);
+	_config = ConfigFactory::create(file);
 	_config->get_value("process_chain", _process_chain);
-	_config->get_value("module_root", _module_root);
+	_config->get_value("processor_root", processor_root);
 
 	for (it = _process_chain.begin(); it != _process_chain.end(); it++) {
 		_create_processor_t create = NULL;
@@ -20,8 +20,8 @@ CNLexizer::CNLexizer(const char *file)
 		Processor *processor = NULL;
 
 		module.clear();
-		module.append(_module_root).append("/libclxmod_").append(*it).append(".so");
-		std::cerr << "loading module " << module << std::endl;
+		module.append(processor_root).append("/").append(*it).append(".so");
+		std::cerr << "loading processor " << module << std::endl;
 		if (!(handle = dlopen(module.c_str(), RTLD_NOW)))
 			throw std::runtime_error(std::string(dlerror()));
 		if (!(create = (_create_processor_t)dlsym(handle, "create_processor")))
