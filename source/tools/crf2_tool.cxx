@@ -5,6 +5,8 @@
 #include <getopt.h>
 #include "utf8.hxx"
 
+#define LINE_MAX 1024
+
 using namespace std;
 
 static const std::string delimiter = " \t\r\n";
