@@ -4,6 +4,14 @@
 #include <cassert>
 #include <iostream>
 
+extern "C" {
+	Processor *create(IConfig *config) 
+	{
+		return new UnigramProcessor(config);
+	}
+}
+
+
 UnigramProcessor::UnigramProcessor(IConfig *config)
 {
 	const char *s;

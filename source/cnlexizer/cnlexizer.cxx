@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
+#include <dlfcn.h>
 
 #include "cnlexizer.hxx"
 #include "prepare_processor.hxx"
@@ -14,46 +15,49 @@
 #include "combine_processor.hxx"
 #include "single_combine_processor.hxx"
 
-const char CNLexizer::_stream_name_prefix[] = "streamline_";
-
 CNLexizer::CNLexizer(const char *file)
 :_config(NULL), _in(&_lex_token[0]), _out(&_lex_token[1])
 {
-	const char *s;
-	char *text, *token, delim[] = ",";
-	size_t length;
-	std::string str;
+	std::vector<std::string>::iterator it;
 
 	_config = ConfigFactory::create("simple_config", file);
-	_config->get_value("streamline", s);
-	length = strlen(s) + strlen(_stream_name_prefix) + 1;
-	text = new char[length];
-	snprintf(text, length, "%s%s", _stream_name_prefix, s);
-	_config->get_value(text, s);
-	delete []text;
-	text = new char[strlen(s) + 1];
-	strcpy(text, s);
-	for (token = strtok(text, delim); token; token = strtok(NULL, delim)) {
-		str = token;
-		_streamline.push_back(std::string(token));
-		if (str == "ascii")
-			_processors["ascii"] = new AsciiProcessor(_config);
-		else if (str == "prepare")
-			_processors["prepare"] = new PrepareProcessor(_config);
-		else if (str == "maxforward")
-			_processors["maxforward"] = new MaxforwardProcessor(_config);
-		else if (str == "unigram")
-			_processors["unigram"] = new UnigramProcessor(_config);
-		else if (str == "crf")
-			_processors["crf"] = new CRFProcessor(_config);
-		else if (str == "crf2")
-			_processors["crf2"] = new CRF2Processor(_config);
-		else if (str == "combine")
-			_processors["combine"] = new CombineProcessor(_config);
-		else if (str == "single_combine")
-			_processors["single_combine"] = new SingleCombineProcessor(_config);
+	_config->get_value("process_chain", _process_chain);
+	_config->get_value("libroot", _libroot);
+
+	for (it = _process_chain.begin(); it != _process_chain.end(); it++) {
+		std::string libpath;
+		_create_t create;
+		void *handle = NULL;
+		Processor *processor = NULL;
+
+		libpath.append(_libroot).append("/libclxmod_").append(*it).append(".so");
+		std::cerr << "Loading Module " << libpath << std::endl;
+		handle = dlopen(libpath.c_str(), RTLD_NOW);
+		if (!handle)
+			throw std::runtime_error(std::string(dlerror()));
+		create = (_create_t)dlsym(handle, "create");
+		if (!create)
+			throw std::runtime_error(std::string(dlerror()));
+		processor = create(_config);
+		if (!processor)
+			throw std::runtime_error(std::string("can not create processor: ") + *it);
+		_processors.push_back(processor);
+		_handles[*it] = handle;
 	}
-	delete []text;
+}
+
+CNLexizer::~CNLexizer()
+{
+	std::vector<Processor *>::iterator i;
+	std::map<std::string, void *>::iterator j;
+
+	for (i = _processors.begin(); i != _processors.end(); i++)
+		delete *i;
+
+	for (j = _handles.begin(); j != _handles.end(); j++)
+		dlclose(j->second);
+
+	delete _config;
 }
 
 size_t CNLexizer::process(char *t, const char *s)
@@ -69,18 +73,14 @@ size_t CNLexizer::process(char *t, const char *s)
 		_out->reserve(length);
 	}
 	_in->push_back(new LexToken(s));
-	length = _streamline.size();
+	length = _processors.size();
 	for (i = 0; i < length; i++) {
-		if (_processors[_streamline[i]]) {
-			_out->clear();
-			_processors[_streamline[i]]->process(*_in, *_out);
-			/* switch in & out queue */
-			_swap = _out;
-			_out = _in;
-			_in = _swap;
-		} else {
-			std::cerr << "Invalid module name: " << _streamline[i] << std::endl;
-		}
+		_out->clear();
+		_processors[i]->process(*_in, *_out);
+		/* switch in & out queue */
+		_swap = _out;
+		_out = _in;
+		_in = _swap;
 	}
 
 	length = _in->size();

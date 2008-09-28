@@ -5,6 +5,13 @@
 #include "single_combine_processor.hxx"
 #include "utf8.hxx"
 
+extern "C" {
+	Processor *create(IConfig *config) 
+	{
+		return new SingleCombineProcessor(config);
+	}
+}
+
 SingleCombineProcessor::SingleCombineProcessor(IConfig *config)
 {
 	const char *s;

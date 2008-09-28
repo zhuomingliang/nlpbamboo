@@ -7,6 +7,7 @@ set(BIN_INSTALL_DIR "/bin")
 set(ETC_INSTALL_DIR "/etc")
 set(TRAINING_INSTALL_DIR "/training")
 set(INC_INSTALL_DIR "/include")
+set(MOD_INSTALL_DIR "/module")
 
 set(CMAKE_CXX_FLAGS "-g")
 set(CMAKE_CXX_FLAGS_DEBUG "-pg")

@@ -16,9 +16,8 @@
 class SimpleConfig:public IConfig {
 protected:
 	size_t _deep_parse_level;
-	std::map<std::string, std::string> _map;
+	std::map<std::string, std::string> _map, _storage;
 	std::string _key, _val, _real, _reserve;
-	std::vector<std::string> _storage;
 	std::string& _trim(std::string &s)
 	{
 		static const char whitespace[] = " \t\r\n";
@@ -109,8 +108,9 @@ public:
 	void get_value(const char *key, std::vector<std::string> &val) {get_value(std::string(key), val);}
 	void get_value(const char *key, const char *&val) 
 	{
-		_storage.push_back(std::string(_deep_parse(_map[std::string(key)])));
-		val = _storage.back().c_str();
+		std::string s(_deep_parse(_map[key]));
+		_storage[key] = s;
+		val = s.c_str();
 	}
 	void get_value(std::string key, int &val)  {val = atoi(_deep_parse(_map[key]).c_str());}
 	void get_value(std::string key, long &val) {val = atol(_deep_parse(_map[key]).c_str());}
@@ -122,9 +122,12 @@ public:
 		std::string::size_type i, p;
 		val.clear();
 		_reserve = _deep_parse(_map[key]);
-		for (p = 0, i = _reserve.find(","); i < _reserve.npos; i = _reserve.find(",", p), p = i + 1) {
-			val.push_back(_reserve.substr(p, i));
-			_trim(val.back());
+		for (p = 0; p < _reserve.npos; p = i + 1) { 
+			i = _reserve.find(',', p);
+			if (i == _reserve.npos) i = _reserve.npos - 1;
+			std::string s(_reserve.substr(p, i - p));
+			_trim(s);
+			if (!s.empty()) val.push_back(s);
 		}
 	}
 	void dump(std::string &s)

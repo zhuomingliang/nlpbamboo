@@ -9,6 +9,7 @@ extern "C" {
 
 #include <vector>
 #include "iconfig.hxx"
+#include <stdexcept>
 
 class LuaConfig: public IConfig {
 protected:
@@ -20,6 +21,10 @@ public:
 	void get_value(const char *key, int &val);
 	void get_value(const char *key, const char *&val);
 	void get_value(const char *key, double &val);
+	void get_value(const char *key, std::vector<std::string> &val) 
+	{
+		throw std::runtime_error("LuaConfig: method not implement");
+	}
 };
 
 #endif

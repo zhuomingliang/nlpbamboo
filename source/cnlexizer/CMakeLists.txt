@@ -5,10 +5,10 @@ set( libsrc_cnlexizer_core
 add_library(cnlexizer_core STATIC ${libsrc_cnlexizer_core})
 
 add_executable(cnlexizer_cli cnlexizer_cli.cxx)
-target_link_libraries(cnlexizer_cli cnlexizer_core processor lexicon trie config_parser utf8 dl ${LUA5_LIBRARIES})
+target_link_libraries(cnlexizer_cli cnlexizer_core config_parser utf8 dl ${LUA5_LIBRARIES})
 
 add_library(cnlexizer SHARED cnlexizer_interface.cxx)
-target_link_libraries(cnlexizer cnlexizer_core processor lexicon trie config_parser utf8 dl ${LUA5_LIBRARIES})
+target_link_libraries(cnlexizer cnlexizer_core config_parser utf8 dl ${LUA5_LIBRARIES})
 
 install(TARGETS cnlexizer_cli DESTINATION ${BIN_INSTALL_DIR})
 install(TARGETS cnlexizer DESTINATION ${LIB_INSTALL_DIR})

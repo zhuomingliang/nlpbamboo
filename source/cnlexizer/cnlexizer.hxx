@@ -13,27 +13,20 @@
 
 class CNLexizer {
 private:
-
+	
 public:
 	size_t process(char *t, const char *s);
 	CNLexizer(const char *file);
-	~CNLexizer()
-	{
-		std::map<std::string, Processor *>::iterator iter;
-
-		for (iter = _processors.begin(); iter != _processors.end(); iter++)
-			delete iter->second;
-
-		delete _config;
-	}
-
+	~CNLexizer();
 protected:
 	IConfig *_config;
-	static const char _stream_name_prefix[];
-	std::vector<std::string> _streamline;
+	const char *_libroot;
+	std::vector<std::string> _process_chain;
 	std::vector<LexToken *> _lex_token[2];
 	std::vector<LexToken *> *_in, *_out, *_swap;
-	std::map<std::string, Processor *> _processors;
+	std::vector<Processor *> _processors;
+	std::map<std::string, void *> _handles;
+	typedef Processor* (*_create_t)(IConfig *);
 };
 
 #endif
