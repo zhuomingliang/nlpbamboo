@@ -1,6 +1,4 @@
-project(lexize_source)
-
-set(LEXIZE_COMPONENT
+set(components
 	utf8
 	mmap
 	trie
@@ -12,9 +10,9 @@ set(LEXIZE_COMPONENT
 	tools
 )
 
-include_directories(${LUA5_INCLUDE_DIR} ${LEXIZE_COMPONENT})
+include_directories(${components})
 
-foreach(component ${LEXIZE_COMPONENT})
+foreach(component ${components})
 	add_subdirectory( ${component} )
 endforeach(component)
 
