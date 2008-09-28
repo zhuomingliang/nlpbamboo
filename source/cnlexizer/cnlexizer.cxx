@@ -1,61 +1,48 @@
-#include <ctype.h>
-#include <cassert>
-#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <dlfcn.h>
 
 #include "cnlexizer.hxx"
-#include "prepare_processor.hxx"
-#include "ascii_processor.hxx"
-#include "maxforward_processor.hxx"
-#include "unigram_processor.hxx"
-#include "crf_processor.hxx"
-#include "crf2_processor.hxx"
-#include "combine_processor.hxx"
-#include "single_combine_processor.hxx"
 
 CNLexizer::CNLexizer(const char *file)
-:_config(NULL), _in(&_lex_token[0]), _out(&_lex_token[1])
+:_config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
 {
 	std::vector<std::string>::iterator it;
+	std::string module;
 
 	_config = ConfigFactory::create("simple_config", file);
 	_config->get_value("process_chain", _process_chain);
-	_config->get_value("libroot", _libroot);
+	_config->get_value("module_root", _module_root);
 
 	for (it = _process_chain.begin(); it != _process_chain.end(); it++) {
-		std::string libpath;
-		_create_t create;
+		_create_processor_t create = NULL;
 		void *handle = NULL;
 		Processor *processor = NULL;
 
-		libpath.append(_libroot).append("/libclxmod_").append(*it).append(".so");
-		std::cerr << "Loading Module " << libpath << std::endl;
-		handle = dlopen(libpath.c_str(), RTLD_NOW);
-		if (!handle)
+		module.clear();
+		module.append(_module_root).append("/libclxmod_").append(*it).append(".so");
+		std::cerr << "loading module " << module << std::endl;
+		if (!(handle = dlopen(module.c_str(), RTLD_NOW)))
 			throw std::runtime_error(std::string(dlerror()));
-		create = (_create_t)dlsym(handle, "create");
-		if (!create)
+		if (!(create = (_create_processor_t)dlsym(handle, "create_processor")))
 			throw std::runtime_error(std::string(dlerror()));
-		processor = create(_config);
-		if (!processor)
+		if (!(processor = create(_config)))
 			throw std::runtime_error(std::string("can not create processor: ") + *it);
+
 		_processors.push_back(processor);
-		_handles[*it] = handle;
+		_dl_handles.push_back(handle);
 	}
 }
 
 CNLexizer::~CNLexizer()
 {
-	std::vector<Processor *>::iterator i;
-	std::map<std::string, void *>::iterator j;
+	size_t i;
 
-	for (i = _processors.begin(); i != _processors.end(); i++)
-		delete *i;
+	i = _processors.size();
+	while(i--) delete _processors[i];
 
-	for (j = _handles.begin(); j != _handles.end(); j++)
-		dlclose(j->second);
+	i = _dl_handles.size();
+	while(i--) dlclose(_dl_handles[i]);
 
 	delete _config;
 }
@@ -93,4 +80,3 @@ size_t CNLexizer::process(char *t, const char *s)
 	}
 	return p - t;
 }
-

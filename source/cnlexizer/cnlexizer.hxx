@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <cstring>
 #include <vector>
-#include <map>
 
 #include "lexicon_factory.hxx"
 #include "config_factory.hxx"
@@ -20,13 +19,13 @@ public:
 	~CNLexizer();
 protected:
 	IConfig *_config;
-	const char *_libroot;
+	const char *_module_root;
 	std::vector<std::string> _process_chain;
-	std::vector<LexToken *> _lex_token[2];
+	std::vector<LexToken *> _token_fifo[2];
 	std::vector<LexToken *> *_in, *_out, *_swap;
 	std::vector<Processor *> _processors;
-	std::map<std::string, void *> _handles;
-	typedef Processor* (*_create_t)(IConfig *);
+	std::vector<void *> _dl_handles;
+	typedef Processor* (*_create_processor_t)(IConfig *);
 };
 
 #endif

@@ -6,7 +6,7 @@
 #include "lex_token.hxx"
 
 #define PROCESSOR_MAGIC /* Nothing */
-#define PROCESSOR_MODULE(NAME) extern "C" {Processor *create(IConfig *config) {return new NAME(config);}}
+#define PROCESSOR_MODULE(NAME) extern "C" {Processor *create_processor(IConfig *config) {return new NAME(config);}}
 
 class Processor {
 protected:
