@@ -25,7 +25,7 @@ static int _do(const char *cfg, const char *file)
 	FILE *fp = NULL;
 	struct timeval tv[2];
 	struct timezone tz;
-	size_t consume = 0;
+	unsigned long consume = 0;
 
 	try {
 		CNLexizer clx(cfg);
@@ -63,7 +63,7 @@ static int _do(const char *cfg, const char *file)
 		return 1;
 	}
 
-	std::cerr << "consumed time: " << static_cast<double>(consume / 1000)<< " ms" << std::endl;
+	std::cerr << "consumed time: " << static_cast<unsigned long>(consume / 1000)<< " ms" << std::endl;
 	return 0;
 }
 
