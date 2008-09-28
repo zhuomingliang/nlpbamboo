@@ -18,7 +18,7 @@ void _PG_fini(void);
 
 void _PG_init(void)
 {
-	handle = cnlexizer_init("/etc/cnlexizer.cfg");
+	handle = cnlexizer_init(NULL);
 }
 
 void _PG_fini(void)
@@ -36,8 +36,9 @@ Datum cnlexizer(PG_FUNCTION_ARGS)
 	memcpy(s, VARDATA(in), VARSIZE(in) - VARHDRSZ);
 	s[VARSIZE(in) - VARHDRSZ] = '\0';
 
-	if (handle == NULL) elog(ERROR, "can not init segmentor");
-	t = palloc((VARSIZE(in) - VARHDRSZ + 1) * 2 + 1);
+	if (handle == NULL) 
+		elog(ERROR, "cnlexizer init failed.");
+	t = palloc(((VARSIZE(in) - VARHDRSZ + 1) << 1) + 1);
 	cnlexizer_process(handle, t, s);
 
 	PG_RETURN_TEXT_P(DatumGetTextP(DirectFunctionCall1(textin, CStringGetDatum(t))));
