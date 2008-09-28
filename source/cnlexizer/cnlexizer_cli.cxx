@@ -53,7 +53,7 @@ static int _do(const char *cfg, const char *file)
 			gettimeofday(&tv[0], &tz);
 			clx.process(t, s);
 			gettimeofday(&tv[1], &tz);
-			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000 + (tv[1].tv_usec - tv[0].tv_usec) / 1000;
+			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 			std::cout << t << std::endl;
 		}
 		free(s);
@@ -63,7 +63,7 @@ static int _do(const char *cfg, const char *file)
 		return 1;
 	}
 
-	std::cerr << "consumed time: " << consume << " ms" << std::endl;
+	std::cerr << "consumed time: " << static_cast<double>(consume / 1000)<< " ms" << std::endl;
 	return 0;
 }
 

@@ -7,8 +7,6 @@
 #include <sstream>
 #include <crfpp.h>
 
-#define TIMING
-
 class CRFProcessor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
@@ -23,7 +21,7 @@ protected:
 	}
 	void _process(LexToken *token, std::vector<LexToken *> &out);
 #ifdef TIMING
-	int _timing_parser, _timing_tagger, _timing_insert;
+	long _timing_parser;
 #endif
 public:
 	CRFProcessor(IConfig *config);

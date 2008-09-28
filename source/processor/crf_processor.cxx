@@ -34,9 +34,7 @@ CRFProcessor::CRFProcessor(IConfig *config)
 		throw std::runtime_error(std::string("can not load model ") + s + ": " + strerror(errno));
 	}
 #ifdef TIMING
-	_timing_tagger = 0;
 	_timing_parser = 0;
-	_timing_insert = 0;
 #endif
 }
 
@@ -45,9 +43,7 @@ CRFProcessor::~CRFProcessor()
 	delete []_token;
 	delete _tagger;
 #ifdef TIMING
-	std::cerr << "crf1 tagger consume: " << _timing_tagger << "ms" << std::endl;
-	std::cerr << "crf1 parser consume: " << _timing_parser << "ms" << std::endl;
-	std::cerr << "crf1 insert consume: " << _timing_insert << "ms" << std::endl;
+	std::cerr << "crf1 parser consume: " << static_cast<double>(_timing_parser / 1000) << "ms" << std::endl;
 #endif
 }
 
@@ -70,28 +66,17 @@ void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	}
 	for (i = 0; i < length; i++) {
 		utf8::sub(_token, s, i, 1);
-#ifdef TIMING		
-		gettimeofday(&tv[0], &tz);
-#endif
 		_tagger->add(_token);
-#ifdef TIMING
-		gettimeofday(&tv[1], &tz);
-		_timing_tagger += (tv[1].tv_sec - tv[0].tv_sec) * 1000 + (tv[1].tv_usec - tv[0].tv_usec) / 1000;
-#endif
 	}
-
 #ifdef TIMING		
 		gettimeofday(&tv[0], &tz);
 #endif
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 #ifdef TIMING
 		gettimeofday(&tv[1], &tz);
-		_timing_parser += (tv[1].tv_sec - tv[0].tv_sec) * 1000 + (tv[1].tv_usec - tv[0].tv_usec) / 1000;
+		_timing_parser += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 #endif
 
-#ifdef TIMING		
-		gettimeofday(&tv[0], &tz);
-#endif
 	_result_top = _result;
 	for (i = 0; i < _tagger->size(); ++i) {
 		s = _tagger->x(i, 0);
@@ -104,9 +89,4 @@ void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 			_result_top = _result;
 		}
 	}
-#ifdef TIMING
-		gettimeofday(&tv[1], &tz);
-		_timing_insert += (tv[1].tv_sec - tv[0].tv_sec) * 1000 + (tv[1].tv_usec - tv[0].tv_usec) / 1000;
-#endif
-
 }

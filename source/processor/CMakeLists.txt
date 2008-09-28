@@ -1,8 +1,8 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
+add_library(processor STATIC processor.cxx)
 macro(build_processor name)
 	add_library(processor_${name} MODULE ${name}_processor.cxx)
-	target_link_libraries(processor_${name} ${ARGN})
+	target_link_libraries(processor_${name} ${ARGN} processor)
 	set_target_properties(processor_${name} PROPERTIES PREFIX "" OUTPUT_NAME ${name})
 	install(TARGETS processor_${name} DESTINATION ${PROCESSOR_INSTALL_DIR})
 endmacro(build_processor)

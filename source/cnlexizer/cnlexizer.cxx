@@ -1,3 +1,4 @@
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -35,6 +36,9 @@ CNLexizer::CNLexizer(const char *file)
 		_processors.push_back(processor);
 		_dl_handles.push_back(handle);
 	}
+#ifdef TIMING
+	memset(_timing_process, 0, sizeof(size_t) * 128);
+#endif
 }
 
 CNLexizer::~CNLexizer()
@@ -48,6 +52,11 @@ CNLexizer::~CNLexizer()
 	while(i--) dlclose(_dl_handles[i]);
 
 	delete _config;
+#ifdef TIMING
+	i = _processors.size();
+	while(i--)
+		std::cerr << "processor" << i << " consume: " << static_cast<double>(_timing_process[i] / 1000)<< "ms" << std::endl;
+#endif
 }
 
 void CNLexizer::_lazy_create_config(const char *custom)
@@ -80,6 +89,10 @@ void CNLexizer::_lazy_create_config(const char *custom)
 
 size_t CNLexizer::process(char *t, const char *s)
 {
+#ifdef TIMING	
+	struct timeval tv[2];
+	struct timezone tz;
+#endif
 	char *neo, *p = t;
 	size_t i, length;
 
@@ -94,7 +107,14 @@ size_t CNLexizer::process(char *t, const char *s)
 	length = _processors.size();
 	for (i = 0; i < length; i++) {
 		_out->clear();
+#ifdef TIMING		
+		gettimeofday(&tv[0], &tz);
+#endif
 		_processors[i]->process(*_in, *_out);
+#ifdef TIMING
+		gettimeofday(&tv[1], &tz);
+		_timing_process[i] += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
+#endif
 		/* switch in & out queue */
 		_swap = _out;
 		_out = _in;
