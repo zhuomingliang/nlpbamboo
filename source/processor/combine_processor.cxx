@@ -4,6 +4,13 @@
 #include <cassert>
 #include <iostream>
 
+extern "C" {
+	Processor *create(IConfig *config) 
+	{
+		return new CombineProcessor(config);
+	}
+}
+
 CombineProcessor::CombineProcessor(IConfig *config)
 {
 	const char *s;

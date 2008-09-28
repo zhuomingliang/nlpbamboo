@@ -4,6 +4,13 @@
 #include "lex_token.hxx"
 #include "prepare_processor.hxx"
 
+extern "C" {
+	Processor *create(IConfig *config) 
+	{
+		return new PrepareProcessor(config);
+	}
+}
+
 PrepareProcessor::PrepareProcessor(IConfig *config)
 {
 }

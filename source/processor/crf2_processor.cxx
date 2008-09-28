@@ -5,6 +5,13 @@
 #include <cstdio>
 #include <stdexcept>
 
+extern "C" {
+	Processor *create(IConfig *config) 
+	{
+		return new CRF2Processor(config);
+	}
+}
+
 CRF2Processor::CRF2Processor(IConfig *config) {
 	const char *model;
 

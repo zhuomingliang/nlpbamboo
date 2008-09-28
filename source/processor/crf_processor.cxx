@@ -6,6 +6,13 @@
 #include <cstdio>
 #include <stdexcept>
 
+extern "C" {
+	Processor *create(IConfig *config) 
+	{
+		return new CRFProcessor(config);
+	}
+}
+
 CRFProcessor::CRFProcessor(IConfig *config)
 {
 	const char *s;
