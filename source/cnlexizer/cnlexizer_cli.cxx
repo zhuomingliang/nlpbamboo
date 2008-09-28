@@ -11,7 +11,7 @@ static void _help_message()
 	std::cout << "Usage: cnlexizer_cli [OPTIONS] file\n"
 				 "OPTIONS:\n"
 				 "        -h|--help             help message\n"
-				 "        -c|--config           config file, default=cnlexizer.cfg\n"
+				 "        -c|--config           configuration\n"
 				 "\n"
 				 "Report bugs to detrox@gmail.com\n"
 			  << std::endl;
@@ -28,9 +28,8 @@ static int _do(const char *cfg, const char *file)
 	size_t consume = 0;
 
 	try {
-		std::cerr << "Loading configuration '" << cfg << "' ..." << std::endl;
 		CNLexizer clx(cfg);
-		std::cerr << "Parsing '" << file << "'..." << std::endl;
+		std::cerr << "parsing '" << file << "'..." << std::endl;
 		if (strcmp(file, "-") == 0) {
 			fp = stdin;
 		} else {
@@ -71,7 +70,7 @@ static int _do(const char *cfg, const char *file)
 int main(int argc, char *argv[])
 {
 	int c;
-	const char default_config[] = "cnlexizer.cfg";
+	const char default_config[] = "";
 	const char default_file[] = "-";
 	const char *config = default_config, *file = default_file;
 	

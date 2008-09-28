@@ -1,3 +1,6 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <iostream>
 #include <stdexcept>
 #include <dlfcn.h>
@@ -10,7 +13,7 @@ CNLexizer::CNLexizer(const char *file)
 	std::vector<std::string>::iterator it;
 	std::string module;
 
-	_config = ConfigFactory::create(file);
+	_lazy_create_config(file);
 	_config->get_value("process_chain", _process_chain);
 	_config->get_value("processor_root", processor_root);
 
@@ -45,6 +48,34 @@ CNLexizer::~CNLexizer()
 	while(i--) dlclose(_dl_handles[i]);
 
 	delete _config;
+}
+
+void CNLexizer::_lazy_create_config(const char *custom)
+{
+	int i;
+	bool flag = false;
+	struct stat buf;
+	std::vector<std::string> v;
+
+	v.push_back(custom);
+	v.push_back("cnlexizer.cfg");
+	v.push_back("etc/cnlexizer.cfg");
+	v.push_back("/opt/cnlexizer.cfg");
+	v.push_back("/etc/cnlexizer.cfg");
+	for (i = 0; i < v.size(); i++) {
+		std::cerr << "loading configuration " << v[i] << " ... ";
+		if (stat(v[i].c_str(), &buf) == 0) {
+			std::cerr << "found." << std::endl;
+			_config = ConfigFactory::create(v[i].c_str());
+			flag = true;
+			break;
+		} else {
+			std::cerr << "not found." << std::endl;
+		}
+	}
+
+	if (!flag)
+		throw new std::runtime_error("can not find configuration");
 }
 
 size_t CNLexizer::process(char *t, const char *s)

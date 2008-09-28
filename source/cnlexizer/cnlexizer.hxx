@@ -26,6 +26,7 @@ protected:
 	std::vector<Processor *> _processors;
 	std::vector<void *> _dl_handles;
 	typedef Processor* (*_create_processor_t)(IConfig *);
+	void _lazy_create_config(const char *);
 };
 
 #endif
