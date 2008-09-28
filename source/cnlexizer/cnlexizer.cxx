@@ -66,7 +66,8 @@ void CNLexizer::_lazy_create_config(const char *custom)
 	struct stat buf;
 	std::vector<std::string> v;
 
-	v.push_back(custom);
+	if (custom)
+		v.push_back(custom);
 	v.push_back("cnlexizer.cfg");
 	v.push_back("etc/cnlexizer.cfg");
 	v.push_back("/opt/etc/cnlexizer.cfg");
