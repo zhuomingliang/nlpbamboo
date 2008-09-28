@@ -69,7 +69,7 @@ void CNLexizer::_lazy_create_config(const char *custom)
 	v.push_back(custom);
 	v.push_back("cnlexizer.cfg");
 	v.push_back("etc/cnlexizer.cfg");
-	v.push_back("/opt/cnlexizer.cfg");
+	v.push_back("/opt/etc/cnlexizer.cfg");
 	v.push_back("/etc/cnlexizer.cfg");
 	for (i = 0; i < v.size(); i++) {
 		std::cerr << "loading configuration " << v[i] << " ... ";
