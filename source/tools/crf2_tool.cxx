@@ -3,9 +3,9 @@
 #include <vector>
 #include <sstream>
 #include <getopt.h>
+#include <limits.h>
 #include "utf8.hxx"
 
-#define LINE_MAX 1024
 
 using namespace std;
 
