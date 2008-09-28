@@ -5,7 +5,7 @@ use Data::Dumper;
 use Getopt::Std;
 use utf8;
 use Encode qw/encode decode/;
-use vars '$opt_c', '$opt_u','$opt_v';
+use vars '$opt_c', '$opt_u','$opt_v', '$opt_h';
 
 ################################################################################
 #
@@ -17,7 +17,7 @@ sub build_unigram_lexicon
 {
 	my $file = shift @_;
 	my %lexicon = ();
-	open FH, "<$file";
+	open FH, "<$file" or die "can not open $file";
 	print STDERR "Building Unigram Lexicon: \n" if ($opt_v);
 	while (<FH>) {
 		chomp;
@@ -50,7 +50,7 @@ sub build_combined_lexicon
 	my $file = shift @_;
 	my %lexicon = ();
 	my $combine = 0;
-	open FH, "<$file";
+	open FH, "<$file" or die "can not open $file";
 	print STDERR "Building Combined Lexicon: \n" if ($opt_v);
 	while (<FH>) {
 		chomp;
@@ -86,7 +86,7 @@ sub build_combined_lexicon
 ################################################################################
 
 
-if (!getopts("cuv")) {
+if (!getopts("cuv") || $opt_h || !$ARGV[0]) {
 	print "Usage: pdc_tool [OPTIONS] CORPUS\n";
 	print "Convert People Daily Corpus to Lexicon\n";
 	print "OPTIONS:\n";
@@ -97,8 +97,5 @@ if (!getopts("cuv")) {
 	print "Author: jianingy <detrox\@gmail.com>\n";
 }
 
-my $file = @ARGV[0];
-$file = "/dev/stdin" if (!-f $file);
-
-&build_unigram_lexicon($file) if ($opt_u);
-&build_combined_lexicon($file) if ($opt_c);
+&build_unigram_lexicon($ARGV[0]) if ($opt_u);
+&build_combined_lexicon($ARGV[0]) if ($opt_c);

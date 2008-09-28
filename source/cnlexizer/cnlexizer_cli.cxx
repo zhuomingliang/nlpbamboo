@@ -63,7 +63,7 @@ static int _do(const char *cfg, const char *file)
 		return 1;
 	}
 
-	std::cerr << "Consumed Time: " << consume << " ms" << std::endl;
+	std::cerr << "consumed time: " << consume << " ms" << std::endl;
 	return 0;
 }
 

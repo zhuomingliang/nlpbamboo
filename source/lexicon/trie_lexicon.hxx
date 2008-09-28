@@ -63,7 +63,7 @@ public:
 		assert(filename);
 		fp = fopen(filename, "r");
 		if (verbose)
-			std::clog << "Making Index" << std::endl;
+			std::clog << "making index" << std::endl;
 		for(i = 0; ; i++) {
 			if (fscanf(fp, "%d %4096[^\n]", &val, str) == EOF) break;
 			insert(str, val);

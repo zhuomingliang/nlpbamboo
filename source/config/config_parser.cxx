@@ -7,12 +7,12 @@
 
 static void _help_message()
 {
-	std::cout << "Usage: cf_tool [OPTIONS]\n"
+	std::cout << "Usage: config_parser [OPTIONS]\n"
 				 "OPTIONS:\n"
 				 "        -h|--help             help message\n"
 				 "        -c|--cfg              config file\n"
 				 "        -k|--key              key name\n"
-				 "        -t|--type TYPE        key type, default = string, options = {string, int}\n"
+				 "        -t|--type TYPE        key type, default = string, options = {string, int, long, double}\n"
 				 "\n"
 				 "Report bugs to jianing.yang@alibaba-inc.com\n"
 			  << std::endl;
@@ -23,6 +23,9 @@ void _query(const char *cf, const char *key, const char *type)
 	IConfig *icf;
 	int int_val;
 	const char *str_val;
+	long long_val;
+	double double_val;
+
 	icf = ConfigFactory::create(cf);
 	if (strcmp(type, "int") == 0) {
 		icf->get_value(key, int_val);
@@ -30,8 +33,14 @@ void _query(const char *cf, const char *key, const char *type)
 	} else if (strcmp(type, "string") == 0) {
 		icf->get_value(key, str_val);
 		std::cout << key << " = " << str_val << std::endl;
+	} else if (strcmp(type, "long") == 0) {
+		icf->get_value(key, long_val);
+		std::cout << key << " = " << long_val << std::endl;
+	} else if (strcmp(type, "double") == 0) {
+		icf->get_value(key, double_val);
+		std::cout << key << " = " << double_val << std::endl;
 	} else {
-		std::cerr << "Unknow key type: " << type << std::endl;
+		std::cerr << "unsupported type: " << type << std::endl;
 		_help_message();
 	}
 }
@@ -49,7 +58,6 @@ int main(int argc, char *argv[])
 			{"config", required_argument, 0, 'c'},
 			{"key", required_argument, 0, 'k'},
 			{"type", required_argument, 0, 't'},
-			{"info", no_argument, 0, 'n'},
 			{0, 0, 0, 0}
 		};
 		int option_index;

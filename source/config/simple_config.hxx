@@ -149,7 +149,7 @@ public:
 				if (!_reserve.empty() && _reserve[0] != '#') _insert(_reserve);
 			}
 		} else {
-			throw std::runtime_error(std::string("can not open file ") + s);
+			throw std::runtime_error(std::string("can not open configuration ") + s);
 		}
 	}
 };

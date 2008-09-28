@@ -1,1 +1,1 @@
-install(FILES 6tag.tmpl DESTINATION ${TRAINING_INSTALL_DIR})
+install(FILES crf.tmpl crf2.tmpl DESTINATION ${TRAINING_INSTALL_DIR})

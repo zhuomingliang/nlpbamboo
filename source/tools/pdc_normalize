@@ -5,7 +5,7 @@ use Data::Dumper;
 use Getopt::Std;
 use utf8;
 use Encode qw/encode decode/;
-use vars '$opt_l', '$opt_v','$opt_v';
+use vars '$opt_l', '$opt_v','$opt_v', '$opt_h';
 
 ################################################################################
 #
@@ -26,7 +26,7 @@ sub normalize
 	my $file = shift @_;
 	my $long = shift @_;
 	my $count = 0;
-	open FH, "<$file";
+	open FH, "<$file" or die "can not open $file";
 	print STDERR "Normalizing $file: \n" if ($opt_v);
 	while (<FH>) {
 		s/^\s+|\s+$//g;
@@ -50,7 +50,7 @@ sub normalize
 ################################################################################
 
 
-if (!getopts("lv")) {
+if (!getopts("hlv") || $opt_h || !$ARGV[0]) {
 	print "Usage: pdc_normalize [OPTIONS] CORPUS\n";
 	print "Normalize People Daily Corpus for ngm_tool\n";
 	print "OPTIONS:\n";
@@ -60,7 +60,4 @@ if (!getopts("lv")) {
 	print "Author: jianingy <detrox\@gmail.com>\n";
 }
 
-my $file = @ARGV[0];
-$file = "/dev/stdin" if (!-f $file);
-
-&normalize($file, $opt_l);
+&normalize($ARGV[0], $opt_l);

@@ -1,43 +1,49 @@
-#include "cnlexizer.hxx"
-#include "stdio.h"
+#include <iostream>
 #include <stdexcept>
+
+#include "cnlexizer.hxx"
 #include "cnlexizer_interface.hxx"
 
 void *cnlexizer_init(const char *cfg)
 {
-	CNLexizer *handle;
 	try {
-		if (cfg == NULL)
-			throw new std::runtime_error("empty cfg filename");
-		handle = new CNLexizer(cfg);
-		return handle;
+		return new CNLexizer(cfg);
 	} catch(std::exception &e) {
-		fprintf(stderr, "ERROR: %s\n", e.what());
+		std::cerr << __FUNCTION__ << ": " << e.what();
 		return NULL;
 	}
 }
 
 void cnlexizer_clean(void *handle)
 {
-	if (handle) delete (CNLexizer *)handle;
+	try {
+		if (handle == NULL)
+			throw new std::runtime_error("handle is null");
+		delete static_cast<CNLexizer *>(handle);
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
+	}
 }
 
 ssize_t cnlexizer_process(void *handle, char *t, const char *s)
 {
-	size_t length = 0;
 	try {
 		if (handle == NULL)
-			throw new std::runtime_error("invalid sgmt handle");
+			throw new std::runtime_error("handle is null");
 		if (s == NULL)
-			throw new std::runtime_error("empty input string");
+			throw new std::runtime_error("input buffer is null");
 		if (t == NULL)
-			throw new std::runtime_error("empty buffer");
+			throw new std::runtime_error("output buffer is null");
 
-		CNLexizer *clx = (CNLexizer *)handle;
-		length = clx->process(t, s);
-		return length;
+		if (*s == '\0') {
+			*t = '\0';
+			return 0;
+		}
+
+		CNLexizer *clx = static_cast<CNLexizer *>(handle);
+		return clx->process(t, s);
 	} catch(std::exception &e) {
-		fprintf(stderr, "ERROR: %s\n", e.what());
+		std::cerr << __FUNCTION__ << ": " << e.what();
 		return -1;
 	}
 }

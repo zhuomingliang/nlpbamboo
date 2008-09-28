@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <cassert>
+#include <cstring>
 
 class MMap {
 protected:
@@ -25,10 +26,10 @@ public:
 
 		assert(filename);
 		fd = open(filename, O_RDONLY);
-		if (fd < 0) throw std::runtime_error("Can not open file");
-		if (fstat(fd, &sb) < 0) throw std::runtime_error("Can not stat file");
+		if (fd < 0) throw std::runtime_error(strerror(errno));
+		if (fstat(fd, &sb) < 0) throw std::runtime_error(strerror(errno));
 		_start = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-		if (_start == MAP_FAILED) throw std::runtime_error("Can not mmap");
+		if (_start == MAP_FAILED) throw std::runtime_error(strerror(errno));
 		while (retval = close(fd), retval == -1 && errno == EINTR) ;
 		_size = sb.st_size;
 	}
@@ -36,7 +37,7 @@ public:
 	{
 		if (_start) {
 			if (munmap(_start, _size) < 0) 
-				throw std::runtime_error("Can not munmap");
+				throw std::runtime_error(strerror(errno));
 		}
 	}
 	void *start(size_t off=0)

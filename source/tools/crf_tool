@@ -5,7 +5,7 @@ use utf8;
 use Encode qw/encode decode/;
 use Getopt::Std;
 
-use vars '$opt_v';
+use vars '$opt_v', '$opt_h';
 
 ################################################################################
 #
@@ -37,7 +37,7 @@ sub build_crf_training_set
 	my $file = shift @_;
 	my $i = 0;
 
-	open FH, "<$file";
+	open FH, "<$file" or die "can not open $file";
 	print STDERR "Building CRF Traning Set from $file: \n" if ($opt_v);
 
 	while (<FH>) {
@@ -62,16 +62,14 @@ sub build_crf_training_set
 ################################################################################
 
 
-if (!getopts("v")) {
+if (!getopts("vh") || $opt_h || !$ARGV[0]) {
 	print "Usage: crf_tool [OPTIONS] CORPUS\n";
 	print "Convert Corpus to CRF Training Set\n";
 	print "OPTIONS:\n";
 	print "        -v            verbose\n";
 	print "\n";
 	print "Author: jianingy <detrox\@gmail.com>\n";
+	exit;
 }
 
-my $file = @ARGV[0];
-$file = "/dev/stdin" if (!-f $file);
-
-&build_crf_training_set($file);
+&build_crf_training_set($ARGV[0]);

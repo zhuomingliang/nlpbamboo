@@ -1,29 +1,33 @@
-#!/bin/sh
-TAG="people-daily"
-TOP=$(dirname $(which $0))/..
-RAW="$TOP/data_raw/${TAG}.txt"
-NUMBER_TRAILING="$TOP/data_raw/number-trailing.txt"
-USER_COMBINE="$TOP/data_raw/user-combine.txt"
-if [ ! -r "$RAW" ]; then
-	echo "can not find $RAWDIR/${TAG}.txt" >&2
-	exit 1
+#!/bin/bash
+
+top="$(dirname $(readlink -f $0))/.."
+source $top/etc/build_settings
+
+mkdir -p $data_dir $build_dir $index_dir
+
+if [ ! -f "$corpus" ]; then 
+	wget -O - $corpus_url | gzip -c > $corpus
+	[ "$?" != "0" ] && exit 1 
 fi
-BUILD_DIR=$TOP/data_build
-INDEX_DIR=$TOP/index
-mkdir -p $BUILD_DIR
-mkdir -p $INDEX_DIR
-cat $USER_COMBINE | sed -e 's/^/1 /g' > ${BUILD_DIR}/combine.txt || exit 1
-cat $NUMBER_TRAILING | sed -e 's/^/1 /g' > ${BUILD_DIR}/number-trailing.txt || exit 1
 
-#$TOP/bin/pdc_tool -v -u ${RAW} > ${BUILD_DIR}/${TAG}.ugm.txt
-$TOP/bin/pdc_normalize -v ${RAW} > ${BUILD_DIR}/${TAG}.normalize.txt || exit 1
-$TOP/bin/ngm_tool -n1 -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.ugm.txt || exit 1
-$TOP/bin/lexicon -v -b -i ${INDEX_DIR}/${TAG}.ugm.idx -s ${BUILD_DIR}/${TAG}.ugm.txt || exit 1
-$TOP/bin/lexicon -v -b -i ${INDEX_DIR}/combine.idx -s ${BUILD_DIR}/combine.txt || exit 1
-$TOP/bin/lexicon -v -b -i ${INDEX_DIR}/number-trailing.idx -s ${BUILD_DIR}/number-trailing.txt || exit 1
+if [ ! -f "$number_trailing" ];then
+	wget -O "$number_trailing" "$number_trailing_url" || exit 1
+fi
+
+[ ! -f "$user_combine" ] && touch $user_combine
+
+# Build Lexicon
+cat $user_combine | sed -e 's/^/1 /g' > ${build_dir}/user_combine.txt || exit 1
+cat $number_trailing | sed -e 's/^/1 /g' > ${build_dir}/number-trailing.txt || exit 1
+
+$bin/pdc_normalize -v ${corpus} > ${build_dir}/normalized.txt || exit 1
+$bin/ngm_tool -n1 -v ${build_dir}/normalized.txt > ${build_dir}/unigram.txt || exit 1
+$bin/lexicon -v -b -i ${index_dir}/unigram.idx -s ${build_dir}/unigram.txt || exit 1
+$bin/lexicon -v -b -i ${index_dir}/user_combine.idx -s ${build_dir}/user_combine.txt || exit 1
+$bin/lexicon -v -b -i ${index_dir}/number-trailing.idx -s ${build_dir}/number-trailing.txt || exit 1
 
 
-# Building crf
+# Train CRF
 echo 
 echo "Training CRF Model may take a very long time (5 to 12 hours depend on your system)"
 echo -n "Are you sure you wanna build (y/n)?"
@@ -34,6 +38,7 @@ if [ "$choice" == "y" ]; then
 		echo "crf_learn not found!"
 		exit
 	fi
-	$TOP/bin/crf_tool -v ${BUILD_DIR}/${TAG}.normalize.txt > ${BUILD_DIR}/${TAG}.crf.training.txt || exit 1
-	crf_learn $TOP/training/6tag.tmpl ${BUILD_DIR}/${TAG}.crf.training.txt ${INDEX_DIR}/${TAG}.model || exit 1
+	$bin/crf_tool -v ${build_dir}/normalized.txt > ${build_dir}/crf.training.txt || exit 1
+	# Train CRF1
+	crf_learn $data_dir/crf.tmpl ${build_dir}/crf.training.txt ${index_dir}/crf1.model || exit 1
 fi

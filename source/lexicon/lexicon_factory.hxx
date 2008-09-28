@@ -21,7 +21,7 @@ public:
 		} else if (strcmp(type, "double_array") == 0) {
 			dc = new TrieLexicon<DoubleArray>(1024);
 		} else {
-			throw std::runtime_error("unknow lexicon file type: " + std::string(type));
+			throw std::runtime_error("unknow lexicon type " + std::string(type));
 		}
 
 		return dc;
@@ -34,7 +34,7 @@ public:
 
 		if (filename == NULL) return NULL;
 		fp = fopen(filename, "r");
-		if (fp == NULL) throw std::runtime_error("can not open lexicon file: " + std::string(filename));
+		if (fp == NULL) throw std::runtime_error("can not open lexicon: " + std::string(filename));
 		fread(magic, sizeof(magic), 1, fp);
 		fclose(fp);
 

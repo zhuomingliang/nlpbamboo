@@ -7,7 +7,7 @@ set(CMAKE_INSTALL_PREFIX "/opt/cnlexizer")
 set(LIB_INSTALL_DIR "lib")
 set(BIN_INSTALL_DIR "bin")
 set(ETC_INSTALL_DIR "etc")
-set(TRAINING_INSTALL_DIR "training")
+set(TRAINING_INSTALL_DIR "data")
 set(INC_INSTALL_DIR "include")
 set(PROCESSOR_INSTALL_DIR "processor")
 

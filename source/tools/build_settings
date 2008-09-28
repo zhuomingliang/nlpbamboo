@@ -1,0 +1,13 @@
+#!/bin/bash
+
+bin=$top/bin
+data_dir=$top/data
+build_dir=$top/build
+index_dir=$top/index
+
+corpus="$data_dir/people-daily.txt"
+number_trailing="$data_dir/number-trailing.txt"
+user_combine="$data_dir/user-combine.txt"
+
+corpus_url="http://cnlexizer.googlecode.com/files/people-daily.txt.gz" 
+number_trailing_url="http://cnlexizer.googlecode.com/files/number-trailing.txt"

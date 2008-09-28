@@ -9,6 +9,7 @@
 class IConfig {
 public:
 	virtual void get_value(const char *key, int &val) = 0;
+	virtual void get_value(const char *key, long &val) = 0;
 	virtual void get_value(const char *key, double &val) = 0;
 	virtual void get_value(const char *key, const char *&val) = 0;
 	virtual void get_value(const char *key, std::vector<std::string> &val) = 0;

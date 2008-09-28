@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 
+/* Reference: http://en.wikipedia.org/wiki/UTF-8 */
 const char utf8::_map_ignore[] = {
 	/* <0x80, no following */
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  

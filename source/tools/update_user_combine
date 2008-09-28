@@ -1,0 +1,12 @@
+#!/bin/bash
+
+top="$(dirname $(readlink -f $0))/.."
+source $top/etc/build_settings
+
+[ ! -f "$user_combine" ] && touch $user_combine
+
+# Build Lexicon
+cat $user_combine | sed -e 's/^/1 /g' > ${build_dir}/user_combine.txt || exit 1
+$bin/lexicon -v -b -i ${index_dir}/user_combine.idx -s ${build_dir}/user_combine.txt || exit 1
+
+
