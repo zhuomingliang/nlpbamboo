@@ -24,7 +24,7 @@ CNLexizer::CNLexizer(const char *file)
 	size_t length;
 	std::string str;
 
-	_config = ConfigFactory::create("lua_config", file);
+	_config = ConfigFactory::create("simple_config", file);
 	_config->get_value("streamline", s);
 	length = strlen(s) + strlen(_stream_name_prefix) + 1;
 	text = new char[length];
@@ -61,7 +61,6 @@ size_t CNLexizer::process(char *t, const char *s)
 	char *neo, *p = t;
 	size_t i, length;
 
-	assert(_in->empty());
 	*t = '\0';
 	length = utf8::length(s);
 	_in->clear();

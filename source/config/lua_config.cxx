@@ -5,14 +5,14 @@
 #include "lua_config.hxx"
 
 LuaConfig::LuaConfig()
-	:_lua(NULL), _throw(true)
+	:_lua(NULL)
 {
 	_lua = lua_open();
 	luaL_openlibs(_lua);
 }
 
-LuaConfig::LuaConfig(const char *filename, bool can_throw)
-	:_lua(NULL), _throw(can_throw)
+LuaConfig::LuaConfig(const char *filename)
+	:_lua(NULL)
 {
 	_lua = lua_open();
 	luaL_openlibs(_lua);
@@ -35,39 +35,33 @@ LuaConfig::~LuaConfig()
 	lua_close(_lua);
 }
 
-bool LuaConfig::get_value(const char *key, double &val)
+void LuaConfig::get_value(const char *key, double &val)
 {
 	lua_getglobal(_lua, key);
 	if (!lua_isnumber(_lua, -1)) {
-		if (_throw) throw std::runtime_error(
+		throw std::runtime_error(
 				std::string("Invalid type of value of key ").append(key).append(", should be double")); 
-		return false;
 	}
 	assert(sizeof(double) == sizeof(lua_Number));
 	val = lua_tonumber(_lua, -1);
-	return true;
 }
 
-bool LuaConfig::get_value(const char *key, int &val)
+void LuaConfig::get_value(const char *key, int &val)
 {
 	lua_getglobal(_lua, key);
 	if (!lua_isnumber(_lua, -1)) {
-		if (_throw) throw std::runtime_error(
+		throw std::runtime_error(
 				std::string("Invalid type of value of key ").append(key).append(", should be integer")); 
-		return false;
 	}
 	val = lua_tointeger(_lua, -1);
-	return true;
 }
 
-bool LuaConfig::get_value(const char *key, const char *&val)
+void LuaConfig::get_value(const char *key, const char *&val)
 {
 	lua_getglobal(_lua, key);
 	if (!lua_isstring(_lua, -1)) {
-		if (_throw) throw std::runtime_error(
+		throw std::runtime_error(
 				std::string("Invalid type of value of key ").append(key).append(", should be string")); 
-		return false;
 	}
 	val = lua_tolstring(_lua, -1, NULL);
-	return true;
 }

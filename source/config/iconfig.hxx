@@ -7,10 +7,10 @@
 
 class IConfig {
 public:
-	virtual bool get_value(const char *key, int &val) = 0;
-	virtual bool get_value(const char *key, double &val) = 0;
-	virtual bool get_value(const char *key, const char *&val) = 0;
-	IConfig(const char *filename, bool can_throw=true);
+	virtual void get_value(const char *key, int &val) = 0;
+	virtual void get_value(const char *key, double &val) = 0;
+	virtual void get_value(const char *key, const char *&val) = 0;
+	IConfig(const char *filename);
 	IConfig() {}
 	virtual ~IConfig() {}
 };
