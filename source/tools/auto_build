@@ -6,7 +6,7 @@ source $top/etc/build_settings
 mkdir -p $data_dir $build_dir $index_dir
 
 if [ ! -f "$corpus" ]; then 
-	wget -O - $corpus_url | gzip -d > $corpus
+	wget -O - $corpus_url | gzip -cd > $corpus
 	[ "$?" != "0" ] && exit 1 
 fi
 
