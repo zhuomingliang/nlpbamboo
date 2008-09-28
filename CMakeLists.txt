@@ -1,14 +1,15 @@
-project(lexize)
+project(cnlexizer)
 
 cmake_minimum_required(VERSION 2.6)
 
-set(LIB_INSTALL_DIR "/lib")
-set(BIN_INSTALL_DIR "/bin")
-set(ETC_INSTALL_DIR "/etc")
-set(TRAINING_INSTALL_DIR "/training")
-set(INC_INSTALL_DIR "/include")
-set(PROCESSOR_INSTALL_DIR "/processor")
-set(CONFIG_PARSER_INSTALL_DIR "/config_parser")
+set(CMAKE_INSTALL_PREFIX "/opt/cnlexizer")
+
+set(LIB_INSTALL_DIR "lib")
+set(BIN_INSTALL_DIR "bin")
+set(ETC_INSTALL_DIR "etc")
+set(TRAINING_INSTALL_DIR "training")
+set(INC_INSTALL_DIR "include")
+set(PROCESSOR_INSTALL_DIR "processor")
 
 set(CMAKE_CXX_FLAGS "-g")
 set(CMAKE_CXX_FLAGS_DEBUG "-pg")
