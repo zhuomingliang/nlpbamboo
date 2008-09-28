@@ -9,12 +9,13 @@
 #include "cnlexizer.hxx"
 
 CNLexizer::CNLexizer(const char *file)
-:_config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
+:_config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1]), _verbose(0)
 {
 	std::vector<std::string>::iterator it;
 	std::string module;
 
 	_lazy_create_config(file);
+	_config->get_value("_verbose", _verbose);
 	_config->get_value("process_chain", _process_chain);
 	_config->get_value("processor_root", processor_root);
 
@@ -25,7 +26,8 @@ CNLexizer::CNLexizer(const char *file)
 
 		module.clear();
 		module.append(processor_root).append("/").append(*it).append(".so");
-		std::cerr << "loading processor " << module << std::endl;
+		if (_verbose)
+			std::cerr << "loading processor " << module << std::endl;
 		if (!(handle = dlopen(module.c_str(), RTLD_NOW)))
 			throw std::runtime_error(std::string(dlerror()));
 		if (!(create = (_create_processor_t)dlsym(handle, "create_processor")))
@@ -70,17 +72,18 @@ void CNLexizer::_lazy_create_config(const char *custom)
 		v.push_back(custom);
 	v.push_back("cnlexizer.cfg");
 	v.push_back("etc/cnlexizer.cfg");
-	v.push_back("/opt/etc/cnlexizer.cfg");
+	v.push_back("/opt/cnlexizer/etc/cnlexizer.cfg");
 	v.push_back("/etc/cnlexizer.cfg");
 	for (i = 0; i < v.size(); i++) {
-		std::cerr << "loading configuration " << v[i] << " ... ";
+		if (_verbose)
+			std::cerr << "loading configuration " << v[i] << " ... ";
 		if (stat(v[i].c_str(), &buf) == 0) {
-			std::cerr << "found." << std::endl;
+			if (_verbose) std::cerr << "found." << std::endl;
 			_config = ConfigFactory::create(v[i].c_str());
 			flag = true;
 			break;
 		} else {
-			std::cerr << "not found." << std::endl;
+			if (_verbose) std::cerr << "not found." << std::endl;
 		}
 	}
 

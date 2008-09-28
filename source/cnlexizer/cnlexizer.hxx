@@ -27,6 +27,7 @@ protected:
 	std::vector<void *> _dl_handles;
 	typedef Processor* (*_create_processor_t)(IConfig *);
 	void _lazy_create_config(const char *);
+	int _verbose;
 #ifdef TIMING
 	size_t _timing_process[128];
 #endif
