@@ -40,6 +40,7 @@ CRFProcessor::CRFProcessor(IConfig *config)
 
 CRFProcessor::~CRFProcessor()
 {
+	free(_result);
 	delete []_token;
 	delete _tagger;
 #ifdef TIMING
@@ -61,7 +62,7 @@ void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	s = token->get_token();
 	length = token->get_length();
 	if (length > _result_size) {
-		_result_size = (length > _result_size << 1)?length + 1:_result_size << 1;
+		_result_size = (length > (_result_size << 1))?length + 1:(_result_size << 1);
 		_result = (char *)realloc(_result, _result_size);
 	}
 	for (i = 0; i < length; i++) {
@@ -82,9 +83,10 @@ void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		s = _tagger->x(i, 0);
 		while ( (*(_result_top++) = *(s++)) != 0)
 			;
-		*(_result_top++) = '\0';
+		*_result_top--;
 		tag = *_tagger->y2(i);
 		if (tag == 'S' || tag == 'E') {
+			*(_result_top) = '\0';
 			out.push_back(new LexToken(_result, LexToken::attr_cword));
 			_result_top = _result;
 		}
