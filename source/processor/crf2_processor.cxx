@@ -9,12 +9,20 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(CRF2Processor)
 
 CRF2Processor::CRF2Processor(IConfig *config) {
-	const char *model;
+	const char *s;
+	_token = new char[8];
+	struct stat st;
 
 	config->get_value("crf_ending_tags", _ending_tags);
-	config->get_value("crf2_model", model);
-	_tagger = CRFPP::createTagger(model);
-	_token = new char[8];
+	config->get_value("crf2_model", s);
+
+	std::string model;
+	model = std::string("-m ") + std::string(s);
+	if (stat(s, &st) == 0) {
+		_tagger = CRFPP::createTagger(model.c_str());
+	} else {
+		throw std::runtime_error(std::string("can not load model ") + s + ": " + strerror(errno));
+	}
 }
 
 CRF2Processor::~CRF2Processor()
