@@ -9,9 +9,11 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(SingleCombineProcessor)
 
 SingleCombineProcessor::SingleCombineProcessor(IConfig *config)
+	:_combine_double_same_character(0)
 {
 	const char *s;
 
+	config->get_value("combine_double_same_character", _combine_double_same_character);
 	config->get_value("lexicon_combine", s);
 	_lexicon_combine = LexiconFactory::load(s);
 	config->get_value("lexicon_number_trailing", s);
@@ -56,7 +58,8 @@ void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<Le
 			_make_combine(in, i, 3);
 			if (_lexicon_combine->search(_combine.c_str()) > 0) match = 3;
 		}
-		if (!match && length == 1 && i > 0 && in[i - 1]
+		if (_combine_double_same_character
+				   && !match && length == 1 && i > 0 && in[i - 1]
 				   && in[i - 1]->get_length() == 1
 				   && strcmp(in[i]->get_token(), in[i - 1]->get_token()) == 0) {
 			_make_combine(in, i, 6);

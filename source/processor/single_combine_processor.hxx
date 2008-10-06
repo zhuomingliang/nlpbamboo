@@ -11,6 +11,7 @@ protected:
 	ILexicon *_lexicon_combine, *_lexicon_number_trailing;
 	std::string _combine;
 	SingleCombineProcessor();
+	int _combine_double_same_character;
 	bool _can_process(LexToken *token) {}
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
 	void _make_combine(std::vector<LexToken *> &in, int i, int with)
