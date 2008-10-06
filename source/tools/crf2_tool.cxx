@@ -95,7 +95,7 @@ std::string generate(vector<std::string> &vec_str) {
 		for(state=begin;;s+=step) {
 			last = state;
 			step = utf8::first(s, uch); 
-			cch = utf8::to_dbc(uch, step);
+			cch = utf8::sbc2dbc(uch, step);
 			if(ispunct(cch)&&step==vec_str[i].size()) state = punct;
 			else if(!strcmp(uch, "。")&&step==vec_str[i].size()) state = punct;
 			else if(*uch==0) state = end;

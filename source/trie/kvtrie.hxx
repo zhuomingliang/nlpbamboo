@@ -53,7 +53,7 @@ public:
 		std::ifstream ifs;
 		std::ofstream ofs;
 		std::string s;
-		int value_start, offset;
+		int value_start;
 		DATrie trie;
 
 		if (verbose)

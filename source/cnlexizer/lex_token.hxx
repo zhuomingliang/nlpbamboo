@@ -37,10 +37,10 @@
 class LexToken {
 protected:
 	char *_orig_token;
-	char *_token;
 	int _attr;
 	size_t _length, _orig_length;
 	size_t _bytes, _orig_bytes;
+	char *_token;
 public:
 	enum attr_t {
 		attr_unknow = 0,
@@ -49,7 +49,10 @@ public:
 		attr_cword,
 		attr_punct,
 	};
-	LexToken():_token(NULL), _orig_token(NULL), _attr(attr_unknow), _length(0), _bytes(0) {}
+	LexToken()
+		:_orig_token(NULL), _attr(attr_unknow), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0)
+	{
+	}
 	LexToken(const char *s, const char *os, int attr = attr_unknow)
 		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0)
 	{
@@ -98,7 +101,7 @@ public:
 		_length = utf8::length(s);
 		_bytes = strlen(s);
 	}
-	int set_attr(int attr) {
+	void set_attr(int attr) {
 		_attr = attr;
 	}
 	size_t get_length() {return _length;}

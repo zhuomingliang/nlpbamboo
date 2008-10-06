@@ -41,7 +41,7 @@ protected:
 	char *_combine;
 
 	CombineProcessor();
-	bool _can_process(LexToken *token) {}
+	bool _can_process(LexToken *token) {return true;}
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
 
 public:

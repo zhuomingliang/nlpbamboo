@@ -91,7 +91,7 @@ CNLexizer::~CNLexizer()
 
 void CNLexizer::_lazy_create_config(const char *custom)
 {
-	int i;
+	std::vector<std::string>::size_type i;
 	bool flag = false;
 	struct stat buf;
 	std::vector<std::string> v;
@@ -125,7 +125,7 @@ size_t CNLexizer::process(char *t, const char *s)
 	struct timeval tv[2];
 	struct timezone tz;
 #endif
-	char *neo, *p = t;
+	char *p = t;
 	size_t i, length;
 
 	*t = '\0';

@@ -43,8 +43,8 @@ CombineProcessor::CombineProcessor(IConfig *config)
 	config->get_value("max_token_length", _max_token_length);
 	_lexicon = LexiconFactory::load(s);
 
-	_token = new char[_max_token_length << 2 + 1]; /* x4 for unicode */
-	_combine = new char[_max_token_length << 2 + 1]; /* x4 for unicode */
+	_token = new char[(_max_token_length << 2) + 1]; /* x4 for unicode */
+	_combine = new char[(_max_token_length << 2) + 1]; /* x4 for unicode */
 }
 
 CombineProcessor::~CombineProcessor()
@@ -56,7 +56,7 @@ CombineProcessor::~CombineProcessor()
 
 void CombineProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
 {
-	size_t i, j, length, num;
+	size_t i, j, length, num = 0;
 
 	if (in.empty()) return;
 	length = in.size();
@@ -64,7 +64,7 @@ void CombineProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken
 		*_combine = '\0';
 		*_token = '\0';
 		for (j = i; j < length; j++) {
-			if (utf8::length(_combine) + in[j]->get_length() <= _max_token_length) {
+			if (utf8::length(_combine) + in[j]->get_length() <= (unsigned int)_max_token_length) {
 				strcpy(_combine + strlen(_combine), in[j]->get_token());
 				if (_lexicon->search(_combine) > 0) {
 					strcpy(_token, _combine);

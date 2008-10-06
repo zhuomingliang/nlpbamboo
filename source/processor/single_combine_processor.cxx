@@ -56,7 +56,7 @@ SingleCombineProcessor::~SingleCombineProcessor()
 
 void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
 {
-	size_t i, j, size, num, length, match;
+	size_t i, size, length, match;
 	int attr;
 
 	size = in.size();

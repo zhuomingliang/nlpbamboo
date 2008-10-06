@@ -46,7 +46,7 @@ protected:
 	inline const char *_get_crf2_tag(int attr);
 
 	CRF2Processor();
-	bool _can_process(LexToken *token) {};
+	bool _can_process(LexToken *token) {return true;};
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
 	void _crf2_tagger(std::vector<LexToken *> &in, size_t offset, std::vector<LexToken *> &out);
 

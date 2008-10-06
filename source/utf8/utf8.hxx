@@ -139,7 +139,7 @@ public:
 		return t - begin;
 	}
 
-	static char to_dbc(const char *str, size_t len) 
+	static char sbc2dbc(const char *str, size_t len) 
 	{
 		/* Reference: http://zh.wikipedia.org/wiki/%E5%85%A8%E8%A7%92 */
 		register unsigned char uch1, uch2, uch3, dbc;

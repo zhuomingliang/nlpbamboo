@@ -78,7 +78,7 @@ CRFProcessor::~CRFProcessor()
 
 void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 {
-	size_t length, i, j;
+	size_t length, i;
 	const char *s;
 	char tag;
 #ifdef TIMING	

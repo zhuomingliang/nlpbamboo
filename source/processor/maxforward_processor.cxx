@@ -43,7 +43,7 @@ MaxforwardProcessor::MaxforwardProcessor(IConfig *config)
 	config->get_value("max_token_length", _max_token_length);
 	_lexicon = LexiconFactory::load(s);
 
-	_token = new char[_max_token_length << 2 + 1]; /* x4 for unicode */
+	_token = new char[(_max_token_length << 2) + 1]; /* x4 for unicode */
 }
 
 MaxforwardProcessor::~MaxforwardProcessor()
@@ -60,7 +60,7 @@ void MaxforwardProcessor::_process(LexToken *token, std::vector<LexToken *> &out
 	s = token->get_token();
 	length = token->get_length();
 	for (i = 0; i < length; i++) {
-		max_token_length = (_max_token_length < length - i)?_max_token_length:length - i;
+		max_token_length = ((unsigned int)_max_token_length + i< length)?_max_token_length:length - i;
 		for (k = 0, j = max_token_length; j > 0; j--) {
 			k = utf8::sub(_token, s, i, j);
 			if (_lexicon->search(_token) > 0) break;
