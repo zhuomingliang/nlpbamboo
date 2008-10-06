@@ -39,7 +39,6 @@ PrepareProcessor::PrepareProcessor(IConfig *config)
 	:_characterize(0)
 {
 	config->get_value("prepare_characterize", _characterize);
-	std::cout << "characterize = " << _characterize << std::endl;
 }
 
 void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
