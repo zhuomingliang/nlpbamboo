@@ -38,11 +38,14 @@ void AsciiProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	english.base = new char [token->get_bytes() + 1];
 	english.top = english.base;
 
+	/* rewrite state machine */
 	for (cch = '\0', state = state_unknow;;s += step, cch = '\0') {
 		last = state;
 		step = utf8::first(s, uch);
 		cch = utf8::to_dbc(uch, step);
+
 		if (isalpha(cch)) state = state_alpha;
+		/* chinese decimal point */
 		else if (cch == '.' && last == state_number) state = state_number;
 		else if (isdigit(cch)) state = state_number;
 		//else if (strcmp(uch, "。") == 0) {state = state_punctuation; cch = '.';}
