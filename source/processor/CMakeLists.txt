@@ -8,7 +8,6 @@ macro(build_processor name)
 endmacro(build_processor)
 
 build_processor(prepare utf8 lexicon trie)
-build_processor(ascii utf8 lexicon trie)
 build_processor(maxforward utf8 lexicon trie)
 build_processor(unigram utf8 lexicon trie)
 build_processor(crf utf8 -lcrfpp)

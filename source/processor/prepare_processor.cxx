@@ -36,7 +36,10 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(PrepareProcessor)
 
 PrepareProcessor::PrepareProcessor(IConfig *config)
+	:_characterize(0)
 {
+	config->get_value("prepare_characterize", _characterize);
+	std::cout << "characterize = " << _characterize << std::endl;
 }
 
 void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
@@ -44,72 +47,69 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	const char *s;
 	char uch[8], cch;
 	size_t step;
-	int id;
 	LexToken::attr_t attr;
 	enum {
-		state_unknow = 0,
-		state_alpha,
-		state_number,
-		state_punctuation,
-		state_whitespace,
-		state_end
-	} state, last;
+		PS_UNKNOW = 0,
+		PS_ALPHA,
+		PS_NUMBER,
+		PS_PUNCT,
+		PS_WHITESPACE,
+		PS_END
+	} state, parent;
 
 	struct {
 		char *base;
 		char *top;
-	} chinese, english;
+	} sbc, dbc;
 
 	s = token->get_token();
-	chinese.base = new char [token->get_bytes() + 1];
-	chinese.top = chinese.base;
-	english.base = new char [token->get_bytes() + 1];
-	english.top = english.base;
+	sbc.base = new char [token->get_bytes() + 1];
+	sbc.top = sbc.base;
+	dbc.base = new char [token->get_bytes() + 1];
+	dbc.top = dbc.base;
 
-	for (state = state_unknow;;s += step) {
-		last = state;
+	for (cch = '\0', state = PS_UNKNOW; ; s += step, cch = '\0') {
 		step = utf8::first(s, uch);
 		cch = utf8::to_dbc(uch, step);
-		if (isalpha(cch)) state = state_alpha;
-		else if (isdigit(cch)) state = state_number;
-		else if (strcmp(uch, "。") == 0) {state = state_punctuation; /*cch = '.';*/}
-		else if (ispunct(cch)) state = state_punctuation;
-		else if (isspace(cch))	state = state_whitespace;
-		else if (*uch == '\0') state = state_end;
-		else state = state_unknow;
+		parent = state;
 
-		if (last != state){
-			if (last == state_whitespace) {
+		/* state transitions */
+		if (isalpha(cch)) state = PS_ALPHA;
+		else if (cch == '.' && state == PS_NUMBER) state = PS_NUMBER;
+		else if (isdigit(cch)) state = PS_NUMBER;
+		else if (ispunct(cch)) state = PS_PUNCT;
+		else if (isspace(cch)) state = PS_WHITESPACE;
+		else if (*uch == '\0') state = PS_END;
+		else state = PS_UNKNOW;
+
+		if (state != parent || ( _characterize && state == PS_UNKNOW) ){
+			if (parent == PS_WHITESPACE) {
 				// do nothing
-			} else if (english.top > english.base) {
-				switch (last) {
-					case state_alpha: attr = LexToken::attr_alpha; break;
-					case state_number: attr = LexToken::attr_number; break;
-					case state_punctuation: attr = LexToken::attr_punct; break;
+			} else if (sbc.top > sbc.base) {
+				switch (parent) {
+					case PS_ALPHA: attr = LexToken::attr_alpha; break;
+					case PS_NUMBER: attr = LexToken::attr_number; break;
+					case PS_PUNCT: attr = LexToken::attr_punct; break;
 					default: attr = LexToken::attr_unknow; break;
 				}
-				*(chinese.top) = '\0';
-				*(english.top) = '\0';
-				out.push_back(new LexToken(english.base, chinese.base, attr));
-				chinese.top = chinese.base;
-				english.top = english.base;
+				*(sbc.top) = '\0';
+				*(dbc.top) = '\0';
+				if (dbc.top > dbc.base)
+					out.push_back(new LexToken(dbc.base, sbc.base, attr));
+				else
+					out.push_back(new LexToken(sbc.base, attr));
+				sbc.top = sbc.base;
+				dbc.top = dbc.base;
 			}
-			if (state == state_end) break;
+			if (state == PS_END) break;
 		}
-		if (state  == state_unknow) {
-			attr = LexToken::attr_unknow;
-			out.push_back(new LexToken(uch, attr));
-		}
-		if (!strcmp(uch, "。")) {
-			attr = LexToken::attr_punct;
-			out.push_back(new LexToken(uch, attr));
-		}
-		if (cch && state != state_whitespace) {
-			strcpy(chinese.top, uch);
-			chinese.top += step;
-			*(english.top++) = cch;
+
+		if (state != PS_WHITESPACE) {
+			strcpy(sbc.top, uch);
+			sbc.top += step;
+			if (cch) *(dbc.top++) = cch;
 		}
 	}
-	delete []chinese.base;
-	delete []english.base;
+	delete []sbc.base;
+	delete []dbc.base;
 }

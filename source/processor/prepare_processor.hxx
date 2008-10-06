@@ -42,9 +42,10 @@ protected:
 		return (token->get_attr() == LexToken::attr_unknow);
 	}
 	void _process(LexToken *token, std::vector<LexToken *> &out);
+	int _characterize;
 public:
 	PrepareProcessor(IConfig *config);
 	~PrepareProcessor() {};
 };
 
-#endif // ASCII_PROCESSOR_HXX
+#endif // PREPARE_PROCESSOR_HXX
