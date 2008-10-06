@@ -56,6 +56,12 @@ void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<Le
 			_make_combine(in, i, 3);
 			if (_lexicon_combine->search(_combine.c_str()) > 0) match = 3;
 		}
+		if (!match && length == 1 && i > 0 && in[i - 1]
+				   && in[i - 1]->get_length() == 1
+				   && strcmp(in[i]->get_token(), in[i - 1]->get_token()) == 0) {
+			_make_combine(in, i, 6);
+			match = 6;
+		}
 		if (match) {
 			if (match & 4) {
 				out.pop_back();
