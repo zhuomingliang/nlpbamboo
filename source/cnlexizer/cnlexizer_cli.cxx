@@ -31,6 +31,7 @@
 #include <getopt.h>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 #include "cnlexizer.hxx"
 
@@ -47,13 +48,15 @@ static void _help_message()
 
 static int _do(const char *cfg, const char *file)
 {
-	char *s, *t;
-	size_t n, m;
+	char *s;
 	ssize_t length;
+	size_t n;
 	FILE *fp = NULL;
 	struct timeval tv[2];
 	struct timezone tz;
 	unsigned long consume = 0;
+	std::vector<LexToken *> vec;
+	std::vector<LexToken *>::iterator it;
 
 	try {
 		CNLexizer clx(cfg);
@@ -67,25 +70,21 @@ static int _do(const char *cfg, const char *file)
 				return 1;
 			}
 		}
-		t = s = NULL;
-		n = 0; m = 0;
+		s = NULL;
 		while ((length = getline(&s, &n, fp)) > 0) {
 			if (s[length - 1] == '\n') s[length - 1] = '\0';
 			if (s[length - 2] == '\r') s[length - 2] = '\0';
-			if (m < n) {
-				m = (n << 2) + 1;
-				t = (char *)realloc(t, m);
-				if (t == NULL) 
-					throw std::bad_alloc();
-			}
 			gettimeofday(&tv[0], &tz);
-			clx.process(t, s);
+			clx.process(vec, s);
 			gettimeofday(&tv[1], &tz);
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
-			std::cout << t << std::endl;
+
+			for (it = vec.begin(); it < vec.end(); ++it) {
+				std::cout << (*it)->get_token() << "/" << LexToken::get_pos_str((*it)->get_pos()) << " ";
+			}
+			std::cout << std::endl;
 		}
 		free(s);
-		free(t);
 	} catch (std::exception &e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
 		return 1;

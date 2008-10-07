@@ -176,13 +176,15 @@ size_t CNLexizer::process(char *t, const char *s)
 	return p - t;
 }
 
-void CNLexizer::process(std::vector<LexToken> &vec, const char *s)
+void CNLexizer::process(std::vector<LexToken *> &vec, const char *s)
 {
 	size_t i, length;
 
 	length = _in->size();
 	_process(s);
 	for (i = 0; i < length; i++) {
-		vec.push_back(LexToken((*_in)[i]->get_orig_token()));
+		vec.push_back(new LexToken((*_in)[i]->get_orig_token()));
+		vec.back()->set_pos( (*_in)[i]->get_pos() );
+		delete (*_in)[i];
 	}
 }

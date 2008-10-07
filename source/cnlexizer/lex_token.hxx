@@ -51,11 +51,13 @@ public:
 		attr_punct,
 	};
 	LexToken()
-		:_orig_token(NULL), _attr(attr_unknow), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0), _pos(0)
+		:_orig_token(NULL), _attr(attr_unknow), _length(0), _orig_length(0), 
+		_bytes(0), _orig_bytes(0), _token(NULL), _pos(0)
 	{
 	}
 	LexToken(const char *s, const char *os, int attr = attr_unknow)
-		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0), _pos(0)
+		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), 
+		_orig_bytes(0), _token(NULL), _pos(0)
 	{
 		_token = strdup(s);
 		_orig_token = strdup(os);
@@ -65,7 +67,8 @@ public:
 		_orig_bytes = strlen(os);
 	}
 	LexToken(const char *s, int attr = attr_unknow)
-		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0), _pos(0)
+		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), 
+		_orig_bytes(0), _token(NULL), _pos(0)
 	{
 		_token = strdup(s);
 		_length = utf8::length(s);
@@ -120,12 +123,14 @@ public:
 	size_t get_orig_bytes() {return (_orig_bytes > 0)?_orig_bytes:_bytes;}
 	unsigned short get_pos() {return _pos;}
 	
-	static char * get_pos_str(unsigned short p) {
-		char * pos_str = (char *)malloc(3);
-		if(p>256) {
-			sprintf(pos_str,"%c%c", p/256, p%256);
+	static char *get_pos_str(unsigned short p) {
+		static char pos_str[3] = {0};
+		if(p > 256) {
+			pos_str[0] = p >> 8;
+			pos_str[1] = p % 256;
 		} else {
-			sprintf(pos_str,"%c", p%256);
+			pos_str[0] = p % 256;
+			pos_str[1] = '\0';
 		}
 		return pos_str;
 	}

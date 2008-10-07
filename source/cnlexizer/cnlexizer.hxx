@@ -42,7 +42,7 @@ class CNLexizer {
 private:
 	
 public:
-	void process(std::vector<LexToken> &vec, const char *s);
+	void process(std::vector<LexToken *> &vec, const char *s);
 	size_t process(char *t, const char *s);
 	CNLexizer(const char *file);
 	~CNLexizer();
