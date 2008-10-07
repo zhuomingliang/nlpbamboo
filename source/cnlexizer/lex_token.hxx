@@ -41,6 +41,7 @@ protected:
 	size_t _length, _orig_length;
 	size_t _bytes, _orig_bytes;
 	char *_token;
+	unsigned short _pos;
 public:
 	enum attr_t {
 		attr_unknow = 0,
@@ -50,11 +51,11 @@ public:
 		attr_punct,
 	};
 	LexToken()
-		:_orig_token(NULL), _attr(attr_unknow), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0)
+		:_orig_token(NULL), _attr(attr_unknow), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0), _pos(0)
 	{
 	}
 	LexToken(const char *s, const char *os, int attr = attr_unknow)
-		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0)
+		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0), _pos(0)
 	{
 		_token = strdup(s);
 		_orig_token = strdup(os);
@@ -64,7 +65,7 @@ public:
 		_orig_bytes = strlen(os);
 	}
 	LexToken(const char *s, int attr = attr_unknow)
-		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0)
+		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), _orig_bytes(0), _pos(0)
 	{
 		_token = strdup(s);
 		_length = utf8::length(s);
@@ -104,10 +105,30 @@ public:
 	void set_attr(int attr) {
 		_attr = attr;
 	}
+	void set_pos(unsigned short pos) {
+		_pos = pos;
+	}
+	void set_pos(const char *s) {
+		_pos = *s;
+		if(*(s+1)!=0) {
+			_pos = _pos*256 + *(s+1);
+		}
+	}
 	size_t get_length() {return _length;}
 	size_t get_bytes() {return _bytes;}
 	size_t get_orig_length() {return (_orig_length > 0)?_orig_length:_length;}
 	size_t get_orig_bytes() {return (_orig_bytes > 0)?_orig_bytes:_bytes;}
+	unsigned short get_pos() {return _pos;}
+	
+	static char * get_pos_str(unsigned short p) {
+		char * pos_str = (char *)malloc(3);
+		if(p>256) {
+			sprintf(pos_str,"%c%c", p/256, p%256);
+		} else {
+			sprintf(pos_str,"%c", p%256);
+		}
+		return pos_str;
+	}
 };
 
 #endif
