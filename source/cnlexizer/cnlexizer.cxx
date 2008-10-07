@@ -43,7 +43,7 @@ CNLexizer::CNLexizer(const char *file)
 	std::string module;
 
 	_lazy_create_config(file);
-	_config->get_value("_verbose", _verbose);
+	_config->get_value("verbose", _verbose);
 	_config->get_value("process_chain", _process_chain);
 	_config->get_value("processor_root", processor_root);
 
@@ -79,7 +79,12 @@ CNLexizer::~CNLexizer()
 	while(i--) delete _processors[i];
 
 	i = _dl_handles.size();
-	while(i--) dlclose(_dl_handles[i]);
+	while(i--) {
+		/* do not switch condition order */
+		if (dlclose(_dl_handles[i]) && _verbose) 
+			std::cerr << strerror(errno) << std::endl;
+		
+	}
 
 	delete _config;
 #ifdef TIMING
