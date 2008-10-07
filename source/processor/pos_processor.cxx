@@ -74,7 +74,10 @@ void POSProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> 
 	t += (tv2.tv_sec - tv1.tv_sec)*1000000 + tv2.tv_usec - tv1.tv_usec;
 	std::cout<<"time: "<<t/1000<<std::endl;
 
-	assert(size==_tagger->size());
+//	assert(size==_tagger->size());
+	if (size != _tagger->size()) {
+		std::cerr << "bug: size = " << size << " <> _tagger->size() = " << _tagger->size() << std::endl;
+	}
 	for(i=0; i<size; ++i) {
 		const char *pos = _tagger->y2(i);
 		LexToken *token = in[i];

@@ -87,13 +87,15 @@ void BreakProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	for (i = 0, j = 0; i < length; i++) {
 		mark = 1 << (length - i - 1);
 		if (split & mark) {
-			utf8::sub(_token, s, j, i - j + 1);
-			j = i + 1;
-			if (_token)
+			if (i > j - 1) {
+				utf8::sub(_token, s, j, i - j + 1);
 				out.push_back(new LexToken(_token, LexToken::attr_cword));
+			}
+			j = i + 1;
 		}
 	}
-	utf8::sub(_token, s, j, length - j);
-	if (_token)
+	if (length > j) {
+		utf8::sub(_token, s, j, length - j);
 		out.push_back(new LexToken(_token, LexToken::attr_cword));
+	}
 }
