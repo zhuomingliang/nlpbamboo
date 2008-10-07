@@ -15,16 +15,19 @@ if [ ! -f "$number_trailing" ];then
 fi
 
 [ ! -f "$user_combine" ] && touch $user_combine
+[ ! -f "$break" ] && touch $break
 
 # Build Lexicon
 cat $user_combine | sed -e 's/^/1 /g' > ${build_dir}/user_combine.txt || exit 1
 cat $number_trailing | sed -e 's/^/1 /g' > ${build_dir}/number_trailing.txt || exit 1
+cat $break | sed -e 's/^/1 /g' > ${build_dir}/break.txt || exit 1
 
 $bin/pdc_normalize -v ${corpus} > ${build_dir}/normalized.txt || exit 1
 $bin/ngm_tool -n1 -v ${build_dir}/normalized.txt > ${build_dir}/unigram.txt || exit 1
 $bin/lexicon -v -b -i ${index_dir}/unigram.idx -s ${build_dir}/unigram.txt || exit 1
 $bin/lexicon -v -b -i ${index_dir}/user_combine.idx -s ${build_dir}/user_combine.txt || exit 1
 $bin/lexicon -v -b -i ${index_dir}/number_trailing.idx -s ${build_dir}/number_trailing.txt || exit 1
+$bin/lexicon -v -b -i ${index_dir}/break.idx -s ${build_dir}/break.txt || exit 1
 
 
 # Train CRF
