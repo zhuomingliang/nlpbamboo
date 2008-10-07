@@ -55,6 +55,26 @@ BreakProcessor::~BreakProcessor()
 	delete []_token;
 }
 
+/*
+ * Break Lexicon Format:
+ *                      Bitmap Word
+ * e.g.
+ *      41 中华人民共和国
+ *
+ * break step:
+ *
+ * 1. dec(41) = bin(0101001)
+ * 
+ * 2. alignment:
+ *    中 华 人 民 共 和 国
+ *    0  1  0  1  0  0  1
+ * 
+ * 3. break at 华，民，国
+ * 
+ * 4. generate 中华/人民/共和国
+ *
+ */
+
 void BreakProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 {
 	size_t length, i, j, mark;
