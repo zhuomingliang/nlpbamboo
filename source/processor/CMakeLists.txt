@@ -13,5 +13,4 @@ build_processor(unigram utf8 lexicon trie)
 build_processor(crf utf8 -lcrfpp)
 build_processor(crf2 -lcrfpp)
 build_processor(combine utf8 lexicon trie)
-build_processor(single_combine utf8 lexicon trie)
 

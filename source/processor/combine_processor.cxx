@@ -26,57 +26,92 @@
  * 
  */
 
+#include <cassert>
+#include <iostream>
+
 #include "lexicon_factory.hxx"
 #include "combine_processor.hxx"
 #include "utf8.hxx"
-#include <cassert>
-#include <iostream>
 
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(CombineProcessor)
 
 CombineProcessor::CombineProcessor(IConfig *config)
+	:_combine_koko(0), _combine_forward(0), _combine_backward(0),
+	 _combine_neighbor(0)
 {
 	const char *s;
 
-	config->get_value("lexicon_combine", s);
-	config->get_value("max_token_length", _max_token_length);
-	_lexicon = LexiconFactory::load(s);
-
-	_token = new char[(_max_token_length << 2) + 1]; /* x4 for unicode */
-	_combine = new char[(_max_token_length << 2) + 1]; /* x4 for unicode */
+	config->get_value("combine_koko", _combine_koko);
+	config->get_value("combine_forward", _combine_forward);
+	config->get_value("combine_backward", _combine_backward);
+	config->get_value("combine_neighbor", _combine_neighbor);
+	config->get_value("combination", s);
+	_lexicon_combine = LexiconFactory::load(s);
+	config->get_value("number_trailing", s);
+	_lexicon_number_trailing = LexiconFactory::load(s);
 }
 
 CombineProcessor::~CombineProcessor()
 {
-	delete []_combine;
-	delete []_token;
-	delete _lexicon;
+	delete _lexicon_combine;
+	delete _lexicon_number_trailing;
 }
 
 void CombineProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
 {
-	size_t i, j, length, num = 0;
+	size_t i, size, length, match;
+	int attr;
 
-	if (in.empty()) return;
-	length = in.size();
-	for (i = 0; i < length; i++) {
-		*_combine = '\0';
-		*_token = '\0';
-		for (j = i; j < length; j++) {
-			if (utf8::length(_combine) + in[j]->get_length() <= (unsigned int)_max_token_length) {
-				strcpy(_combine + strlen(_combine), in[j]->get_token());
-				if (_lexicon->search(_combine) > 0) {
-					strcpy(_token, _combine);
-					num = j;
-				}
-			}
+	size = in.size();
+	for (i = 0; i < size; i++) {
+		if (in[i] == NULL) continue;
+		match = 0;
+		length = in[i]->get_length();
+		attr = in[i]->get_attr();
+		
+		if (i + 1 < size && in[i + 1]
+				  && in[i]->get_attr() == LexToken::attr_number 
+				  && _lexicon_number_trailing->search(in[i + 1]->get_token()))
+		{
+			_make_combine(in, i, 3);
+			match = 3;
 		}
-		if (*_token) {
-			out.push_back(new LexToken(_token, LexToken::attr_cword));
-			for (j = i; j <= num; j++)
-				delete in[j];
-			i = num;
+		
+		if (_combine_neighbor && !match && length == 1 && i > 0 && i + 1 < size 
+			&& in[i - 1] && in[i + 1]) {
+			_make_combine(in, i, 7);
+			if (_lexicon_combine->search(_combine.c_str()) > 0) match = 7; 
+		}
+		if (_combine_forward && !match && length == 1 && i > 0 && in[i - 1]) {
+			_make_combine(in, i, 6);
+			if (_lexicon_combine->search(_combine.c_str()) > 0) match = 6;
+		}
+		if (_combine_backward && !match && length == 1 && i + 1 < size && in[i + 1]) {
+			_make_combine(in, i, 3);
+			if (_lexicon_combine->search(_combine.c_str()) > 0) match = 3;
+		}
+		if (_combine_koko && !match && length == 1 && i > 0 && in[i - 1]
+				   && in[i - 1]->get_length() == 1
+				   && strcmp(in[i]->get_token(), in[i - 1]->get_token()) == 0) {
+			_make_combine(in, i, 6);
+			match = 6;
+		}
+		if (match) {
+			if (match & 4) {
+				out.pop_back();
+				delete in[i - 1];
+				in[i - 1] = NULL;
+			} 
+			if (match & 2) {
+				delete in[i];
+				in[i] = NULL;
+			} 
+			if (match & 1) {
+				delete in[i + 1];
+				in[i + 1] = NULL;
+			}
+			out.push_back(new LexToken(_combine.c_str(), attr));
 		} else {
 			out.push_back(in[i]);
 		}
