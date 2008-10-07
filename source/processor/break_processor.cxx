@@ -83,7 +83,10 @@ void BreakProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	s = token->get_token();
 	length = token->get_length();
 	int split = _lexicon->search(s);
-	if (!split) return;
+	if (!split) {
+		out.push_back(token);
+		return;
+	}
 	for (i = 0, j = 0; i < length; i++) {
 		mark = 1 << (length - i - 1);
 		if (split & mark) {
