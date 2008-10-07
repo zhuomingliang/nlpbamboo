@@ -124,16 +124,14 @@ void CNLexizer::_lazy_create_config(const char *custom)
 		throw new std::runtime_error("can not find configuration");
 }
 
-size_t CNLexizer::process(char *t, const char *s)
+void CNLexizer::_process(const char *s)
 {
 #ifdef TIMING	
 	struct timeval tv[2];
 	struct timezone tz;
 #endif
-	char *p = t;
 	size_t i, length;
 
-	*t = '\0';
 	length = utf8::length(s);
 	_in->clear();
 	if (length > _in->capacity()) {
@@ -157,7 +155,15 @@ size_t CNLexizer::process(char *t, const char *s)
 		_out = _in;
 		_in = _swap;
 	}
+}
 
+size_t CNLexizer::process(char *t, const char *s)
+{
+	size_t i, length;
+	char *p = t;
+
+	*t = '\0';
+	_process(s);
 	length = _in->size();
 	for (i = 0; i < length; i++) {
 		strcpy(p, (*_in)[i]->get_orig_token());
@@ -166,5 +172,17 @@ size_t CNLexizer::process(char *t, const char *s)
 		*p = '\0';
 		delete (*_in)[i];
 	}
+
 	return p - t;
+}
+
+void CNLexizer::process(std::vector<LexToken> &vec, const char *s)
+{
+	size_t i, length;
+
+	length = _in->size();
+	_process(s);
+	for (i = 0; i < length; i++) {
+		vec.push_back(LexToken((*_in)[i]->get_orig_token()));
+	}
 }

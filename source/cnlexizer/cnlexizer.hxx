@@ -42,6 +42,7 @@ class CNLexizer {
 private:
 	
 public:
+	void process(std::vector<LexToken> &vec, const char *s);
 	size_t process(char *t, const char *s);
 	CNLexizer(const char *file);
 	~CNLexizer();
@@ -54,7 +55,8 @@ protected:
 	std::vector<Processor *> _processors;
 	std::vector<void *> _dl_handles;
 	typedef Processor* (*_create_processor_t)(IConfig *);
-	void _lazy_create_config(const char *);
+	inline void _lazy_create_config(const char *);
+	inline void _process(const char *s);
 	int _verbose;
 #ifdef TIMING
 	size_t _timing_process[128];
