@@ -66,18 +66,19 @@ void POSProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> 
 		_tagger->add(str); 
 	}
 	static double t = 0;
-	struct timeval tv1, tv2;
 
+#ifdef TIMING	
+	struct timeval tv1, tv2;
 	gettimeofday(&tv1, 0);
+#endif
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
+#ifdef TIMING	
 	gettimeofday(&tv2, 0);
 	t += (tv2.tv_sec - tv1.tv_sec)*1000000 + tv2.tv_usec - tv1.tv_usec;
-	std::cout<<"time: "<<t/1000<<std::endl;
+	std::cerr<<"pos processor consumed: "<< t/1000 << std::endl;
+#endif
 
-//	assert(size==_tagger->size());
-	if (size != _tagger->size()) {
-		std::cerr << "bug: size = " << size << " <> _tagger->size() = " << _tagger->size() << std::endl;
-	}
+	assert(size==_tagger->size());
 	for(i=0; i<size; ++i) {
 		const char *pos = _tagger->y2(i);
 		LexToken *token = in[i];
