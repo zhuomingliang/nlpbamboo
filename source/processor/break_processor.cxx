@@ -41,8 +41,8 @@ BreakProcessor::BreakProcessor(IConfig *config)
 	const char *s;
 
 	config->get_value("max_token_length", _max_token_length);
-	config->get_value("break_min_token_length", _min_token_length);
-	config->get_value("break", s);
+	config->get_value("break_min_length", _min_token_length);
+	config->get_value("break_lexicon", s);
 	_lexicon = LexiconFactory::load(s);
 	if (_min_token_length < 2) _min_token_length = 2;
 	if (_max_token_length < 1) throw std::runtime_error("max_token_length must greater than 0");
@@ -62,16 +62,18 @@ void BreakProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 
 	s = token->get_token();
 	length = token->get_length();
-	if (length > (size_t)_min_token_length) {
-		int split = _lexicon->search(s);
-		if (!split) return;
-		for (i = 0, j = 0; i < length; i++) {
-			mark = 1 << (length - i);
-			if (split & mark) {
-				utf8::sub(_token, s, j, i - j + 1);
-				j = i + 1;
-				std::cerr << "_token = " << _token << std::endl;
-			}
+	int split = _lexicon->search(s);
+	if (!split) return;
+	for (i = 0, j = 0; i < length; i++) {
+		mark = 1 << (length - i - 1);
+		if (split & mark) {
+			utf8::sub(_token, s, j, i - j + 1);
+			j = i + 1;
+			if (_token)
+				out.push_back(new LexToken(_token, LexToken::attr_cword));
 		}
 	}
+	utf8::sub(_token, s, j, length - j);
+	if (_token)
+		out.push_back(new LexToken(_token, LexToken::attr_cword));
 }

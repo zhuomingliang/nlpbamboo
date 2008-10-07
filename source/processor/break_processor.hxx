@@ -41,7 +41,9 @@ protected:
 	BreakProcessor();
 	bool _can_process(LexToken *token) 
 	{
-		return true;
+		if (token->get_length() >= (size_t)_min_token_length)
+			return true;
+		return false;
 	}
 	void _process(LexToken *token, std::vector<LexToken *> &out);
 
