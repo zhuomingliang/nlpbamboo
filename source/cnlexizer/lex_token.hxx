@@ -74,6 +74,19 @@ public:
 		_length = utf8::length(s);
 		_bytes = strlen(s);
 	}
+	LexToken(const LexToken &rhs)
+		:_orig_token(NULL), _token(NULL)
+	{
+		if (rhs._token) _token = strdup(rhs._token);
+		if (rhs._orig_token) _orig_token = strdup(rhs._orig_token);
+		_attr = rhs._attr;
+		_length = rhs._length;
+		_orig_length = rhs._orig_length;
+		_bytes = rhs._bytes;
+		_orig_bytes = rhs._orig_bytes;
+		_pos = rhs._pos;
+	}
+
 	~LexToken()
 	{
 		if (_token) {

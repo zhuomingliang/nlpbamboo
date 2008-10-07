@@ -55,8 +55,8 @@ static int _do(const char *cfg, const char *file)
 	struct timeval tv[2];
 	struct timezone tz;
 	unsigned long consume = 0;
-	std::vector<LexToken *> vec;
-	std::vector<LexToken *>::iterator it;
+	std::vector<LexToken> vec;
+	std::vector<LexToken>::iterator it;
 
 	try {
 		CNLexizer clx(cfg);
@@ -72,6 +72,7 @@ static int _do(const char *cfg, const char *file)
 		}
 		s = NULL;
 		while ((length = getline(&s, &n, fp)) > 0) {
+			vec.clear();
 			if (s[length - 1] == '\n') s[length - 1] = '\0';
 			if (s[length - 2] == '\r') s[length - 2] = '\0';
 			gettimeofday(&tv[0], &tz);
@@ -80,7 +81,9 @@ static int _do(const char *cfg, const char *file)
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 
 			for (it = vec.begin(); it < vec.end(); ++it) {
-				std::cout << (*it)->get_token() << "/" << LexToken::get_pos_str((*it)->get_pos()) << " ";
+				std::cout << it->get_orig_token();
+				if (it->get_pos()) std::cout << "/" << LexToken::get_pos_str(it->get_pos());
+				std::cout << " ";
 			}
 			std::cout << std::endl;
 		}
