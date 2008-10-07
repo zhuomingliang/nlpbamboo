@@ -37,6 +37,7 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(BreakProcessor)
 
 BreakProcessor::BreakProcessor(IConfig *config)
+	:_split(0)
 {
 	const char *s;
 
@@ -82,22 +83,17 @@ void BreakProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 
 	s = token->get_token();
 	length = token->get_length();
-	int split = _lexicon->search(s);
-	if (!split) {
-		out.push_back(token);
-		return;
-	}
 	for (i = 0, j = 0; i < length; i++) {
 		mark = 1 << (length - i - 1);
-		if (split & mark) {
-			if (i > j - 1) {
+		if (_split & mark) {
+			if (i - j + 1 > 0) {
 				utf8::sub(_token, s, j, i - j + 1);
 				out.push_back(new LexToken(_token, LexToken::attr_cword));
 			}
 			j = i + 1;
 		}
 	}
-	if (length > j) {
+	if (length - j > 0) {
 		utf8::sub(_token, s, j, length - j);
 		out.push_back(new LexToken(_token, LexToken::attr_cword));
 	}

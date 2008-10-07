@@ -36,12 +36,14 @@
 class BreakProcessor: public Processor {
 protected:
 	ILexicon *_lexicon;
+	int _split;
 	char *_token;
 	int _min_token_length, _max_token_length;
 	BreakProcessor();
 	bool _can_process(LexToken *token) 
 	{
-		if (token->get_length() >= (size_t)_min_token_length)
+		_split = _lexicon->search(token->get_token());
+		if (token->get_length() >= (size_t)_min_token_length && _split);
 			return true;
 		return false;
 	}
