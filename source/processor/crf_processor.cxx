@@ -54,7 +54,7 @@ CRFProcessor::CRFProcessor(IConfig *config)
 	_token = new char[8];
 	 _result = (char *)realloc(_result, 4096);
 	 _result_size = 4096;
-	config->get_value("model", s);
+	config->get_value("crf_token_model", s);
 	_model_parameter.append("-m ").append(s);
 	if (stat(s, &buf) == 0) {
 		_tagger = CRFPP::createTagger(_model_parameter.c_str());

@@ -36,10 +36,11 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(MaxforwardProcessor)
 
 MaxforwardProcessor::MaxforwardProcessor(IConfig *config)
+	:_token(NULL)
 {
 	const char *s;
 
-	config->get_value("lexicon_unigram", s);
+	config->get_value("unigram_lexicon", s);
 	config->get_value("max_token_length", _max_token_length);
 	_lexicon = LexiconFactory::load(s);
 

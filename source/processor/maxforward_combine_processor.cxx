@@ -43,7 +43,7 @@ MaxforwardCombineProcessor::MaxforwardCombineProcessor(IConfig *config)
 
 	config->get_value("max_token_length", _max_token_length);
 	config->get_value("maxforward_combination_min_token_length", _min_token_length);
-	config->get_value("maxforward_combination", s);
+	config->get_value("maxforward_combination_lexicon", s);
 	_lexicon = LexiconFactory::load(s);
 	_token = new char[(_max_token_length << 2) + 1]; /* x4 for unicode */
 
