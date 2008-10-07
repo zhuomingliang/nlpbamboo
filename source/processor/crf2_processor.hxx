@@ -39,7 +39,6 @@ class CRF2Processor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
 	char *_token;
-	const char *_ending_tags;
 	std::string _result;
 	std::string _result_orig;
 

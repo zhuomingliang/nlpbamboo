@@ -41,8 +41,7 @@ CRF2Processor::CRF2Processor(IConfig *config) {
 	_token = new char[8];
 	struct stat st;
 
-	config->get_value("crf_ending_tags", _ending_tags);
-	config->get_value("crf2_model", s);
+	config->get_value("model", s);
 
 	std::string model;
 	model = std::string("-m ") + std::string(s);

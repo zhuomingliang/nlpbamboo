@@ -40,7 +40,7 @@ UnigramProcessor::UnigramProcessor(IConfig *config)
 	const char *s;
 
 	config->get_value("ele_lambda", _lambda);
-	config->get_value("lexicon_unigram", s);
+	config->get_value("unigram", s);
 	config->get_value("max_token_length", _max_token_length);
 	_lexicon = LexiconFactory::load(s);
 
