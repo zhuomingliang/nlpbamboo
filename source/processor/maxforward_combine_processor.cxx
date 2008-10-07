@@ -37,14 +37,17 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(MaxforwardCombineProcessor)
 
 MaxforwardCombineProcessor::MaxforwardCombineProcessor(IConfig *config)
-	 :_token(NULL), _combine_maxforward(0)
+	 :_token(NULL), _min_token_length(1), _max_token_length(8), _combine_maxforward(0)
 {
 	const char *s;
 
 	config->get_value("max_token_length", _max_token_length);
+	config->get_value("maxforward_combination_min_token_length", _min_token_length);
 	config->get_value("maxforward_combination", s);
 	_lexicon = LexiconFactory::load(s);
 	_token = new char[(_max_token_length << 2) + 1]; /* x4 for unicode */
+
+	if (_min_token_length < 1) _min_token_length = 1;
 }
 
 MaxforwardCombineProcessor::~MaxforwardCombineProcessor()
@@ -86,7 +89,7 @@ void MaxforwardCombineProcessor::process(std::vector<LexToken *> &in, std::vecto
 	size = in.size();
 	_combine.erase();
 	for (i = 0, state = PS_UNKNOW; i < size; i++) {
-		if (i < size - 1 && in[i]->get_length() == 1) {
+		if (i < size - 1 && in[i]->get_length() <= (size_t)_min_token_length) {
 			_combine.append(in[i]->get_orig_token());
 			delete in[i];
 			state = PS_SINGLE;

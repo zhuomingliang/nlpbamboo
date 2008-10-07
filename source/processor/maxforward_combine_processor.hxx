@@ -40,7 +40,7 @@ protected:
 	std::string _combine;
 	MaxforwardCombineProcessor();
 	char *_token;
-	int _combine_maxforward, _max_token_length;
+	int _min_token_length, _max_token_length, _combine_maxforward;
 	bool _can_process(LexToken *token) {return true;}
 	void _process(LexToken *token, std::vector<LexToken *> &out) {};
 	inline void _tokenize(std::vector<LexToken *> &out);
