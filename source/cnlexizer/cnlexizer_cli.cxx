@@ -35,18 +35,24 @@
 
 #include "cnlexizer.hxx"
 
+int g_pos = 0;
+const char g_default_config[] = "";
+const char g_default_file[] = "-";
+const char *g_config = g_default_config, *g_file = g_default_file;
+
 static void _help_message()
 {
 	std::cout << "Usage: cnlexizer_cli [OPTIONS] file\n"
 				 "OPTIONS:\n"
-				 "        -h|--help             help message\n"
 				 "        -c|--config           configuration\n"
+				 "        -h|--help             help message\n"
+				 "        -p|--pos              show pos tag\n"
 				 "\n"
 				 "Report bugs to detrox@gmail.com\n"
 			  << std::endl;
 }
 
-static int _do(const char *cfg, const char *file)
+static int _do()
 {
 	char *s;
 	ssize_t length;
@@ -59,14 +65,14 @@ static int _do(const char *cfg, const char *file)
 	std::vector<LexToken>::iterator it;
 
 	try {
-		CNLexizer clx(cfg);
-		std::cerr << "parsing '" << file << "'..." << std::endl;
-		if (strcmp(file, "-") == 0) {
+		CNLexizer clx(g_config);
+		std::cerr << "parsing '" << g_file << "'..." << std::endl;
+		if (strcmp(g_file, "-") == 0) {
 			fp = stdin;
 		} else {
-			fp = fopen(file, "r");
+			fp = fopen(g_file, "r");
 			if (fp == NULL) {
-				std::cerr << "can not read file " << file << std::endl;
+				std::cerr << "can not read file " << g_file << std::endl;
 				return 1;
 			}
 		}
@@ -82,7 +88,7 @@ static int _do(const char *cfg, const char *file)
 
 			for (it = vec.begin(); it < vec.end(); ++it) {
 				std::cout << it->get_orig_token();
-				if (it->get_pos()) std::cout << "/" << LexToken::get_pos_str(it->get_pos());
+				if (g_pos && it->get_pos()) std::cout << "/" << LexToken::get_pos_str(it->get_pos());
 				std::cout << " ";
 			}
 			std::cout << std::endl;
@@ -100,20 +106,18 @@ static int _do(const char *cfg, const char *file)
 int main(int argc, char *argv[])
 {
 	int c;
-	const char default_config[] = "";
-	const char default_file[] = "-";
-	const char *config = default_config, *file = default_file;
 	
 	while (true) {
 		static struct option long_options[] =
 		{
 			{"help", no_argument, 0, 'h'},
 			{"config", required_argument, 0, 'c'},
+			{"pos", no_argument, 0, 'p'},
 			{0, 0, 0, 0}
 		};
 		int option_index;
 		
-		c = getopt_long(argc, argv, "c:h", long_options, &option_index);
+		c = getopt_long(argc, argv, "c:hp", long_options, &option_index);
 		if (c == -1) break;
 
 		switch(c) {
@@ -121,13 +125,16 @@ int main(int argc, char *argv[])
 				_help_message();
 				return 0;
 			case 'c':
-				config = optarg;
+				g_config = optarg;
+				break;
+			case 'p':
+				g_pos = 1;
 				break;
 		}
 	}
 
 	if (optind < argc)
-		file = argv[optind];
+		g_file = argv[optind];
 
-	return _do(config, file);
+	return _do();
 }
