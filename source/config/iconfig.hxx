@@ -41,6 +41,8 @@ public:
 	virtual void get_value(const char *key, double &val) = 0;
 	virtual void get_value(const char *key, const char *&val) = 0;
 	virtual void get_value(const char *key, std::vector<std::string> &val) = 0;
+	virtual std::string &operator[] (std::string s) = 0;
+	virtual IConfig& operator<< (std::string &s) = 0;
 	IConfig(const char *filename);
 	IConfig() {}
 	virtual ~IConfig() {}

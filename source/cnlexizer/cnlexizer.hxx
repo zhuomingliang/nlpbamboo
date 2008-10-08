@@ -44,6 +44,9 @@ private:
 public:
 	void process(std::vector<LexToken> &vec, const char *s);
 	size_t process(char *t, const char *s);
+	void set(std::string, std::string);
+	void set(std::string s);
+	void reload();
 	CNLexizer(const char *file);
 	~CNLexizer();
 protected:
@@ -58,6 +61,8 @@ protected:
 	inline void _lazy_create_config(const char *);
 	inline void _process(const char *s);
 	int _verbose;
+	void _init();
+	void _fini();
 #ifdef TIMING
 	size_t _timing_process[128];
 #endif

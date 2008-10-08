@@ -40,6 +40,8 @@ const char g_default_config[] = "";
 const char g_default_file[] = "-";
 const char *g_config = g_default_config, *g_file = g_default_file;
 
+std::vector<std::string> g_override;
+
 static void _help_message()
 {
 	std::cout << "Usage: cnlexizer_cli [OPTIONS] file\n"
@@ -54,9 +56,9 @@ static void _help_message()
 
 static int _do()
 {
-	char *s;
+	char *s, *t;
 	ssize_t length;
-	size_t n;
+	size_t n, i;
 	FILE *fp = NULL;
 	struct timeval tv[2];
 	struct timezone tz;
@@ -67,6 +69,11 @@ static int _do()
 	try {
 		CNLexizer clx(g_config);
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
+		for (i = 0; i < g_override.size(); i++) {
+			std::cerr << "overriding " << g_override[i] << std::endl;
+			clx.set(g_override[i]);
+		}
+		if (i > 0) clx.reload();
 		if (strcmp(g_file, "-") == 0) {
 			fp = stdin;
 		} else {
@@ -82,7 +89,9 @@ static int _do()
 			if (s[length - 1] == '\n') s[length - 1] = '\0';
 			if (s[length - 2] == '\r') s[length - 2] = '\0';
 			gettimeofday(&tv[0], &tz);
-			clx.process(vec, s);
+			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n")) {
+				clx.process(vec, t);
+			}
 			gettimeofday(&tv[1], &tz);
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 
@@ -113,11 +122,12 @@ int main(int argc, char *argv[])
 			{"help", no_argument, 0, 'h'},
 			{"config", required_argument, 0, 'c'},
 			{"pos", no_argument, 0, 'p'},
+			{"set", required_argument, 0, 's'},
 			{0, 0, 0, 0}
 		};
 		int option_index;
 		
-		c = getopt_long(argc, argv, "c:hp", long_options, &option_index);
+		c = getopt_long(argc, argv, "c:hps:", long_options, &option_index);
 		if (c == -1) break;
 
 		switch(c) {
@@ -129,6 +139,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'p':
 				g_pos = 1;
+				break;
+			case 's':
+				g_override.push_back(optarg);
 				break;
 		}
 	}

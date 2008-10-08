@@ -39,10 +39,49 @@
 CNLexizer::CNLexizer(const char *file)
 :_config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1]), _verbose(0)
 {
+	_lazy_create_config(file);
+	_init();
+#ifdef TIMING
+	memset(_timing_process, 0, sizeof(size_t) * 128);
+#endif
+}
+
+CNLexizer::~CNLexizer()
+{
+
+	_fini();
+	delete _config;
+#ifdef TIMING
+	size_t i;
+
+	i = _processors.size();
+	while(i--)
+		std::cerr << "processor" << i << " consume: " << static_cast<double>(_timing_process[i] / 1000)<< "ms" << std::endl;
+#endif
+}
+
+void CNLexizer::_fini()
+{
+	size_t i;
+
+	i = _processors.size();
+	while(i--) delete _processors[i];
+	_processors.clear();
+
+	i = _dl_handles.size();
+	while(i--) {
+		/* do not switch condition order */
+		if (dlclose(_dl_handles[i]) && _verbose) 
+			std::cerr << strerror(errno) << std::endl;
+	}
+	_dl_handles.clear();
+}
+
+void CNLexizer::_init()
+{
 	std::vector<std::string>::iterator it;
 	std::string module;
 
-	_lazy_create_config(file);
 	_config->get_value("verbose", _verbose);
 	_config->get_value("process_chain", _process_chain);
 	_config->get_value("processor_root", processor_root);
@@ -66,32 +105,6 @@ CNLexizer::CNLexizer(const char *file)
 		_processors.push_back(processor);
 		_dl_handles.push_back(handle);
 	}
-#ifdef TIMING
-	memset(_timing_process, 0, sizeof(size_t) * 128);
-#endif
-}
-
-CNLexizer::~CNLexizer()
-{
-	size_t i;
-
-	i = _processors.size();
-	while(i--) delete _processors[i];
-
-	i = _dl_handles.size();
-	while(i--) {
-		/* do not switch condition order */
-		if (dlclose(_dl_handles[i]) && _verbose) 
-			std::cerr << strerror(errno) << std::endl;
-		
-	}
-
-	delete _config;
-#ifdef TIMING
-	i = _processors.size();
-	while(i--)
-		std::cerr << "processor" << i << " consume: " << static_cast<double>(_timing_process[i] / 1000)<< "ms" << std::endl;
-#endif
 }
 
 void CNLexizer::_lazy_create_config(const char *custom)
@@ -186,4 +199,20 @@ void CNLexizer::process(std::vector<LexToken> &vec, const char *s)
 		vec.push_back(LexToken(*(*_in)[i]));
 		delete (*_in)[i];
 	}
+}
+
+void CNLexizer::set(std::string s)
+{
+	(*_config) << s;
+}
+
+void CNLexizer::set(std::string key, std::string val)
+{
+	(*_config)[key] = val;	
+}
+
+void CNLexizer::reload()
+{
+	_fini();
+	_init();
 }
