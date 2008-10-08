@@ -1,8 +1,8 @@
-project(cnlexizer)
+project(bamboo)
 
 cmake_minimum_required(VERSION 2.6)
 
-set(CMAKE_INSTALL_PREFIX "/opt/cnlexizer")
+set(CMAKE_INSTALL_PREFIX "/opt/bamboo")
 
 set(LIB_INSTALL_DIR "lib")
 set(BIN_INSTALL_DIR "bin")

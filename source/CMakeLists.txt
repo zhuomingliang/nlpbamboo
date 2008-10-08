@@ -6,7 +6,7 @@ set(components
 	config
 	processor
 	debugger
-	cnlexizer
+	bamboo
 	tools
 )
 

@@ -1,4 +1,4 @@
-SET(cnlexizer_tools
+SET(experiment
 	pdc_normalize
 	pdc_tool
 	crf_tool
