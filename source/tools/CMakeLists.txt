@@ -7,6 +7,7 @@ SET(cnlexizer_tools
 	make_turing_data
 	auto_build
 	update_user_combine
+	convert_pos
 	)
 add_executable(crf2_tool crf2_tool.cxx)
 target_link_libraries(crf2_tool utf8)
