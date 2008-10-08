@@ -49,7 +49,7 @@
 #include "utils/builtins.h"
 #include "dlfcn.h"
 
-#include "bamboo_interface.hxx"
+#include "ibamboo.hxx"
 
 /* Output token categories */
 

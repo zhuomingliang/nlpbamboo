@@ -32,7 +32,7 @@
 
 #include "postgres.h"
 #include "utils/builtins.h"
-#include "bamboo_interface.hxx"
+#include "ibamboo.hxx"
 
 PG_MODULE_MAGIC;
 
