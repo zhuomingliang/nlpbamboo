@@ -1,1 +1,1 @@
-install(FILES cnlexizer.cfg DESTINATION ${ETC_INSTALL_DIR})
+install(FILES bamboo.cfg DESTINATION ${ETC_INSTALL_DIR})
