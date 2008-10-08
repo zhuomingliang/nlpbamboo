@@ -49,7 +49,7 @@
 #include "utils/builtins.h"
 #include "dlfcn.h"
 
-#include "cnlexizer_interface.hxx"
+#include "bamboo.hxx"
 
 /* Output token categories */
 
@@ -1567,12 +1567,12 @@ void _PG_fini(void);
 
 void _PG_init(void)
 {
-	handle = cnlexizer_init("/etc/cnlexizer.cfg");
+	handle = bamboo_init("/etc/bamboo.cfg");
 }
 
 void _PG_fini(void)
 {
-	cnlexizer_clean(handle);
+	bamboo_clean(handle);
 }
 
 Datum
@@ -1584,7 +1584,7 @@ chineseprs_start(PG_FUNCTION_ARGS)
 	while(TParserGet(prs))
 		;
 	t = (char *)malloc(strlen(prs->trimmed) * 4);
-	cnlexizer_process(handle, t, prs->trimmed);
+	bamboo_parse(handle, t, prs->trimmed);
 	prs->sege = t;
 	if (prs->sege == NULL) {
 		prs->sege = strdup(" ");

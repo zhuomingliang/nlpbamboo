@@ -32,12 +32,12 @@
 
 #include "postgres.h"
 #include "utils/builtins.h"
-#include "cnlexizer_interface.hxx"
+#include "bamboo.hxx"
 
 PG_MODULE_MAGIC;
 
-PG_FUNCTION_INFO_V1(cnlexizer);
-Datum cnlexizer(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(bamboo);
+Datum bamboo(PG_FUNCTION_ARGS);
 
 static void *handle = NULL;
 
@@ -46,15 +46,15 @@ void _PG_fini(void);
 
 void _PG_init(void)
 {
-	handle = cnlexizer_init(NULL);
+	handle = bamboo_init(NULL);
 }
 
 void _PG_fini(void)
 {
-	cnlexizer_clean(handle);
+	bamboo_clean(handle);
 }
 
-Datum cnlexizer(PG_FUNCTION_ARGS)
+Datum bamboo(PG_FUNCTION_ARGS)
 {
 	text *in = PG_GETARG_TEXT_P(0);
 	char *s;
@@ -65,9 +65,9 @@ Datum cnlexizer(PG_FUNCTION_ARGS)
 	s[VARSIZE(in) - VARHDRSZ] = '\0';
 
 	if (handle == NULL) 
-		elog(ERROR, "cnlexizer init failed.");
+		elog(ERROR, "bamboo init failed.");
 	t = palloc(((VARSIZE(in) - VARHDRSZ + 1) << 1) + 1);
-	cnlexizer_process(handle, t, s);
+	bamboo_parse(handle, t, s);
 
 	PG_RETURN_TEXT_P(DatumGetTextP(DirectFunctionCall1(textin, CStringGetDatum(t))));
 }
