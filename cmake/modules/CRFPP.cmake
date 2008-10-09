@@ -1,6 +1,6 @@
 find_path(CRFPP_INCLUDE_DIR crfpp.h
-   /usr/include
-   /usr/local/include
+	/usr/include
+	/usr/local/include
 )
 
 
