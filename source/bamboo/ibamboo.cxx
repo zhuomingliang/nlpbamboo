@@ -56,22 +56,44 @@ void bamboo_clean(void *handle)
 ssize_t bamboo_parse(void *handle, char *t, const char *s)
 {
 	try {
-		if (handle == NULL)
-			throw new std::runtime_error("handle is null");
-		if (s == NULL)
-			throw new std::runtime_error("input buffer is null");
-		if (t == NULL)
-			throw new std::runtime_error("output buffer is null");
+		if (handle == NULL) throw new std::runtime_error("handle is null");
+		if (s == NULL) return 0;
+		if (t == NULL) return 0;
 
 		if (*s == '\0') {
 			*t = '\0';
 			return 0;
 		}
 
-		Bamboo *clx = static_cast<Bamboo *>(handle);
-		return clx->parse(t, s);
+		Bamboo *bamboo = static_cast<Bamboo *>(handle);
+		return bamboo->parse(t, s);
 	} catch(std::exception &e) {
 		std::cerr << __FUNCTION__ << ": " << e.what();
 		return -1;
+	}
+}
+void bamboo_set(void *handle, const char *s)
+{
+	try {
+		if (handle == NULL) throw new std::runtime_error("handle is null");
+		if (s == NULL) return;
+
+		Bamboo *bamboo = static_cast<Bamboo *>(handle);
+		bamboo->set(s);
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
+	}
+}
+
+void bamboo_reload(void *handle)
+{
+	try {
+		if (handle == NULL) throw new std::runtime_error("handle is null");
+		if (s == NULL) return;
+
+		Bamboo *bamboo = static_cast<Bamboo *>(handle);
+		bamboo->reload();
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
 	}
 }

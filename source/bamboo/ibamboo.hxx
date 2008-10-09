@@ -39,8 +39,10 @@ enum bamboo_method {
 #ifdef __cplusplus
 extern "C" {
 #endif	
-ssize_t bamboo_parse(void *handle, char *t, const char *s);
 void *bamboo_init(const char *s);
+ssize_t bamboo_parse(void *handle, char *t, const char *s);
+void bamboo_set(void *handle, const char *s);
+void bamboo_reload(void *handle);
 void bamboo_clean(void *handle);
 #ifdef __cplusplus
 };
