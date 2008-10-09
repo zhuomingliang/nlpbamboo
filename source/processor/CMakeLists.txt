@@ -14,10 +14,11 @@ build_processor(single_combine utf8 lexicon trie)
 build_processor(maxforward_combine utf8 lexicon trie)
 build_processor(break utf8 lexicon trie)
 
+
+find_package(CRFPP)
+
 if (CRFPP_FOUND)
 	build_processor(crf utf8 -lcrfpp)
 	build_processor(crf2 -lcrfpp)
 	build_processor(pos -lcrfpp)
-else (CRFPP_FOUND)
-	message(STATUS "libcrfpp not found. all related processors will not be built.")
 endif (CRFPP_FOUND)

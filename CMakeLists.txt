@@ -16,6 +16,7 @@ set(CMAKE_CXX_FLAGS "-fPIC -Wall")
 set(CMAKE_CXX_FLAGS_DEBUG "-g ")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O2 -DNDEBUG")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
 foreach(subdir cmake source etc training exts)
 
