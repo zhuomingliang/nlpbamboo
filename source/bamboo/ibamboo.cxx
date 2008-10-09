@@ -89,7 +89,6 @@ void bamboo_reload(void *handle)
 {
 	try {
 		if (handle == NULL) throw new std::runtime_error("handle is null");
-		if (s == NULL) return;
 
 		Bamboo *bamboo = static_cast<Bamboo *>(handle);
 		bamboo->reload();
