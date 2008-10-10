@@ -70,7 +70,8 @@ PHP_FUNCTION(bamboo_open)
 
 PHP_FUNCTION(bamboo_parse)
 {
-	char *ret = NULL, *t = NULL, *s = NULL;
+	char *ret = NULL, *s = NULL;
+	const char *t = NULL;
 	int size;
 		
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &s, &size) == FAILURE)
@@ -79,25 +80,6 @@ PHP_FUNCTION(bamboo_parse)
 	bamboo_parse(handle, &t, s);
 	if (!*t) RETURN_NULL();
 	RETURN_STRING(estrdup(t), 1);
-}
-
-PHP_FUNCTION(bamboo_set)
-{
-	char *s = NULL;
-	int size;
-		
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &s, &size) == FAILURE)
-		RETURN_NULL();
-
-	bamboo_set(handle, s);
-	RETURN_BOOL(1);
-}
-
-PHP_FUNCTION(bamboo_reload)
-{
-		
-	bamboo_reload(handle);
-	RETURN_BOOL(1);
 }
 
 PHP_FUNCTION(bamboo_set)
