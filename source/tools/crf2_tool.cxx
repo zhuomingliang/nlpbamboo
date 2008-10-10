@@ -197,10 +197,10 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	char buf[LINE_MAX];
+	char buf[LINE_MAX*10];
 	std::vector<std::string> vec_str;
 
-	while(fgets(buf, LINE_MAX, fin)!=NULL) {
+	while(fgets(buf, LINE_MAX*10, fin)!=NULL) {
 		vec_str.clear();
 		str_to_vec(buf, delimiter, vec_str);
 		string tmp = generate(vec_str);
