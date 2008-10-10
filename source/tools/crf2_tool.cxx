@@ -131,22 +131,22 @@ std::string generate(vector<std::string> &vec_str) {
 			}
 		}
 		size_t size = buckets_cn.size();
-		if(size==1) str_stream<<buckets_cn[0]<<" "<<get_attr_str(attr[0])<<" S"<<endl;
+		if(size==1) str_stream<<buckets_en[0]<<" "<<get_attr_str(attr[0])<<" S"<<endl;
 		else {
 			size_t j;
 			for(j=0; j<size-1; ++j) {
 				switch(j) {
 				case 0:
-					str_stream<<buckets_cn[j]<<" "<<get_attr_str(attr[j])<<" B"<<endl; break;
+					str_stream<<buckets_en[j]<<" "<<get_attr_str(attr[j])<<" B"<<endl; break;
 				case 1:
-					str_stream<<buckets_cn[j]<<" "<<get_attr_str(attr[j])<<" B1"<<endl; break;
+					str_stream<<buckets_en[j]<<" "<<get_attr_str(attr[j])<<" B1"<<endl; break;
 				case 2:
-					str_stream<<buckets_cn[j]<<" "<<get_attr_str(attr[j])<<" B2"<<endl; break;
+					str_stream<<buckets_en[j]<<" "<<get_attr_str(attr[j])<<" B2"<<endl; break;
 				default:
-					str_stream<<buckets_cn[j]<<" "<<get_attr_str(attr[j])<<" M"<<endl; break;
+					str_stream<<buckets_en[j]<<" "<<get_attr_str(attr[j])<<" M"<<endl; break;
 				}
 			}
-			str_stream<<buckets_cn[j]<<" "<<get_attr_str(attr[j])<<" E"<<endl;
+			str_stream<<buckets_en[j]<<" "<<get_attr_str(attr[j])<<" E"<<endl;
 		}
 	}
 	if(len >= 1)
