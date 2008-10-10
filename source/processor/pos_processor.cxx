@@ -65,9 +65,9 @@ void POSProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> 
 		const char *str = token->get_token();
 		_tagger->add(str); 
 	}
-	static double t = 0;
 
 #ifdef TIMING	
+	static double t = 0;
 	struct timeval tv1, tv2;
 	gettimeofday(&tv1, 0);
 #endif
