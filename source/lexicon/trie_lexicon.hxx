@@ -33,6 +33,9 @@
 
 #include "datrie.hxx"
 
+namespace bamboo {
+
+
 template<class TrieType>
 class TrieLexicon:public ILexicon {
 	friend class TrieDebugger;
@@ -136,5 +139,7 @@ public:
 	//void read_from_text(const char *filename, bool verbose=false);
 	//void write_to_text(const char *filename);
 };
+
+} //namespace bamboo
 
 #endif // TRIE_LEXICON_HXX

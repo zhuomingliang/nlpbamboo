@@ -63,17 +63,17 @@ static int _do()
 	struct timeval tv[2];
 	struct timezone tz;
 	unsigned long consume = 0;
-	std::vector<LexToken> vec;
-	std::vector<LexToken>::iterator it;
+	std::vector<bamboo::Token *> vec;
+	std::vector<bamboo::Token *>::iterator it;
 
 	try {
-		Bamboo clx(g_config);
+		bamboo::Parser parser(g_config);
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
 		for (i = 0; i < g_override.size(); i++) {
 			std::cerr << "overriding " << g_override[i] << std::endl;
-			clx.set(g_override[i]);
+			parser.set(g_override[i]);
 		}
-		if (i > 0) clx.reload();
+		if (i > 0) parser.reload();
 		if (strcmp(g_file, "-") == 0) {
 			fp = stdin;
 		} else {
@@ -89,18 +89,18 @@ static int _do()
 			if (s[length - 1] == '\n') s[length - 1] = '\0';
 			if (s[length - 2] == '\r') s[length - 2] = '\0';
 			gettimeofday(&tv[0], &tz);
-			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n")) {
-				clx.parse(vec, t);
-			}
+			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n")) 
+				parser.parse(vec, t);
 			gettimeofday(&tv[1], &tz);
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 
 			for (it = vec.begin(); it < vec.end(); ++it) {
-				std::cout << it->get_orig_token();
-				if (g_pos && it->get_pos()) std::cout << "/" << LexToken::get_pos_str(it->get_pos());
+				std::cout << (*it)->token;
+				if (g_pos && (*it)->pos) std::cout << "/" << bamboo::strfpos((*it)->pos);
 				std::cout << " ";
 			}
 			std::cout << std::endl;
+			bamboo::freetoks(vec);
 		}
 		free(s);
 	} catch (std::exception &e) {
@@ -108,7 +108,7 @@ static int _do()
 		return 1;
 	}
 
-	std::cerr << "consumed time: " << static_cast<unsigned long>(consume / 1000)<< " ms" << std::endl;
+	std::cerr << "consumed time: " << static_cast<double>(consume / 1000)<< " ms" << std::endl;
 	return 0;
 }
 
@@ -151,3 +151,4 @@ int main(int argc, char *argv[])
 
 	return _do();
 }
+

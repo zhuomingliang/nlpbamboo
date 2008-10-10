@@ -26,193 +26,152 @@
  * 
  */
 
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <iostream>
 #include <stdexcept>
-#include <dlfcn.h>
+#include <cstdlib>
 
 #include "bamboo.hxx"
 
-Bamboo::Bamboo(const char *file)
-:_config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1]), _verbose(0)
+static std::vector<bamboo::Token *> g_tokens;
+static std::string g_str;
+
+static void _strftoks(std::string &str, std::vector<bamboo::Token *> &vec, const char *delim)
 {
-	_lazy_create_config(file);
-	_init();
-#ifdef TIMING
-	memset(_timing_process, 0, sizeof(size_t) * 128);
-#endif
-}
+	size_t i, length;
 
-Bamboo::~Bamboo()
-{
-
-	_fini();
-	delete _config;
-#ifdef TIMING
-	size_t i;
-
-	i = _processors.size();
-	while(i--)
-		std::cerr << "processor" << i << " consume: " << static_cast<double>(_timing_process[i] / 1000)<< "ms" << std::endl;
-#endif
-}
-
-void Bamboo::_fini()
-{
-	size_t i;
-
-	i = _processors.size();
-	while(i--) delete _processors[i];
-	_processors.clear();
-
-	i = _dl_handles.size();
-	while(i--) {
-		/* do not switch condition order */
-		if (dlclose(_dl_handles[i]) && _verbose) 
-			std::cerr << strerror(errno) << std::endl;
-	}
-	_dl_handles.clear();
-}
-
-void Bamboo::_init()
-{
-	std::vector<std::string>::iterator it;
-	std::string module;
-
-	_config->get_value("verbose", _verbose);
-	_config->get_value("process_chain", _process_chain);
-	_config->get_value("processor_root", processor_root);
-
-	for (it = _process_chain.begin(); it != _process_chain.end(); it++) {
-		_create_processor_t create = NULL;
-		void *handle = NULL;
-		Processor *processor = NULL;
-
-		module.clear();
-		module.append(processor_root).append("/").append(*it).append(".so");
-		if (_verbose)
-			std::cerr << "loading processor " << module << std::endl;
-		if (!(handle = dlopen(module.c_str(), RTLD_NOW)))
-			throw std::runtime_error(std::string(dlerror()));
-		if (!(create = (_create_processor_t)dlsym(handle, "create_processor")))
-			throw std::runtime_error(std::string(dlerror()));
-		if (!(processor = create(_config)))
-			throw std::runtime_error(std::string("can not create processor: ") + *it);
-
-		_processors.push_back(processor);
-		_dl_handles.push_back(handle);
+	length = vec.size();
+	for (i = 0; i < length; i++) {
+		str += vec[i]->token;
+		if (i < length - 1) str += delim;
 	}
 }
 
-void Bamboo::_lazy_create_config(const char *custom)
-{
-	std::vector<std::string>::size_type i;
-	bool flag = false;
-	struct stat buf;
-	std::vector<std::string> v;
 
-	if (custom)
-		v.push_back(custom);
-	v.push_back("bamboo.cfg");
-	v.push_back("etc/bamboo.cfg");
-	v.push_back("/opt/bamboo/etc/bamboo.cfg");
-	v.push_back("/etc/bamboo.cfg");
-	for (i = 0; i < v.size(); i++) {
-		if (_verbose)
-			std::cerr << "loading configuration " << v[i] << " ... ";
-		if (stat(v[i].c_str(), &buf) == 0) {
-			if (_verbose) std::cerr << "found." << std::endl;
-			_config = ConfigFactory::create(v[i].c_str());
-			flag = true;
-			break;
-		} else {
-			if (_verbose) std::cerr << "not found." << std::endl;
+void *bamboo_init(const char *cfg)
+{
+	try {
+		return new bamboo::Parser(cfg);
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
+		return NULL;
+	}
+}
+
+void bamboo_clean(void *handle)
+{
+	try {
+		if (handle == NULL)
+			throw new std::runtime_error("handle is null");
+		delete static_cast<bamboo::Parser *>(handle);
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
+	}
+}
+
+ssize_t bamboo_parse(void *handle, const char **t, const char *s)
+{
+	try {
+		if (handle == NULL) throw new std::runtime_error("handle is null");
+		if (s == NULL) return 0;
+		if (t == NULL) return 0;
+
+		if (*s == '\0') {
+			*t = '\0';
+			return 0;
 		}
-	}
 
-	if (!flag)
-		throw std::runtime_error("can not find configuration");
+		g_tokens.clear();
+		g_str.clear();
+		bamboo::Parser *bamboo = static_cast<bamboo::Parser *>(handle);
+		bamboo->parse(g_tokens, s);
+		_strftoks(g_str, g_tokens, " ");
+		*t = g_str.c_str();
+		return g_str.length();
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
+		return -1;
+	}
 }
-
-void Bamboo::_parse(const char *s)
+void bamboo_set(void *handle, const char *s)
 {
-#ifdef TIMING	
-	struct timeval tv[2];
-	struct timezone tz;
-#endif
-	size_t i, length;
+	try {
+		if (handle == NULL) throw new std::runtime_error("handle is null");
+		if (s == NULL) return;
 
-	length = utf8::length(s);
-	_in->clear();
-	if (length > _in->capacity()) {
-		_in->reserve(length);
-		_out->reserve(length);
-	}
-	_in->push_back(new LexToken(s));
-	length = _processors.size();
-	for (i = 0; i < length; i++) {
-		_out->clear();
-#ifdef TIMING		
-		gettimeofday(&tv[0], &tz);
-#endif
-		_processors[i]->process(*_in, *_out);
-#ifdef TIMING
-		gettimeofday(&tv[1], &tz);
-		_timing_process[i] += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
-#endif
-		/* switch in & out queue */
-		_swap = _out;
-		_out = _in;
-		_in = _swap;
+		bamboo::Parser *bamboo = static_cast<bamboo::Parser *>(handle);
+		bamboo->set(s);
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
 	}
 }
 
-size_t Bamboo::parse(char *t, const char *s)
+void bamboo_reload(void *handle)
 {
-	size_t i, length;
-	char *p = t;
+	try {
+		if (handle == NULL) throw new std::runtime_error("handle is null");
 
-	*t = '\0';
-	_parse(s);
-	length = _in->size();
-	for (i = 0; i < length; i++) {
-		strcpy(p, (*_in)[i]->get_orig_token());
-		p += (*_in)[i]->get_orig_bytes();
-		*(p++) = ' ';
-		*p = '\0';
-		delete (*_in)[i];
-	}
-
-	return p - t;
-}
-
-void Bamboo::parse(std::vector<LexToken> &vec, const char *s)
-{
-	size_t i, length;
-
-	_parse(s);
-	length = _in->size();
-	for (i = 0; i < length; i++) {
-		vec.push_back(LexToken(*(*_in)[i]));
-		delete (*_in)[i];
+		bamboo::Parser *bamboo = static_cast<bamboo::Parser *>(handle);
+		bamboo->reload();
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
 	}
 }
 
-void Bamboo::set(std::string s)
-{
-	(*_config) << s;
-}
 
-void Bamboo::set(std::string key, std::string val)
-{
-	(*_config)[key] = val;	
-}
+namespace bamboo {
 
-void Bamboo::reload()
-{
-	_fini();
-	_init();
+	char *strfpos(unsigned short p) {
+		static char pos_str[3] = {0};
+		if(p > 256) {
+			pos_str[0] = p >> 8;
+			pos_str[1] = p % 256;
+		} else {
+			pos_str[0] = p % 256;
+			pos_str[1] = '\0';
+		}
+		return pos_str;
+	}
+
+	void freetoks(std::vector<Token *> &vec)
+	{
+		size_t i, length;
+
+		length = vec.size();
+		for (i = 0; i < length; i++) 
+			delete vec[i];
+	}
+
+	Parser::Parser (const char *s): ParserImpl(s) 
+	{
+	}
+
+	void Parser::set(std::string s) {(*_config) << s;}
+	void Parser::set(std::string key, std::string val) {(*_config)[key] = val;}
+	void Parser::reload() {_fini();_init();}
+
+	size_t Parser::parse(std::vector<Token *> &vec, const char *s)
+	{
+		size_t i, length;
+
+		_parse(s);
+		length = _in->size();
+		for (i = 0; i < length; i++) {
+			vec.push_back(new Token(*(*_in)[i]));
+			delete (*_in)[i];
+		}
+
+		return length;
+	}
+
+	Token::Token(TokenImpl &rhs)
+	{
+		token = strdup(rhs.get_orig_token());
+		pos = rhs.get_pos();
+	}
+
+	Token::~Token()
+	{
+		free(token);
+		pos = 0;
+	}
 }

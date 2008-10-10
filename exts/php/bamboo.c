@@ -6,7 +6,7 @@
 #include "php_ini.h"
 #include "php_bamboo.h"
 
-#include "ibamboo.hxx"
+#include "bamboo.hxx"
 
 static function_entry bamboo_functions[] = {
     PHP_FE(bamboo_open, NULL)
@@ -70,16 +70,34 @@ PHP_FUNCTION(bamboo_open)
 
 PHP_FUNCTION(bamboo_parse)
 {
-	char *t = NULL, *s = NULL;
+	char *ret = NULL, *t = NULL, *s = NULL;
 	int size;
 		
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &s, &size) == FAILURE)
 		RETURN_NULL();
 
-	t = (char *)emalloc((size << 1) + 1);
-	bamboo_parse(handle, t, s);
-	if (!t) RETURN_NULL();
-	RETURN_STRING(t, 1);
+	bamboo_parse(handle, &t, s);
+	if (!*t) RETURN_NULL();
+	RETURN_STRING(estrdup(t), 1);
+}
+
+PHP_FUNCTION(bamboo_set)
+{
+	char *s = NULL;
+	int size;
+		
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &s, &size) == FAILURE)
+		RETURN_NULL();
+
+	bamboo_set(handle, s);
+	RETURN_BOOL(1);
+}
+
+PHP_FUNCTION(bamboo_reload)
+{
+		
+	bamboo_reload(handle);
+	RETURN_BOOL(1);
 }
 
 PHP_FUNCTION(bamboo_set)

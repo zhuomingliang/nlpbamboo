@@ -42,6 +42,9 @@
 #include "crf_processor.hxx"
 #include "utf8.hxx"
 
+namespace bamboo {
+
+
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(CRFProcessor)
 
@@ -76,7 +79,7 @@ CRFProcessor::~CRFProcessor()
 #endif
 }
 
-void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
+void CRFProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 {
 	size_t length, i;
 	const char *s;
@@ -115,8 +118,11 @@ void CRFProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		tag = *_tagger->y2(i);
 		if (tag == 'S' || tag == 'E') {
 			*(_result_top) = '\0';
-			out.push_back(new LexToken(_result, LexToken::attr_cword));
+			out.push_back(new TokenImpl(_result, TokenImpl::attr_cword));
 			_result_top = _result;
 		}
 	}
 }
+
+
+} //namespace bamboo

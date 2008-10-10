@@ -36,6 +36,9 @@
 #include "ilexicon.hxx"
 #include "trie_lexicon.hxx"
 
+namespace bamboo {
+
+
 class LexiconFactory {
 private:
 	LexiconFactory();
@@ -74,5 +77,7 @@ public:
 		return NULL;
 	}
 };
+
+} //namespace bamboo
 
 #endif // LEXICON_FACTORY_HXX

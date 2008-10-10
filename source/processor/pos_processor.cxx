@@ -35,6 +35,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+namespace bamboo {
+
+
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(POSProcessor)
 
@@ -55,13 +58,13 @@ POSProcessor::~POSProcessor() {
 	delete _tagger;
 }
 
-void POSProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out) {
+void POSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
 	_tagger->clear();
 
 	size_t i, size = in.size();
 
 	for(i=0; i<size; ++i) {
-		LexToken *token = in[i];
+		TokenImpl *token = in[i];
 		const char *str = token->get_token();
 		_tagger->add(str); 
 	}
@@ -81,9 +84,11 @@ void POSProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> 
 	assert(size==_tagger->size());
 	for(i=0; i<size; ++i) {
 		const char *pos = _tagger->y2(i);
-		LexToken *token = in[i];
+		TokenImpl *token = in[i];
 		token->set_pos(pos);
 		out.push_back(token);
 	}
 }
 
+
+} //namespace bamboo

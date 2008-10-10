@@ -33,6 +33,9 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace bamboo {
+
+
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(BreakProcessor)
 
@@ -76,7 +79,7 @@ BreakProcessor::~BreakProcessor()
  *
  */
 
-void BreakProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
+void BreakProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 {
 	size_t length, i, j, mark;
 	char *s;
@@ -88,13 +91,16 @@ void BreakProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 		if (_split & mark) {
 			if (i - j + 1 > 0) {
 				utf8::sub(_token, s, j, i - j + 1);
-				out.push_back(new LexToken(_token, LexToken::attr_cword));
+				out.push_back(new TokenImpl(_token, TokenImpl::attr_cword));
 			}
 			j = i + 1;
 		}
 	}
 	if (length - j > 0) {
 		utf8::sub(_token, s, j, length - j);
-		out.push_back(new LexToken(_token, LexToken::attr_cword));
+		out.push_back(new TokenImpl(_token, TokenImpl::attr_cword));
 	}
 }
+
+
+} //namespace bamboo

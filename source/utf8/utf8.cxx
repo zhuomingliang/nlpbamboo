@@ -30,6 +30,9 @@
 #include <iostream>
 #include <cstdlib>
 
+namespace bamboo {
+
+
 /* Reference: http://en.wikipedia.org/wiki/UTF-8 */
 const char utf8::_map_ignore[] = {
 	/* <0x80, no following */
@@ -88,3 +91,5 @@ const char utf8::_map[] = {
 	4, 4, 4, 4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 };
 
+
+} //namespace bamboo

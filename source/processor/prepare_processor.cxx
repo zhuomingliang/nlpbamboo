@@ -29,8 +29,11 @@
 #include <ctype.h>
 #include <iostream>
 
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "prepare_processor.hxx"
+
+namespace bamboo {
+
 
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(PrepareProcessor)
@@ -41,12 +44,12 @@ PrepareProcessor::PrepareProcessor(IConfig *config)
 	config->get_value("prepare_characterize", _characterize);
 }
 
-void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
+void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 {
 	const char *s;
 	char uch[8], cch;
 	size_t step;
-	LexToken::attr_t attr;
+	TokenImpl::attr_t attr;
 	enum {
 		PS_UNKNOW = 0,
 		PS_ALPHA,
@@ -86,17 +89,17 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 				// do nothing
 			} else if (sbc.top > sbc.base) {
 				switch (parent) {
-					case PS_ALPHA: attr = LexToken::attr_alpha; break;
-					case PS_NUMBER: attr = LexToken::attr_number; break;
-					case PS_PUNCT: attr = LexToken::attr_punct; break;
-					default: attr = LexToken::attr_unknow; break;
+					case PS_ALPHA: attr = TokenImpl::attr_alpha; break;
+					case PS_NUMBER: attr = TokenImpl::attr_number; break;
+					case PS_PUNCT: attr = TokenImpl::attr_punct; break;
+					default: attr = TokenImpl::attr_unknow; break;
 				}
 				*(sbc.top) = '\0';
 				*(dbc.top) = '\0';
 				if (dbc.top > dbc.base)
-					out.push_back(new LexToken(dbc.base, sbc.base, attr));
+					out.push_back(new TokenImpl(dbc.base, sbc.base, attr));
 				else
-					out.push_back(new LexToken(sbc.base, attr));
+					out.push_back(new TokenImpl(sbc.base, attr));
 				sbc.top = sbc.base;
 				dbc.top = dbc.base;
 			}
@@ -112,3 +115,6 @@ void PrepareProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	delete []sbc.base;
 	delete []dbc.base;
 }
+
+
+} //namespace bamboo

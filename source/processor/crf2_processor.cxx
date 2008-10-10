@@ -33,6 +33,9 @@
 #include <cstdio>
 #include <stdexcept>
 
+namespace bamboo {
+
+
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(CRF2Processor)
 
@@ -60,26 +63,26 @@ CRF2Processor::~CRF2Processor()
 
 inline const char *CRF2Processor::_get_crf2_tag(int attr) {
 	switch(attr) {
-	case LexToken::attr_number:
-	case LexToken::attr_alpha:
+	case TokenImpl::attr_number:
+	case TokenImpl::attr_alpha:
 		return "ASCII";
-	case LexToken::attr_punct:
+	case TokenImpl::attr_punct:
 		return "PUNC";
-	case LexToken::attr_cword:
+	case TokenImpl::attr_cword:
 		return "CN";
 	default:
 		return "CN";
 	}
 }
 
-void CRF2Processor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out) {
+void CRF2Processor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
 	size_t i, offset, size = in.size();
 
 	_tagger->clear();
 	for (i = 0; i < size; ++i) {
-		LexToken *cur_tok = in[i];
+		TokenImpl *cur_tok = in[i];
 		const char *tok_str = cur_tok->get_token();
-		if(cur_tok->get_attr() == LexToken::attr_punct) tok_str = cur_tok->get_orig_token();
+		if(cur_tok->get_attr() == TokenImpl::attr_punct) tok_str = cur_tok->get_orig_token();
 		const char *data[] = {
 			tok_str,
 			_get_crf2_tag(cur_tok->get_attr()),
@@ -97,7 +100,7 @@ void CRF2Processor::process(std::vector<LexToken *> &in, std::vector<LexToken *>
 	_crf2_tagger(in, offset, out);
 }
 
-void CRF2Processor::_crf2_tagger(std::vector<LexToken *> &in, size_t offset, std::vector<LexToken *> &out) {
+void CRF2Processor::_crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out) {
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
 	_result.clear();
@@ -105,14 +108,14 @@ void CRF2Processor::_crf2_tagger(std::vector<LexToken *> &in, size_t offset, std
 
 	for (size_t i = 0; i < _tagger->size(); ++i) {
 		_result.append(_tagger->x(i, 0));
-		LexToken *cur_tok = in[offset+i];
+		TokenImpl *cur_tok = in[offset+i];
 		_result_orig.append(cur_tok->get_orig_token());
 		const char * tag = _tagger->y2(i);
 		int attr = cur_tok->get_attr();
-		if(attr==LexToken::attr_unknow) attr = LexToken::attr_cword;
-		if(attr==LexToken::attr_alpha || attr==LexToken::attr_number || attr==LexToken::attr_punct)	tag = "S";
+		if(attr==TokenImpl::attr_unknow) attr = TokenImpl::attr_cword;
+		if(attr==TokenImpl::attr_alpha || attr==TokenImpl::attr_number || attr==TokenImpl::attr_punct)	tag = "S";
 		if (*tag=='S' || *tag=='E') {
-			out.push_back(new LexToken(_result.c_str(), _result_orig.c_str(), attr));
+			out.push_back(new TokenImpl(_result.c_str(), _result_orig.c_str(), attr));
 			_result.clear();
 			_result_orig.clear();
 		}
@@ -122,3 +125,5 @@ void CRF2Processor::_crf2_tagger(std::vector<LexToken *> &in, size_t offset, std
 	_tagger->clear();
 }
 
+
+} //namespace bamboo

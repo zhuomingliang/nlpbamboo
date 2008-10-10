@@ -27,3 +27,9 @@
  */
 
 #include "config_factory.hxx"
+
+namespace bamboo {
+
+
+
+} //namespace bamboo

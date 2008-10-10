@@ -32,12 +32,13 @@
 
 #include "lexicon_factory.hxx"
 
+
 static void _info(const char *index)
 {
-	ILexicon *dc;
+	bamboo::ILexicon *dc;
 
 	assert(index);
-	dc = LexiconFactory::load(index);
+	dc = bamboo::LexiconFactory::load(index);
 
 	std::cout << " max = " << dc->max_value() 
 			  << " min = " << dc->min_value()
@@ -47,30 +48,30 @@ static void _info(const char *index)
 
 static void _query(const char *index, const char *query)
 {
-	ILexicon *dc;
+	bamboo::ILexicon *dc;
 
 	assert(query); assert(index);
-	dc = LexiconFactory::load(index);
+	dc = bamboo::LexiconFactory::load(index);
 
 	std::cout << query << " = " << dc->search(query) << std::endl;
 }
 
 static void _dump(const char *index, const char *target)
 {
-	ILexicon *dc;
+	bamboo::ILexicon *dc;
 
 	assert(target); assert(index);
-	dc = LexiconFactory::load(index);
+	dc = bamboo::LexiconFactory::load(index);
 	if (dc == NULL) throw std::runtime_error("can not load lexicon");
 	dc->write_to_text(target);
 }
 
 static void _build(const char *source, const char *index, const char *type, bool verbose)
 {
-	ILexicon *dc;
+	bamboo::ILexicon *dc;
 
 	assert(source); assert(index);
-	dc = LexiconFactory::create(type);
+	dc = bamboo::LexiconFactory::create(type);
 	if (dc == NULL) throw std::runtime_error("can not create lexicon");
 	dc->read_from_text(source, verbose);
 	dc->save(index);
@@ -175,3 +176,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+

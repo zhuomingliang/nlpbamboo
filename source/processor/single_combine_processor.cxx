@@ -33,6 +33,9 @@
 #include "single_combine_processor.hxx"
 #include "utf8.hxx"
 
+namespace bamboo {
+
+
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(SingleCombineProcessor)
 
@@ -58,7 +61,7 @@ SingleCombineProcessor::~SingleCombineProcessor()
 	delete _lexicon_number_trailing;
 }
 
-void SingleCombineProcessor::_make_combine(std::vector<LexToken *> &in, int i, int with)
+void SingleCombineProcessor::_make_combine(std::vector<TokenImpl *> &in, int i, int with)
 {
 	/* with: a bitmap indicates copy range. 
 	 * binary  :  0        0      0
@@ -71,7 +74,7 @@ void SingleCombineProcessor::_make_combine(std::vector<LexToken *> &in, int i, i
 }
 
 int SingleCombineProcessor::_single_combine(size_t i, size_t size, 
-		std::vector<LexToken *> &in, std::vector<LexToken *> &out)
+		std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out)
 {
 	int match = 0;
 
@@ -97,11 +100,11 @@ int SingleCombineProcessor::_single_combine(size_t i, size_t size,
 }
 
 int SingleCombineProcessor::_number_trailing_combine(size_t i, size_t size, 
-		std::vector<LexToken *> &in, std::vector<LexToken *> &out)
+		std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out)
 {
 	int match = 0;
 	if (i + 1 < size && in[i + 1]
-			  && in[i]->get_attr() == LexToken::attr_number 
+			  && in[i]->get_attr() == TokenImpl::attr_number 
 			  && _lexicon_number_trailing->search(in[i + 1]->get_token()))
 	{
 		_make_combine(in, i, 3);
@@ -110,7 +113,7 @@ int SingleCombineProcessor::_number_trailing_combine(size_t i, size_t size,
 	return match;
 }
 
-void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
+void SingleCombineProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out)
 {
 	size_t i, size, length, match;
 	int attr;
@@ -142,9 +145,12 @@ void SingleCombineProcessor::process(std::vector<LexToken *> &in, std::vector<Le
 				delete in[i + 1];
 				in[i + 1] = NULL;
 			}
-			out.push_back(new LexToken(_combine.c_str(), attr));
+			out.push_back(new TokenImpl(_combine.c_str(), attr));
 		} else {
 			out.push_back(in[i]);
 		}
 	}
 }
+
+
+} //namespace bamboo

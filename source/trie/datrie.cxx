@@ -28,6 +28,9 @@
 
 #include "datrie.hxx"
 
+namespace bamboo {
+
+
 void DATrie::_insert_tail(int s, const char *key, int val)
 {
 	const char *p;
@@ -156,3 +159,5 @@ void DATrie::save(const char *filename)
 	fclose(fp);
 }
 
+
+} //namespace bamboo

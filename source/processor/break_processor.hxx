@@ -29,9 +29,12 @@
 #ifndef BREAK_PROCESSOR_HXX
 #define BREAK_PROCESSOR_HXX
 
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
+
+namespace bamboo {
+
 
 class BreakProcessor: public Processor {
 protected:
@@ -40,18 +43,20 @@ protected:
 	char *_token;
 	int _min_token_length, _max_token_length;
 	BreakProcessor();
-	bool _can_process(LexToken *token) 
+	bool _can_process(TokenImpl *token) 
 	{
 		_split = _lexicon->search(token->get_token());
 		if (token->get_length() >= (size_t)_min_token_length && _split);
 			return true;
 		return false;
 	}
-	void _process(LexToken *token, std::vector<LexToken *> &out);
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out);
 
 public:
 	BreakProcessor(IConfig *config);
 	~BreakProcessor();
 };
+
+} //namespace bamboo
 
 #endif // BREAK_PROCESSOR_HXX

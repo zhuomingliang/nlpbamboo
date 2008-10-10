@@ -29,10 +29,13 @@
 #ifndef SINGLE_COMBINE_PROCESSOR_HXX
 #define SINGLE_COMBINE_PROCESSOR_HXX
 
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
 #include "utf8.hxx"
+
+namespace bamboo {
+
 
 class SingleCombineProcessor: public Processor {
 protected:
@@ -40,17 +43,19 @@ protected:
 	std::string _combine;
 	SingleCombineProcessor();
 	int _combine_koko, _combine_forward, _combine_backward, _combine_neighbor;
-	bool _can_process(LexToken *token) {return true;}
-	void _process(LexToken *token, std::vector<LexToken *> &out) {};
+	bool _can_process(TokenImpl *token) {return true;}
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {};
 	inline int _number_trailing_combine
-		(size_t i, size_t size, std::vector<LexToken *> &in, std::vector<LexToken *> &out);
+		(size_t i, size_t size, std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
 	inline int _single_combine
-		(size_t i, size_t size, std::vector<LexToken *> &in, std::vector<LexToken *> &out);
-	inline void _make_combine(std::vector<LexToken *> &in, int i, int with);
+		(size_t i, size_t size, std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
+	inline void _make_combine(std::vector<TokenImpl *> &in, int i, int with);
 public:
-	void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out);
+	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
 	SingleCombineProcessor(IConfig *config);
 	~SingleCombineProcessor();
 };
+
+} //namespace bamboo
 
 #endif // SINGLE_COMBINE_PROCESSOR_HXX

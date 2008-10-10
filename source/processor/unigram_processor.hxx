@@ -31,9 +31,12 @@
 
 #include <math.h>
 #include <stack>
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
+
+namespace bamboo {
+
 
 class UnigramProcessor: public Processor {
 protected:
@@ -41,23 +44,25 @@ protected:
 	double _lambda;
 	int _max_token_length;
 	char *_token;
-	std::stack<LexToken *> stack;
+	std::stack<TokenImpl *> stack;
 
 	UnigramProcessor();
-	size_t _unigram_model(LexToken *token);
+	size_t _unigram_model(TokenImpl *token);
 	double _ele_estimate(int v, int n, int t)
 	{
 		return log(v + _lambda) - log(n + t * _lambda);
 	}
-	bool _can_process(LexToken *token) 
+	bool _can_process(TokenImpl *token) 
 	{
-		return (token->get_attr() == LexToken::attr_unknow);
+		return (token->get_attr() == TokenImpl::attr_unknow);
 	}
-	void _process(LexToken *token, std::vector<LexToken *> &out);
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out);
 
 public:
 	UnigramProcessor(IConfig *config);
 	~UnigramProcessor();
 };
+
+} //namespace bamboo
 
 #endif // UNIGRAM_PROCESSOR_HXX

@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2008, detrox@gmail.com
+namespace bamboo {
+
+ * Copyright (c) 2008, detrox@gmail.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +29,52 @@
  * 
  */
 
-#ifndef CNLEXIZER_HXX
-#define CNLEXIZER_HXX
+#ifndef LIB_BAMBOO_HXX
+#define LIB_BAMBOO_HXX
 
-#include <stdexcept>
-#include <cstring>
+#ifdef __cplusplus
+#include "token_impl.hxx"
+#include "parser_impl.hxx"
 #include <vector>
 
-#include "lexicon_factory.hxx"
-#include "config_factory.hxx"
-#include "processor.hxx"
-#include "lex_token.hxx"
-
-class Bamboo {
-private:
-	
+namespace bamboo {
+class Token {
 public:
-	void parse(std::vector<LexToken> &vec, const char *s);
-	size_t parse(char *t, const char *s);
-	void set(std::string, std::string);
-	void set(std::string s);
-	void reload();
-	Bamboo(const char *file);
-	~Bamboo();
-protected:
-	IConfig *_config;
-	const char *processor_root;
-	std::vector<std::string> _process_chain;
-	std::vector<LexToken *> _token_fifo[2];
-	std::vector<LexToken *> *_in, *_out, *_swap;
-	std::vector<Processor *> _processors;
-	std::vector<void *> _dl_handles;
-	typedef Processor* (*_create_processor_t)(IConfig *);
-	inline void _lazy_create_config(const char *);
-	inline void _parse(const char *s);
-	int _verbose;
-	void _init();
-	void _fini();
-#ifdef TIMING
-	size_t _timing_process[128];
-#endif
+	Token();
+	~Token();
+	Token(TokenImpl &rhs);
+	char *token;
+	int pos;
 };
 
+class Parser: public ParserImpl {
+
+public:
+	Parser (const char *s);
+
+	void set(std::string s);
+	void set(std::string key, std::string val);
+	void reload();
+	size_t parse(std::vector<Token *> &vec, const char *s);
+};
+
+
+char *strfpos(unsigned short p);
+void freetoks(std::vector<Token *> &vec);
+
+}
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif	
+void *bamboo_init(const char *s);
+ssize_t bamboo_parse(void *handle, const char **t, const char *s);
+void bamboo_set(void *handle, const char *s);
+void bamboo_reload(void *handle);
+void bamboo_clean(void *handle);
+#ifdef __cplusplus
+};
+#endif
+
+#endif //LIB_BAMBOO_HXX

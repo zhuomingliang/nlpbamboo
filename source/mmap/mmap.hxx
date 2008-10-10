@@ -40,6 +40,9 @@
 #include <cassert>
 #include <cstring>
 
+namespace bamboo {
+
+
 class MMap {
 protected:
 	void *_start;
@@ -78,4 +81,8 @@ public:
 	}
 };
 
+} //namespace bamboo
+
 #endif
+
+

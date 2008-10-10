@@ -32,6 +32,9 @@
 #include <cassert>
 #include <cstdio>
 
+namespace bamboo {
+
+
 class ILexicon {
 protected:
 	static void _export(const char *s, int val, void *arg) 
@@ -56,5 +59,7 @@ public:
 	virtual int num_insert() = 0;
 	virtual ~ILexicon() {};
 };
+
+} //namespace bamboo
 
 #endif // ILEXICON_HXX

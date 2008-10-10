@@ -34,7 +34,7 @@
 #include <limits.h>
 #include "utf8.hxx"
 
-
+using namespace bamboo;
 using namespace std;
 
 static const std::string delimiter = " \t\r\n";
@@ -211,3 +211,4 @@ int main(int argc, char *argv[]) {
 	fclose(fin);
 	return 0;
 }
+

@@ -35,6 +35,9 @@
 #include "double_array.hxx"
 #include "datrie.hxx"
 
+namespace bamboo {
+
+
 class TrieDebugger {
 protected:
 	
@@ -53,5 +56,7 @@ public:
 
 
 };
+
+} //namespace bamboo
 
 #endif // TRIE_DEBUGGER_HPP

@@ -32,6 +32,9 @@
 #include <cassert>
 #include <iostream>
 
+namespace bamboo {
+
+
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(UnigramProcessor)
 
@@ -53,7 +56,7 @@ UnigramProcessor::~UnigramProcessor()
 	delete _lexicon;
 }
 
-void UnigramProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
+void UnigramProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 {
 	size_t i, j, k, length, max_token_length, *backref;
 	double *score, lp;
@@ -104,7 +107,7 @@ void UnigramProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	assert(stack.empty() == true);
 	for (k = 0, i = length; i > 0;) {
 		k = utf8::sub(_token, s, backref[i], i - backref[i]);
-		stack.push(new LexToken(_token, LexToken::attr_cword));
+		stack.push(new TokenImpl(_token, TokenImpl::attr_cword));
 		i = backref[i];
 	}
 	while(!stack.empty()) {
@@ -114,3 +117,6 @@ void UnigramProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
 	delete []score;
 	delete []backref;
 }
+
+
+} //namespace bamboo

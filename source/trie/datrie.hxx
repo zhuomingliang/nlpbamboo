@@ -31,6 +31,9 @@
 
 #include "double_array.hxx"
 
+namespace bamboo {
+
+
 class DATrie: public DoubleArray {
 	friend class TrieDebugger;
 private:
@@ -121,5 +124,7 @@ public:
 	int search(const char *key);
 	void save(const char *filename);
 };
+
+} //namespace bamboo
 
 #endif // DATRIE_HPP

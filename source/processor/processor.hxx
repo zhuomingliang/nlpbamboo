@@ -33,21 +33,24 @@
 #include <sys/time.h>
 #include <vector>
 #include "config_factory.hxx"
-#include "lex_token.hxx"
+#include "token_impl.hxx"
+
+namespace bamboo {
+
 
 #define PROCESSOR_MAGIC /* Nothing */
 #define PROCESSOR_MODULE(NAME) extern "C" {Processor *create_processor(IConfig *config) {return new NAME(config);}}
 
 class Processor {
 protected:
-	virtual bool _can_process(LexToken *) = 0;
-	virtual void _process(LexToken *token, std::vector<LexToken *> &out) = 0;
+	virtual bool _can_process(TokenImpl *) = 0;
+	virtual void _process(TokenImpl *token, std::vector<TokenImpl *> &out) = 0;
 public:
 	Processor() {};
 	Processor(IConfig *_config) {};
 	virtual ~Processor() {};
 
-	virtual void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out)
+	virtual void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out)
 	{
 		size_t i, length;
 		if (in.empty()) return;
@@ -62,5 +65,7 @@ public:
 		}
 	}
 };
+
+} //namespace bamboo
 
 #endif // PROCESSOR_HXX

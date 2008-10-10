@@ -39,6 +39,9 @@ extern "C" {
 #include "iconfig.hxx"
 #include <stdexcept>
 
+namespace bamboo {
+
+
 class LuaConfig: public IConfig {
 protected:
 	lua_State *_lua;
@@ -54,5 +57,7 @@ public:
 		throw std::runtime_error("LuaConfig: method not implement");
 	}
 };
+
+} //namespace bamboo
 
 #endif

@@ -29,11 +29,14 @@
 #ifndef CRF_PROCESSOR_HXX
 #define CRF_PROCESSOR_HXX
 
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
 #include <sstream>
 #include <crfpp.h>
+
+namespace bamboo {
+
 
 class CRFProcessor: public Processor {
 protected:
@@ -43,11 +46,11 @@ protected:
 	std::string _model_parameter;
 	
 	CRFProcessor();
-	bool _can_process(LexToken *token) 
+	bool _can_process(TokenImpl *token) 
 	{
-		return (token->get_attr() == LexToken::attr_unknow);
+		return (token->get_attr() == TokenImpl::attr_unknow);
 	}
-	void _process(LexToken *token, std::vector<LexToken *> &out);
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out);
 #ifdef TIMING
 	long _timing_parser;
 #endif
@@ -55,5 +58,7 @@ public:
 	CRFProcessor(IConfig *config);
 	~CRFProcessor();
 };
+
+} //namespace bamboo
 
 #endif // CRF_PROCESSOR_HXX

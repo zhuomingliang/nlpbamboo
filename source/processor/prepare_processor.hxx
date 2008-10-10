@@ -34,18 +34,23 @@
 #include "datrie.hxx"
 #include "utf8.hxx"
 
+namespace bamboo {
+
+
 class PrepareProcessor: public Processor {
 protected:
 	PrepareProcessor();
-	bool _can_process(LexToken *token)
+	bool _can_process(TokenImpl *token)
 	{
-		return (token->get_attr() == LexToken::attr_unknow);
+		return (token->get_attr() == TokenImpl::attr_unknow);
 	}
-	void _process(LexToken *token, std::vector<LexToken *> &out);
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out);
 	int _characterize;
 public:
 	PrepareProcessor(IConfig *config);
 	~PrepareProcessor() {};
 };
+
+} //namespace bamboo
 
 #endif // PREPARE_PROCESSOR_HXX

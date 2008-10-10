@@ -40,6 +40,9 @@
 
 #include "mmap.hxx"
 
+namespace bamboo {
+
+
 typedef void (*on_explore_finish_t)(const char*, int, void *);
 class DoubleArray {
 	friend class TrieDebugger;
@@ -214,5 +217,7 @@ private:
 	DoubleArray(DoubleArray &) {}
 
 };
+
+} //namespace bamboo
 
 #endif // DOUBLE_ARRAY_HPP

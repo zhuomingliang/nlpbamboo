@@ -32,7 +32,7 @@
 
 #include "postgres.h"
 #include "utils/builtins.h"
-#include "ibamboo.hxx"
+#include "bamboo.hxx"
 
 PG_MODULE_MAGIC;
 
@@ -57,8 +57,8 @@ void _PG_fini(void)
 Datum bamboo(PG_FUNCTION_ARGS)
 {
 	text *in = PG_GETARG_TEXT_P(0);
-	char *s;
-	char *t;
+	char *s = NULL;
+	char *t = NULL;
 
 	s = (char *) palloc(VARSIZE(in) - VARHDRSZ + 1);
 	memcpy(s, VARDATA(in), VARSIZE(in) - VARHDRSZ);
@@ -66,8 +66,7 @@ Datum bamboo(PG_FUNCTION_ARGS)
 
 	if (handle == NULL) 
 		elog(ERROR, "bamboo init failed.");
-	t = palloc(((VARSIZE(in) - VARHDRSZ + 1) << 1) + 1);
-	bamboo_parse(handle, t, s);
-
-	PG_RETURN_TEXT_P(DatumGetTextP(DirectFunctionCall1(textin, CStringGetDatum(t))));
+	bamboo_parse(handle, &t, s);
+	
+	PG_RETURN_TEXT_P(DatumGetTextP(DirectFunctionCall1(textin, CStringGetDatum(pstrdup(t)))));
 }

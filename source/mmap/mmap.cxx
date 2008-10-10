@@ -27,3 +27,9 @@
  */
 
 #include "mmap.hxx"
+
+namespace bamboo {
+
+
+
+} //namespace bamboo

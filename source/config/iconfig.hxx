@@ -33,6 +33,9 @@
 #include <cstring>
 #include <vector>
 
+namespace bamboo {
+
+
 
 class IConfig {
 public:
@@ -47,4 +50,7 @@ public:
 	IConfig() {}
 	virtual ~IConfig() {}
 };
+
+} //namespace bamboo
+
 #endif // ICONFIG_HPP

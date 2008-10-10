@@ -32,6 +32,9 @@
 #include <cassert>
 #include <iostream>
 
+namespace bamboo {
+
+
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(MaxforwardProcessor)
 
@@ -53,7 +56,7 @@ MaxforwardProcessor::~MaxforwardProcessor()
 	delete _lexicon;
 }
 
-void MaxforwardProcessor::_process(LexToken *token, std::vector<LexToken *> &out)
+void MaxforwardProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 {
 	size_t length, max_token_length, i, j, k;
 	char *s;
@@ -67,7 +70,10 @@ void MaxforwardProcessor::_process(LexToken *token, std::vector<LexToken *> &out
 			if (_lexicon->search(_token) > 0) break;
 		}
 		if (j == 0) {j = 1;}
-		out.push_back(new LexToken(_token, LexToken::attr_cword));
+		out.push_back(new TokenImpl(_token, TokenImpl::attr_cword));
 		i = i + j - 1;
 	}
 }
+
+
+} //namespace bamboo

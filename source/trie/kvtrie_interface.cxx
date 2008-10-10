@@ -29,6 +29,9 @@
 #include "kvtrie_interface.h"
 #include "kvtrie.hxx"
 
+namespace bamboo {
+
+
 void *kvtrie_open(const char *index, const char *data)
 {
 	KVTrie *kvt;
@@ -46,3 +49,6 @@ void kvtrie_close(void *handle)
 {
 	delete (KVTrie *)handle;
 }
+
+
+} //namespace bamboo

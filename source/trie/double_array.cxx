@@ -28,6 +28,9 @@
 
 #include "double_array.hxx"
 
+namespace bamboo {
+
+
 DoubleArray::DoubleArray(int num)
 	:_header(NULL), _state(NULL), _mmap(NULL)
 {
@@ -198,3 +201,6 @@ void DoubleArray::save(const char *filename)
 	fwrite(_state, _header->num * sizeof(_state_t), 1, fp);
 	fclose(fp);
 }
+
+
+} //namespace bamboo

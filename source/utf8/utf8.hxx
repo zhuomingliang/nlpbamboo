@@ -33,6 +33,9 @@
 #include <cstdlib>
 #include <iostream>
 
+namespace bamboo {
+
+
 class utf8 {
 protected:
 	static const char _map[], _map_ignore[];
@@ -164,4 +167,7 @@ public:
 		return dbc;
 	}
 };
+
+} //namespace bamboo
+
 #endif

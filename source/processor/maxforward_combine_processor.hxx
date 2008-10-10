@@ -29,10 +29,13 @@
 #ifndef MAXFORWARD_COMBINE_PROCESSOR_HXX
 #define MAXFORWARD_COMBINE_PROCESSOR_HXX
 
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
 #include "utf8.hxx"
+
+namespace bamboo {
+
 
 class MaxforwardCombineProcessor: public Processor {
 protected:
@@ -41,13 +44,15 @@ protected:
 	MaxforwardCombineProcessor();
 	char *_token;
 	int _min_token_length, _max_token_length, _combine_maxforward;
-	bool _can_process(LexToken *token) {return true;}
-	void _process(LexToken *token, std::vector<LexToken *> &out) {};
-	inline void _tokenize(std::vector<LexToken *> &out);
+	bool _can_process(TokenImpl *token) {return true;}
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {};
+	inline void _tokenize(std::vector<TokenImpl *> &out);
 public:
-	void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out);
+	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
 	MaxforwardCombineProcessor(IConfig *config);
 	~MaxforwardCombineProcessor();
 };
+
+} //namespace bamboo
 
 #endif // MAXFORWARD_COMBINE_PROCESSOR_HXX

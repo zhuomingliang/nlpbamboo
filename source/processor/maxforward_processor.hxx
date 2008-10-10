@@ -29,9 +29,12 @@
 #ifndef MAXFORWARD_PROCESSOR_HXX
 #define MAXFORWARD_PROCESSOR_HXX
 
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
+
+namespace bamboo {
+
 
 class MaxforwardProcessor: public Processor {
 protected:
@@ -40,15 +43,17 @@ protected:
 	char *_token;
 
 	MaxforwardProcessor();
-	bool _can_process(LexToken *token) 
+	bool _can_process(TokenImpl *token) 
 	{
-		return (token->get_attr() == LexToken::attr_unknow);
+		return (token->get_attr() == TokenImpl::attr_unknow);
 	}
-	void _process(LexToken *token, std::vector<LexToken *> &out);
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out);
 
 public:
 	MaxforwardProcessor(IConfig *config);
 	~MaxforwardProcessor();
 };
+
+} //namespace bamboo
 
 #endif // MAXFORWARD_PROCESSOR_HXX

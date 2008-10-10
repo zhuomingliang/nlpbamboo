@@ -41,6 +41,9 @@
 
 #include "iconfig.hxx"
 
+namespace bamboo {
+
+
 class SimpleConfig:public IConfig {
 protected:
 	size_t _deep_parse_level;
@@ -181,5 +184,7 @@ public:
 		}
 	}
 };
+
+} //namespace bamboo
 
 #endif

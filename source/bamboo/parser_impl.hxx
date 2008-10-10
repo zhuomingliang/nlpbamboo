@@ -26,73 +26,46 @@
  * 
  */
 
-#include <iostream>
+#ifndef PARSER_IMPL_HXX
+#define PARSER_IMPL_HXX
+
 #include <stdexcept>
+#include <cstring>
+#include <vector>
 
-#include "bamboo.hxx"
-#include "ibamboo.hxx"
+#include "lexicon_factory.hxx"
+#include "config_factory.hxx"
+#include "processor.hxx"
+#include "token_impl.hxx"
 
-void *bamboo_init(const char *cfg)
-{
-	try {
-		return new Bamboo(cfg);
-	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
-		return NULL;
-	}
-}
+namespace bamboo {
 
-void bamboo_clean(void *handle)
-{
-	try {
-		if (handle == NULL)
-			throw new std::runtime_error("handle is null");
-		delete static_cast<Bamboo *>(handle);
-	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
-	}
-}
 
-ssize_t bamboo_parse(void *handle, char *t, const char *s)
-{
-	try {
-		if (handle == NULL) throw new std::runtime_error("handle is null");
-		if (s == NULL) return 0;
-		if (t == NULL) return 0;
+class ParserImpl {
+public:
+	ParserImpl(const char *file);
+	~ParserImpl();
+protected:
+	typedef Processor* (*_create_processor_t)(IConfig *);
 
-		if (*s == '\0') {
-			*t = '\0';
-			return 0;
-		}
+	int _verbose;
+	IConfig *_config;
+	const char *processor_root;
+	std::vector<std::string> _process_chain;
+	std::vector<TokenImpl *> _token_fifo[2];
+	std::vector<TokenImpl *> *_in, *_out, *_swap;
+	std::vector<Processor *> _processors;
+	std::vector<void *> _dl_handles;
 
-		Bamboo *bamboo = static_cast<Bamboo *>(handle);
-		return bamboo->parse(t, s);
-	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
-		return -1;
-	}
-}
-void bamboo_set(void *handle, const char *s)
-{
-	try {
-		if (handle == NULL) throw new std::runtime_error("handle is null");
-		if (s == NULL) return;
+	void _parse(const char *s);
+	void _init();
+	void _fini();
+	inline void _lazy_create_config(const char *);
+#ifdef TIMING
+	size_t _timing_process[128];
+#endif
+};
 
-		Bamboo *bamboo = static_cast<Bamboo *>(handle);
-		bamboo->set(s);
-	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
-	}
-}
+} //namespace bamboo
 
-void bamboo_reload(void *handle)
-{
-	try {
-		if (handle == NULL) throw new std::runtime_error("handle is null");
-
-		Bamboo *bamboo = static_cast<Bamboo *>(handle);
-		bamboo->reload();
-	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
-	}
-}
+#endif

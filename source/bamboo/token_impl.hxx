@@ -26,15 +26,18 @@
  * 
  */
 
-#ifndef LEX_TOKEN_CXX
-#define LEX_TOKEN_CXX
+#ifndef TOKEN_IMPL_HXX
+#define TOKEN_IMPL_HXX
 
 #include <cstdlib>
 #include <cstring>
 
 #include "utf8.hxx"
 
-class LexToken {
+namespace bamboo {
+
+
+class TokenImpl {
 protected:
 	char *_orig_token;
 	int _attr;
@@ -50,12 +53,12 @@ public:
 		attr_cword,
 		attr_punct,
 	};
-	LexToken()
+	TokenImpl()
 		:_orig_token(NULL), _attr(attr_unknow), _length(0), _orig_length(0), 
 		_bytes(0), _orig_bytes(0), _token(NULL), _pos(0)
 	{
 	}
-	LexToken(const char *s, const char *os, int attr = attr_unknow)
+	TokenImpl(const char *s, const char *os, int attr = attr_unknow)
 		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), 
 		_orig_bytes(0), _token(NULL), _pos(0)
 	{
@@ -66,7 +69,7 @@ public:
 		_orig_length = utf8::length(os);
 		_orig_bytes = strlen(os);
 	}
-	LexToken(const char *s, int attr = attr_unknow)
+	TokenImpl(const char *s, int attr = attr_unknow)
 		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), 
 		_orig_bytes(0), _token(NULL), _pos(0)
 	{
@@ -74,7 +77,7 @@ public:
 		_length = utf8::length(s);
 		_bytes = strlen(s);
 	}
-	LexToken(const LexToken &rhs)
+	TokenImpl(const TokenImpl &rhs)
 		:_orig_token(NULL), _token(NULL)
 	{
 		if (rhs._token) _token = strdup(rhs._token);
@@ -87,7 +90,7 @@ public:
 		_pos = rhs._pos;
 	}
 
-	~LexToken()
+	~TokenImpl()
 	{
 		if (_token) {
 			free(_token);
@@ -135,19 +138,8 @@ public:
 	size_t get_orig_length() {return (_orig_length > 0)?_orig_length:_length;}
 	size_t get_orig_bytes() {return (_orig_bytes > 0)?_orig_bytes:_bytes;}
 	unsigned short get_pos() {return _pos;}
-	
-	static char *get_pos_str(unsigned short p) {
-		static char pos_str[3] = {0};
-		if(p > 256) {
-			pos_str[0] = p >> 8;
-			pos_str[1] = p % 256;
-		} else {
-			pos_str[0] = p % 256;
-			pos_str[1] = '\0';
-		}
-		return pos_str;
-	}
 };
 
-#endif
+} //namespace bamboo
 
+#endif

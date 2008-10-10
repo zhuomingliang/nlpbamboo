@@ -49,7 +49,7 @@
 #include "utils/builtins.h"
 #include "dlfcn.h"
 
-#include "ibamboo.hxx"
+#include "bamboo.hxx"
 
 /* Output token categories */
 
@@ -1578,14 +1578,13 @@ void _PG_fini(void)
 Datum
 chineseprs_start(PG_FUNCTION_ARGS)
 {
-	char *t = NULL;
+	const char *t = NULL;
 	TParser *prs = TParserInit((char*)PG_GETARG_POINTER(0), PG_GETARG_INT32(1));
 
 	while(TParserGet(prs))
 		;
-	t = (char *)malloc(strlen(prs->trimmed) * 4);
-	bamboo_parse(handle, t, prs->trimmed);
-	prs->sege = t;
+	bamboo_parse(handle, &t, prs->trimmed);
+	prs->sege = strdup(t);
 	if (prs->sege == NULL) {
 		prs->sege = strdup(" ");
 	}

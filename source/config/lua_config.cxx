@@ -32,6 +32,9 @@
 #include <cstdlib>
 #include "lua_config.hxx"
 
+namespace bamboo {
+
+
 LuaConfig::LuaConfig()
 	:_lua(NULL)
 {
@@ -93,3 +96,6 @@ void LuaConfig::get_value(const char *key, const char *&val)
 	}
 	val = lua_tolstring(_lua, -1, NULL);
 }
+
+
+} //namespace bamboo

@@ -36,6 +36,9 @@
 #include "mmap.hxx"
 #include "datrie.hxx"
 
+namespace bamboo {
+
+
 class KVTrie {
 protected:
 	DATrie _index;
@@ -85,5 +88,6 @@ public:
 	}
 };
 
+} //namespace bamboo
 
 #endif // KVTRIE_HXX

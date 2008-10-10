@@ -32,6 +32,9 @@
 #include "iconfig.hxx"
 #include "simple_config.hxx"
 
+namespace bamboo {
+
+
 class ConfigFactory {
 private:
 	ConfigFactory();
@@ -41,5 +44,7 @@ public:
 		return new SimpleConfig(filename);
 	}
 };
+
+} //namespace bamboo
 
 #endif //CONFIG_FACTORY_HXX

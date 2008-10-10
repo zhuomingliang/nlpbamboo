@@ -29,11 +29,14 @@
 #ifndef CRF2_PROCESSOR_HXX
 #define CRF2_PROCESSOR_HXX
 
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
 #include <sstream>
 #include <crfpp.h>
+
+namespace bamboo {
+
 
 class CRF2Processor: public Processor {
 protected:
@@ -45,15 +48,17 @@ protected:
 	inline const char *_get_crf2_tag(int attr);
 
 	CRF2Processor();
-	bool _can_process(LexToken *token) {return true;};
-	void _process(LexToken *token, std::vector<LexToken *> &out) {};
-	void _crf2_tagger(std::vector<LexToken *> &in, size_t offset, std::vector<LexToken *> &out);
+	bool _can_process(TokenImpl *token) {return true;};
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {};
+	void _crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out);
 
 public:
 	CRF2Processor(IConfig *config);
 	~CRF2Processor();
 
-	void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out);
+	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
 };
+
+} //namespace bamboo
 
 #endif // CRF2_PROCESSOR_HXX

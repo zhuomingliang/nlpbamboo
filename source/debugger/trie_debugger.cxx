@@ -28,6 +28,9 @@
 
 #include "trie_debugger.hxx"
 
+namespace bamboo {
+
+
 void TrieDebugger::trace(int s)
 {
 	int *p, key[_darray->alphabet_size + 1];
@@ -84,3 +87,6 @@ void TrieDebugger::_trace_finish()
 	
 	std::clog << std::endl;
 }
+
+
+} //namespace bamboo

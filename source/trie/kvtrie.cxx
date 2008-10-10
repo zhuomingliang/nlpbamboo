@@ -28,3 +28,8 @@
 
 #include "kvtrie.hxx"
 
+namespace bamboo {
+
+
+
+} //namespace bamboo

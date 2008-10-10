@@ -29,25 +29,30 @@
 #ifndef POS_PROCESSOR_HXX
 #define POS_PROCESSOR_HXX
 
-#include "lex_token.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
 #include <sstream>
 #include <crfpp.h>
+
+namespace bamboo {
+
 
 class POSProcessor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
 	
 	POSProcessor();
-	bool _can_process(LexToken *token) {return true;}
-	void _process(LexToken *token, std::vector<LexToken *> &out) {}
+	bool _can_process(TokenImpl *token) {return true;}
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {}
 
 public:
 	POSProcessor(IConfig *config);
 	~POSProcessor();
 
-	void process(std::vector<LexToken *> &in, std::vector<LexToken *> &out);
+	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
 };
+
+} //namespace bamboo
 
 #endif // POS_PROCESSOR_HXX
