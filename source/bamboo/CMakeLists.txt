@@ -10,7 +10,11 @@ install(TARGETS bamboo_shared DESTINATION ${LIB_INSTALL_DIR})
 install(FILES bamboo.hxx DESTINATION ${INC_INSTALL_DIR})
 
 add_executable(bamboo_cli cli.cxx)
-target_link_libraries(bamboo_cli -lbamboo)
+if (CLI_SHARED)
+	target_link_libraries(bamboo_cli -lbamboo)
+else (CLI_SHARED)
+	target_link_libraries(bamboo_cli bamboo parser_impl config_factory utf8 dl)
+endif (CLI_SHARED)
 set_target_properties(bamboo_cli PROPERTIES OUTPUT_NAME "bamboo")
 install(TARGETS bamboo_cli DESTINATION ${BIN_INSTALL_DIR})
 
