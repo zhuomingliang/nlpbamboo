@@ -9,7 +9,7 @@ while(<DATA>) {
 }
 
 while(<>) {
-	s!/(\w+)!sprintf("/\033[31m%s\033[0m", $map{lc($1)})!seg;
+	s!/(\w+)!sprintf("/%s", $map{lc($1)})!seg;
 	print $_;
 }
 
