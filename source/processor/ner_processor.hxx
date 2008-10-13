@@ -16,7 +16,7 @@
  * THIS SOFTWARE IS PROVIDED BY weibingzheng@gmail.com ''AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL detrox@gmail.com BE LIABLE FOR ANY
+ * DISCLAIMED. IN NO EVENT SHALL weibingzheng@gmail.com BE LIABLE FOR ANY
  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -26,69 +26,33 @@
  * 
  */
 
-#include "lexicon_factory.hxx"
-#include "pos_processor.hxx"
-#include <cassert>
-#include <cstdio>
-#include <stdexcept>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#ifndef NER_PROCESSOR_HXX
+#define NER_PROCESSOR_HXX
+
+#include "token_impl.hxx"
+#include "processor.hxx"
+#include "ilexicon.hxx"
+#include <sstream>
+#include <crfpp.h>
 
 namespace bamboo {
 
 
-PROCESSOR_MAGIC
-PROCESSOR_MODULE(POSProcessor)
+class NERProcessor: public Processor {
+protected:
+	CRFPP::Tagger *_tagger;
+	
+	NERProcessor();
+	bool _can_process(TokenImpl *token) {return true;}
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out);
 
-POSProcessor::POSProcessor(IConfig *config) {
-	const char *s;
-	struct stat buf;
+public:
+	NERProcessor(IConfig *config);
+	~NERProcessor();
 
-	config->get_value("crf_pos_model", s);
-	std::string model_param = std::string("-m ") + std::string(s);
-	if(stat(s, &buf)==0) {
-		_tagger = CRFPP::createTagger(model_param.c_str());
-	} else {
-		throw std::runtime_error(std::string("can not load model ") + s + ": " + strerror(errno));
-	}
-}
-
-POSProcessor::~POSProcessor() {
-	delete _tagger;
-}
-
-void POSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
-	_tagger->clear();
-
-	size_t i, size = in.size();
-
-	for(i=0; i<size; ++i) {
-		TokenImpl *token = in[i];
-		const char *str = token->get_orig_token();
-		_tagger->add(str); 
-	}
-
-#ifdef TIMING	
-	static double t = 0;
-	struct timeval tv1, tv2;
-	gettimeofday(&tv1, 0);
-#endif
-	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
-#ifdef TIMING	
-	gettimeofday(&tv2, 0);
-	t += (tv2.tv_sec - tv1.tv_sec)*1000000 + tv2.tv_usec - tv1.tv_usec;
-	std::cerr<<"pos processor consumed: "<< t/1000 << std::endl;
-#endif
-
-	assert(size==_tagger->size());
-	for(i=0; i<size; ++i) {
-		const char *pos = _tagger->y2(i);
-		TokenImpl *token = in[i];
-		token->set_pos(pos);
-		out.push_back(token);
-	}
-}
-
+	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
+};
 
 } //namespace bamboo
+
+#endif // NER_PROCESSOR_HXX

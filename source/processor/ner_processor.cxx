@@ -27,25 +27,29 @@
  */
 
 #include "lexicon_factory.hxx"
-#include "pos_processor.hxx"
+#include "ner_processor.hxx"
 #include <cassert>
 #include <cstdio>
 #include <stdexcept>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <iostream>
+#include "bamboo.hxx"
+
+using namespace std;
 
 namespace bamboo {
 
 
 PROCESSOR_MAGIC
-PROCESSOR_MODULE(POSProcessor)
+PROCESSOR_MODULE(NERProcessor)
 
-POSProcessor::POSProcessor(IConfig *config) {
+NERProcessor::NERProcessor(IConfig *config) {
 	const char *s;
 	struct stat buf;
 
-	config->get_value("crf_pos_model", s);
+	config->get_value("crf_ner_model", s);
 	std::string model_param = std::string("-m ") + std::string(s);
 	if(stat(s, &buf)==0) {
 		_tagger = CRFPP::createTagger(model_param.c_str());
@@ -54,39 +58,85 @@ POSProcessor::POSProcessor(IConfig *config) {
 	}
 }
 
-POSProcessor::~POSProcessor() {
+NERProcessor::~NERProcessor() {
 	delete _tagger;
 }
 
-void POSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
+void NERProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out) {
+	enum {MAXSTR=128};
+	size_t size, i, step;
+	char uch[8];
+	char buf[128], *top = buf;
+	const char * str = token->get_token();
+	std::vector<std::string> vecToken;
+
+	size = token->get_length();
+	for(i=0; i<size; ++i) {
+		step = utf8::sub(uch, str, i, 1);
+		if(step==1) {
+			*top++ = *uch;
+		} else {
+			if(top!=buf) {
+				*top = 0;
+				vecToken.push_back(buf);
+			}
+			top = buf;
+			vecToken.push_back(uch);
+		}
+	}
+	if(top!=buf) {
+		*top = 0;
+		vecToken.push_back(buf);
+	}
+
+	if( (size=vecToken.size())==0 ) return;
+
+	const char *tag;
+	char * pos_str = strfpos(token->get_pos());
+	for(i=0; i<size-1; ++i) {
+		switch(i) {
+		case 0: tag = "B"; break;
+		case 1: tag = "B1"; break;
+		case 2: tag = "B2"; break;
+		default: tag = "M";
+		}
+		sprintf(buf, "%s%s", pos_str, tag);
+		const char *data[] = {vecToken[i].c_str(), buf};
+		_tagger->add(2, data);
+	}
+	if(size==1) tag = "S"; else tag = "E";
+	sprintf(buf, "%s%s", pos_str, tag);
+	const char *data[] = {vecToken[i].c_str(), buf};
+	_tagger->add(2, data);
+}
+
+void NERProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
 	_tagger->clear();
 
 	size_t i, size = in.size();
 
 	for(i=0; i<size; ++i) {
 		TokenImpl *token = in[i];
-		const char *str = token->get_orig_token();
-		_tagger->add(str); 
+
+		_process(token, out);
+		delete token;
 	}
 
-#ifdef TIMING	
-	static double t = 0;
-	struct timeval tv1, tv2;
-	gettimeofday(&tv1, 0);
-#endif
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
-#ifdef TIMING	
-	gettimeofday(&tv2, 0);
-	t += (tv2.tv_sec - tv1.tv_sec)*1000000 + tv2.tv_usec - tv1.tv_usec;
-	std::cerr<<"pos processor consumed: "<< t/1000 << std::endl;
-#endif
 
-	assert(size==_tagger->size());
+	enum {max_str_size=128};
+	std::string ner_word("");
+	ner_word.reserve(max_str_size);
+	size = _tagger->size();
 	for(i=0; i<size; ++i) {
-		const char *pos = _tagger->y2(i);
-		TokenImpl *token = in[i];
-		token->set_pos(pos);
-		out.push_back(token);
+		const char *tag = _tagger->y2(i);
+		if(*tag != 'O') ner_word += _tagger->x(i, 0);
+
+		if( (*tag=='E'||*tag=='S'||*tag=='O') && ner_word.size()>0) {
+			out.push_back(new TokenImpl(ner_word.c_str()));
+			ner_word.clear();
+		}
+
 	}
 }
 
