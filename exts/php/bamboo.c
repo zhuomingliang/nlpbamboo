@@ -11,6 +11,7 @@
 static function_entry bamboo_functions[] = {
     PHP_FE(bamboo_open, NULL)
     PHP_FE(bamboo_parse, NULL)
+    PHP_FE(bamboo_parse_with_pos, NULL)
     PHP_FE(bamboo_set, NULL)
     PHP_FE(bamboo_reload, NULL)
     PHP_FE(bamboo_close, NULL)
@@ -78,6 +79,20 @@ PHP_FUNCTION(bamboo_parse)
 		RETURN_NULL();
 
 	bamboo_parse(handle, &t, s);
+	if (!*t) RETURN_NULL();
+	RETURN_STRING(estrdup(t), 1);
+}
+
+PHP_FUNCTION(bamboo_parse_with_pos)
+{
+	char *ret = NULL, *s = NULL;
+	const char *t = NULL;
+	int size;
+		
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &s, &size) == FAILURE)
+		RETURN_NULL();
+
+	bamboo_parse_with_pos(handle, &t, s);
 	if (!*t) RETURN_NULL();
 	RETURN_STRING(estrdup(t), 1);
 }

@@ -70,6 +70,7 @@ extern "C" {
 #endif	
 void *bamboo_init(const char *s);
 ssize_t bamboo_parse(void *handle, const char **t, const char *s);
+ssize_t bamboo_parse_with_pos(void *handle, const char **t, const char *s);
 void bamboo_set(void *handle, const char *s);
 void bamboo_reload(void *handle);
 void bamboo_clean(void *handle);

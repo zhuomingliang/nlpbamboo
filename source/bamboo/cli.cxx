@@ -89,7 +89,7 @@ static int _do()
 			if (s[length - 1] == '\n') s[length - 1] = '\0';
 			if (s[length - 2] == '\r') s[length - 2] = '\0';
 			gettimeofday(&tv[0], &tz);
-			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n")) 
+			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n"))
 				parser.parse(vec, t);
 			gettimeofday(&tv[1], &tz);
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);

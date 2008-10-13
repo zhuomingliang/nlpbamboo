@@ -3,13 +3,13 @@ PHP_ARG_ENABLE(bamboo, whether to enable bamboo nlp support,
 
 if test "$PHP_BAMBOO" != "no"; then
 	for i in /opt/bamboo/include /usr/include /usr/local/include; do
-		if test -r "$i/ibamboo.hxx"; then
+		if test -r "$i/bamboo.hxx"; then
 			BAMBOO_INCLUDE=$i
-			AC_DEFINE(HAVE_IBAMBOO_HXX,1,[Whether to have ibamboo.hxx])
+			AC_DEFINE(HAVE_BAMBOO_HXX,1,[Whether to have bamboo.hxx])
 		fi
 	done 
 	if test -z "$BAMBOO_INCLUDE"; then
-		AC_MSG_ERROR(Can not find ibamboo.hxx. Please specify correct Bamboo installation path)
+		AC_MSG_ERROR(Can not find bamboo.hxx. Please specify correct Bamboo installation path)
 	fi
 
 	for i in /opt/bamboo/lib /usr/lib /usr/local/lib; do

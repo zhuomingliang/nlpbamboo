@@ -92,6 +92,42 @@ ssize_t bamboo_parse(void *handle, const char **t, const char *s)
 		return -1;
 	}
 }
+/* This function is for test purpose */
+ssize_t bamboo_parse_with_pos(void *handle, const char **t, const char *s)
+{
+	size_t i, length;
+
+	try {
+		if (handle == NULL) throw new std::runtime_error("handle is null");
+		if (s == NULL) return 0;
+		if (t == NULL) return 0;
+
+		if (*s == '\0') {
+			*t = '\0';
+			return 0;
+		}
+
+		g_tokens.clear();
+		g_str.clear();
+		bamboo::Parser *bamboo = static_cast<bamboo::Parser *>(handle);
+		bamboo->parse(g_tokens, s);
+		length = g_tokens.size();
+		for (i = 0; i < length; i++) {
+			g_str += g_tokens[i]->token;
+			if (g_tokens[i]->pos) {
+				g_str += "/"; 
+				g_str += bamboo::strfpos(g_tokens[i]->pos);
+			}
+			if (i < length - 1) g_str += " ";
+		}
+		*t = g_str.c_str();
+		return g_str.length();
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
+		return -1;
+	}
+}
+
 void bamboo_set(void *handle, const char *s)
 {
 	try {
