@@ -56,6 +56,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		PS_NUMBER,
 		PS_PUNCT,
 		PS_WHITESPACE,
+		PS_IDENT,
 		PS_END
 	} state, parent;
 
@@ -78,17 +79,30 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		/* state transitions */
 		if (isalpha(cch)) state = PS_ALPHA;
 		else if (cch == '.' && state == PS_NUMBER) state = PS_NUMBER;
+//		else if ((isdigit(cch) || isalpha(cch)) && state == PS_IDENT) {state = PS_IDENT};
+//		else if (isdigit(cch) && state == PS_ALPHA) {parent = state = PS_IDENT};
 		else if (isdigit(cch)) state = PS_NUMBER;
+//		else if (ispunct(cch) && state == PS_ALPHA) {parent = state = PS_IDENT;}
+//		else if (ispunct(cch) && state == PS_NUMBER) {parent = state = PS_IDENT;}
 		else if (ispunct(cch)) state = PS_PUNCT;
 		else if (isspace(cch)) state = PS_WHITESPACE;
 		else if (*uch == '\0') state = PS_END;
 		else state = PS_UNKNOW;
+
+		if ((parent == PS_ALPHA || parent == PS_NUMBER || parent == PS_PUNCT)
+			&& (state == PS_ALPHA || state == PS_NUMBER || state == PS_PUNCT)) {
+			parent = state = PS_IDENT;
+		}
+
+		if (parent == PS_IDENT && (state == PS_ALPHA || state == PS_NUMBER || state == PS_PUNCT))
+			state = PS_IDENT;
 
 		if (state != parent || ( _characterize && state == PS_UNKNOW) ){
 			if (parent == PS_WHITESPACE) {
 				// do nothing
 			} else if (sbc.top > sbc.base) {
 				switch (parent) {
+					case PS_IDENT:
 					case PS_ALPHA: attr = TokenImpl::attr_alpha; break;
 					case PS_NUMBER: attr = TokenImpl::attr_number; break;
 					case PS_PUNCT: attr = TokenImpl::attr_punct; break;
