@@ -79,11 +79,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		/* state transitions */
 		if (isalpha(cch)) state = PS_ALPHA;
 		else if (cch == '.' && state == PS_NUMBER) state = PS_NUMBER;
-//		else if ((isdigit(cch) || isalpha(cch)) && state == PS_IDENT) {state = PS_IDENT};
-//		else if (isdigit(cch) && state == PS_ALPHA) {parent = state = PS_IDENT};
 		else if (isdigit(cch)) state = PS_NUMBER;
-//		else if (ispunct(cch) && state == PS_ALPHA) {parent = state = PS_IDENT;}
-//		else if (ispunct(cch) && state == PS_NUMBER) {parent = state = PS_IDENT;}
 		else if (ispunct(cch)) state = PS_PUNCT;
 		else if (isspace(cch)) state = PS_WHITESPACE;
 		else if (*uch == '\0') state = PS_END;
