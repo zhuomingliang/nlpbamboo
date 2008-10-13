@@ -86,7 +86,8 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		else state = PS_UNKNOW;
 
 		if ((parent == PS_ALPHA || parent == PS_NUMBER || parent == PS_PUNCT)
-			&& (state == PS_ALPHA || state == PS_NUMBER || state == PS_PUNCT)) {
+			&& (state == PS_ALPHA || state == PS_NUMBER || state == PS_PUNCT)
+			&& state != parent) {
 			parent = state = PS_IDENT;
 		}
 
