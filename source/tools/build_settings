@@ -7,7 +7,8 @@ index_dir=$top/index
 
 corpus="$data_dir/people-daily.txt"
 number_trailing="$data_dir/number-trailing.txt"
-user_combine="$data_dir/user-combine.txt"
+user_combine="$data_dir/user_combine.txt"
+break="$data_dir/break.txt"
 
-corpus_url="http://nlpbaboom.googlecode.com/files/people-daily.txt.gz" 
-number_trailing_url="http://nlpbaboom.googlecode.com/files/number_trailing.txt"
+corpus_url="http://nlpbamboo.googlecode.com/files/people-daily.txt.gz" 
+number_trailing_url="http://nlpbamboo.googlecode.com/files/number_trailing.txt"
