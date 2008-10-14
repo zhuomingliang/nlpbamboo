@@ -85,13 +85,14 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		else if (*uch == '\0') state = PS_END;
 		else state = PS_UNKNOW;
 
-		if ((parent == PS_ALPHA || parent == PS_NUMBER || parent == PS_PUNCT)
-			&& (state == PS_ALPHA || state == PS_NUMBER || state == PS_PUNCT)
+#define isconcat(c) ((c) == '-' || (c) == '_')	
+		if ((parent == PS_ALPHA || parent == PS_NUMBER || isconcat(cch))
+			&& (state == PS_ALPHA || state == PS_NUMBER || isconcat(cch))
 			&& state != parent) {
 			parent = state = PS_IDENT;
 		}
 
-		if (parent == PS_IDENT && (state == PS_ALPHA || state == PS_NUMBER || state == PS_PUNCT))
+		if (parent == PS_IDENT && (state == PS_ALPHA || state == PS_NUMBER || isconcat(cch)))
 			state = PS_IDENT;
 
 		if (state != parent || ( _characterize && state == PS_UNKNOW) ){
@@ -123,6 +124,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 			if (cch) *(dbc.top++) = cch;
 		}
 	}
+#undef isconcat	
 	delete []sbc.base;
 	delete []dbc.base;
 }
