@@ -30,8 +30,3 @@
 #include "lexicon_factory.hxx"
 #include "trie_lexicon.hxx"
 
-namespace bamboo {
-
-
-
-} //namespace bamboo

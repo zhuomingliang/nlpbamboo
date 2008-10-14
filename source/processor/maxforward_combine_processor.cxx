@@ -108,3 +108,4 @@ void MaxforwardCombineProcessor::process(std::vector<TokenImpl *> &in, std::vect
 
 
 } //namespace bamboo
+

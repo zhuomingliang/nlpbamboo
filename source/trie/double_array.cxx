@@ -204,3 +204,4 @@ void DoubleArray::save(const char *filename)
 
 
 } //namespace bamboo
+

@@ -52,3 +52,4 @@ void kvtrie_close(void *handle)
 
 
 } //namespace bamboo
+

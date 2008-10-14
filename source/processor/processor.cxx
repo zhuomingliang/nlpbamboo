@@ -28,8 +28,3 @@
 
 #include "processor.hxx"
 
-namespace bamboo {
-
-
-
-} //namespace bamboo

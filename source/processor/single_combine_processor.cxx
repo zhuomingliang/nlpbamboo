@@ -154,3 +154,4 @@ void SingleCombineProcessor::process(std::vector<TokenImpl *> &in, std::vector<T
 
 
 } //namespace bamboo
+
