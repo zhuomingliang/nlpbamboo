@@ -82,7 +82,7 @@ void CRF2Processor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl 
 	for (i = 0; i < size; ++i) {
 		TokenImpl *cur_tok = in[i];
 		const char *tok_str = cur_tok->get_token();
-		if(cur_tok->get_attr() == TokenImpl::attr_punct) tok_str = cur_tok->get_token();
+		if(cur_tok->get_attr() == TokenImpl::attr_punct) tok_str = cur_tok->get_orig_token();
 
 		if(cur_tok->get_pos() != 0) {
 			offset = i - _tagger->size();
