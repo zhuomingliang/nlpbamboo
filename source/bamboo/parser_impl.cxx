@@ -93,8 +93,15 @@ void ParserImpl::_init()
 		void *handle = NULL;
 		Processor *processor = NULL;
 
+		std::string processor_str = *it;
+		std::string parameter("");
+		std::string::size_type ptr = processor_str.find_first_of('/');
+		if(ptr!=std::string::npos) {
+			parameter = processor_str.substr(ptr+1, processor_str.size());
+			processor_str = processor_str.substr(0, ptr);
+		}
 		module.clear();
-		module.append(processor_root).append("/").append(*it).append(".so");
+		module.append(processor_root).append("/").append(processor_str).append(".so");
 		if (_verbose)
 			std::cerr << "loading processor " << module << std::endl;
 		if (!(handle = dlopen(module.c_str(), RTLD_NOW)))
@@ -104,6 +111,7 @@ void ParserImpl::_init()
 		if (!(processor = create(_config)))
 			throw std::runtime_error(std::string("can not create processor: ") + *it);
 
+		if(parameter.size()>0) processor->init(parameter.c_str());
 		_processors.push_back(processor);
 		_dl_handles.push_back(handle);
 	}

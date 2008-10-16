@@ -83,12 +83,17 @@ void CRF2Processor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl 
 		TokenImpl *cur_tok = in[i];
 		const char *tok_str = cur_tok->get_token();
 		if(cur_tok->get_attr() == TokenImpl::attr_punct) tok_str = cur_tok->get_token();
-		const char *data[] = {
-			tok_str,
-			_get_crf2_tag(cur_tok->get_attr()),
-			NULL
-		};
-		_tagger->add(2, data);
+
+		if(cur_tok->get_pos() != 0) {
+			offset = i - _tagger->size();
+			_crf2_tagger(in, offset, out);
+			_tagger->clear();
+			out.push_back(cur_tok);
+			continue;
+		} else {
+			const char *data[] = {tok_str, _get_crf2_tag(cur_tok->get_attr())};
+			_tagger->add(2, data);
+		}
 
 		if(*tok_str=='!' || *tok_str=='?' || *tok_str==';' || !strcmp(tok_str, "。")) {
 			offset = i - _tagger->size() + 1;
@@ -101,6 +106,7 @@ void CRF2Processor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl 
 }
 
 void CRF2Processor::_crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out) {
+	if(_tagger->size()==0) return;
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
 	_result.clear();

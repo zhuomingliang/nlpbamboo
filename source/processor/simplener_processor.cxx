@@ -46,50 +46,81 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(SIMPLENERProcess)
 
 SIMPLENERProcess::SIMPLENERProcess(IConfig *config) {
-	const char *s;
-	struct stat buf;
+	_config = config;
+	_ner_type = NULL;
+}
 
-	config->get_value("crf_ner2_model", s);
-	std::string model_param = std::string("-m ") + std::string(s);
-	if(stat(s, &buf)==0) {
+void SIMPLENERProcess::init(const char *ner_type) {
+	const char * model;
+	struct stat buf;
+	enum {max_model_name_len = 32};
+	char *model_name = new char[max_model_name_len];
+	snprintf(model_name, max_model_name_len, "crf_simplener_%s_model", ner_type);
+	_config->get_value(model_name, model);
+
+	std::string model_param = std::string("-m ") + std::string(model);
+	if(stat(model, &buf)==0) {
 		_tagger = CRFPP::createTagger(model_param.c_str());
 	} else {
-		throw std::runtime_error(std::string("can not load model ") + s + ": " + strerror(errno));
+		throw std::runtime_error(std::string("can not load model ") + model + ": " + strerror(errno));
 	}
+
+	_ner_type = strdup(ner_type);
+	delete [] model_name;
 }
 
 SIMPLENERProcess::~SIMPLENERProcess() {
 	delete _tagger;
+	if(_ner_type) free(_ner_type);
 }
 
 void SIMPLENERProcess::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
 	_tagger->clear();
 
-	size_t i, size = in.size();
+	size_t i, size = in.size(), max_token_size = 0;
+	unsigned short * POS = new unsigned short[size];
 
 	for(i=0; i<size; ++i) {
 		TokenImpl *token = in[i];
 		const char * str = token->get_token();
 		_tagger->add(1, &str);
+		max_token_size += token->get_bytes();
+		POS[i] = token->get_pos();
 		delete token;
 	}
 
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
-	enum {max_str_size=128};
 	std::string ner_word("");
-	ner_word.reserve(max_str_size);
+	ner_word.reserve(max_token_size);
+	assert(in.size() == _tagger->size());
 	size = _tagger->size();
 	for(i=0; i<size; ++i) {
 		const char *tag = _tagger->y2(i);
-		if(*tag != 'O') ner_word += _tagger->x(i, 0);
-
-		if( (*tag=='E'||*tag=='S'||*tag=='O') && ner_word.size()>0) {
-			out.push_back(new TokenImpl(ner_word.c_str()));
-			ner_word.clear();
+		if(*tag == 'O') {
+			if(ner_word.size() > 0) {
+				out.push_back(new TokenImpl(ner_word.c_str()));
+				out.back()->set_pos(_ner_type);
+				ner_word.clear();
+			}
+			out.push_back(new TokenImpl(_tagger->x(i, 0)));
+			out.back()->set_pos(POS[i]);
+		} else {
+			ner_word += _tagger->x(i, 0);
+			if( (*tag=='E'||*tag=='S') && ner_word.size()>0) {
+				out.push_back(new TokenImpl(ner_word.c_str()));
+				out.back()->set_pos(_ner_type);
+				ner_word.clear();
+			}
 		}
-
 	}
+	if(ner_word.size() > 0) {
+		out.push_back(new TokenImpl(ner_word.c_str()));
+		out.back()->set_pos(_ner_type);
+		ner_word.clear();
+	}
+
+	delete [] POS;
 }
 
 

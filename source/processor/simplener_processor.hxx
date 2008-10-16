@@ -41,6 +41,8 @@ namespace bamboo {
 class SIMPLENERProcess: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
+	IConfig *_config;
+	char * _ner_type;
 	
 	SIMPLENERProcess();
 	bool _can_process(TokenImpl *token) {return true;}
@@ -50,6 +52,7 @@ public:
 	SIMPLENERProcess(IConfig *config);
 	~SIMPLENERProcess();
 
+	void init(const char *ner_type);
 	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
 };
 

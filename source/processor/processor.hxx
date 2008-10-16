@@ -50,6 +50,7 @@ public:
 	Processor(IConfig *_config) {};
 	virtual ~Processor() {};
 
+	virtual void init(const char *parameter) {};
 	virtual void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out)
 	{
 		size_t i, length;
