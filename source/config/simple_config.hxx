@@ -106,10 +106,6 @@ protected:
 			}
 			if (state == PS_FIN || state == PS_REPFIN) break;
 		}
-		if(_key.size()>0) {
-			real.append(_map[_key]);
-			_key.clear();
-		}
 	}
 #undef isident
 	std::string& _deep_parse(std::string &str, size_t level = 0)
