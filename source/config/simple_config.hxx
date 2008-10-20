@@ -80,33 +80,38 @@ protected:
 			PS_DOLLAR,
 			PS_FETCHKEY,
 			PS_REPLACE,
+			PS_FIN,
+			PS_REPFIN,
 		} state;
 
 		real.clear();
 		_key.clear();
-		for (pch = str.c_str(), state = PS_UNKNOW; *pch; pch++) {
+#define isident(CH) (isalnum(CH) || (CH) == '_')
+		for (pch = str.c_str(), state = PS_UNKNOW; ;pch++) {
 			if (*pch == '\\') state = PS_ESCAPE;
+			else if (*pch == '\0') state = (state == PS_FETCHKEY)?PS_REPFIN:PS_FIN;
 			else if (*pch == '$' && state != PS_ESCAPE) state = PS_DOLLAR;
 			else if (state == PS_DOLLAR) state = PS_FETCHKEY;
-			else if (state == PS_FETCHKEY && !isalnum(*pch) && *pch != '{') state = PS_REPLACE;
+			else if (state == PS_FETCHKEY && !isident(*pch) && *pch != '{') state = PS_REPLACE;
 			else if (state != PS_FETCHKEY) state = PS_UNKNOW;
 
 			if (state == PS_UNKNOW) real.append(pch, 1);
 			else if (state == PS_FETCHKEY) {
-				if (isalnum(*pch)) _key.append(pch, 1);
+				if (isident(*pch)) _key.append(pch, 1);
 				if (*pch == '{') opencb = true;
-			} else if (state == PS_REPLACE) {
+			} else if (state == PS_REPLACE || state == PS_REPFIN) {
 				real.append(_map[_key]); 
 				_key.clear(); 
 				if (!(opencb && *pch == '}')) pch--;
 			}
+			if (state == PS_FIN || state == PS_REPFIN) break;
 		}
 		if(_key.size()>0) {
 			real.append(_map[_key]);
 			_key.clear();
 		}
 	}
-
+#undef isident
 	std::string& _deep_parse(std::string &str, size_t level = 0)
 	{
 		size_t i;
