@@ -101,6 +101,10 @@ protected:
 				if (!(opencb && *pch == '}')) pch--;
 			}
 		}
+		if(_key.size()>0) {
+			real.append(_map[_key]);
+			_key.clear();
+		}
 	}
 
 	std::string& _deep_parse(std::string &str, size_t level = 0)
