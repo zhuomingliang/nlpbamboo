@@ -78,49 +78,50 @@ void SIMPLENERProcess::process(std::vector<TokenImpl *> &in, std::vector<TokenIm
 	_tagger->clear();
 
 	size_t i, size = in.size(), max_token_size = 0;
-	unsigned short * POS = new unsigned short[size];
 
 	for(i=0; i<size; ++i) {
 		TokenImpl *token = in[i];
 		const char * str = token->get_token();
 		_tagger->add(1, &str);
 		max_token_size += token->get_bytes();
-		POS[i] = token->get_pos();
-		delete token;
 	}
 
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
-	std::string ner_word("");
-	ner_word.reserve(max_token_size);
+	std::string ner_str(""), ner_str_orig("");
+	ner_str.reserve(max_token_size);
+	ner_str_orig.reserve(max_token_size);
 	assert(in.size() == _tagger->size());
 	size = _tagger->size();
 	for(i=0; i<size; ++i) {
 		const char *tag = _tagger->y2(i);
+		TokenImpl *token = in[i];
 		if(*tag == 'O') {
-			if(ner_word.size() > 0) {
-				out.push_back(new TokenImpl(ner_word.c_str()));
+			if(ner_str.size() > 0) {
+				out.push_back(new TokenImpl(ner_str.c_str(), ner_str_orig.c_str()));
 				out.back()->set_pos(_ner_type);
-				ner_word.clear();
+				ner_str.clear();
+				ner_str_orig.clear();
 			}
-			out.push_back(new TokenImpl(_tagger->x(i, 0)));
-			out.back()->set_pos(POS[i]);
+			out.push_back(new TokenImpl(*token));
 		} else {
-			ner_word += _tagger->x(i, 0);
-			if( (*tag=='E'||*tag=='S') && ner_word.size()>0) {
-				out.push_back(new TokenImpl(ner_word.c_str()));
+			ner_str += token->get_token();
+			ner_str_orig += token->get_orig_token();
+			if( (*tag=='E'||*tag=='S') && ner_str.size()>0) {
+				out.push_back(new TokenImpl(ner_str.c_str(), ner_str_orig.c_str()));
 				out.back()->set_pos(_ner_type);
-				ner_word.clear();
+				ner_str.clear();
+				ner_str_orig.clear();
 			}
 		}
+		delete token;
 	}
-	if(ner_word.size() > 0) {
-		out.push_back(new TokenImpl(ner_word.c_str()));
+	if(ner_str.size() > 0) {
+		out.push_back(new TokenImpl(ner_str.c_str(), ner_str_orig.c_str()));
 		out.back()->set_pos(_ner_type);
-		ner_word.clear();
+		ner_str.clear();
+		ner_str_orig.clear();
 	}
-
-	delete [] POS;
 }
 
 
