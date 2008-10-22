@@ -64,18 +64,12 @@ public:
 	{
 		_token = strdup(s);
 		_orig_token = strdup(os);
-		_length = utf8::length(s);
-		_bytes = strlen(s);
-		_orig_length = utf8::length(os);
-		_orig_bytes = strlen(os);
 	}
 	TokenImpl(const char *s, int attr = attr_unknow)
 		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), 
 		_orig_bytes(0), _token(NULL), _pos(0)
 	{
 		_token = strdup(s);
-		_length = utf8::length(s);
-		_bytes = strlen(s);
 	}
 	TokenImpl(const TokenImpl &rhs)
 		:_orig_token(NULL), _token(NULL)
@@ -83,10 +77,6 @@ public:
 		if (rhs._token) _token = strdup(rhs._token);
 		if (rhs._orig_token) _orig_token = strdup(rhs._orig_token);
 		_attr = rhs._attr;
-		_length = rhs._length;
-		_orig_length = rhs._orig_length;
-		_bytes = rhs._bytes;
-		_orig_bytes = rhs._orig_bytes;
 		_pos = rhs._pos;
 	}
 
@@ -118,8 +108,6 @@ public:
 			free(_token);
 		}
 		_token = strdup(s);
-		_length = utf8::length(s);
-		_bytes = strlen(s);
 	}
 	void set_attr(int attr) {
 		_attr = attr;
@@ -133,10 +121,32 @@ public:
 			_pos = _pos*256 + *(s+1);
 		}
 	}
-	size_t get_length() {return _length;}
-	size_t get_bytes() {return _bytes;}
-	size_t get_orig_length() {return (_orig_length > 0)?_orig_length:_length;}
-	size_t get_orig_bytes() {return (_orig_bytes > 0)?_orig_bytes:_bytes;}
+	size_t get_length() 
+	{
+		if (_length == 0) _length = utf8::length(_token);
+		return _length;
+	}
+	size_t get_bytes() 
+	{
+		if (_bytes == 0) _bytes = strlen(_token);
+		return _bytes;
+	}
+	size_t get_orig_length() 
+	{
+		if (_orig_token) {
+			if (_orig_length == 0) _orig_length = utf8::length(_orig_token);
+		} else {
+			return get_length();
+		}
+	}
+	size_t get_orig_bytes() 
+	{
+		if (_orig_token) {
+			if (_orig_bytes == 0) _orig_bytes = strlen(_orig_token);
+		} else {
+			return get_orig_bytes();
+		}
+	}
 	unsigned short get_pos() {return _pos;}
 };
 
