@@ -47,7 +47,11 @@ CRF2Processor::CRF2Processor(IConfig *config) {
 	config->get_value("crf2_token_model", s);
 
 	std::string model;
+#ifdef DEBUG
+	model = std::string("-n5 -m ") + std::string(s);
+#else
 	model = std::string("-m ") + std::string(s);
+#endif
 	if (stat(s, &st) == 0) {
 		_tagger = CRFPP::createTagger(model.c_str());
 	} else {
@@ -127,6 +131,23 @@ void CRF2Processor::_crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, st
 		}
 		delete cur_tok;
 	}
+
+#ifdef DEBUG
+	std::cout << "nbest outputs:" << std::endl;
+	for (size_t n = 0; n < 5; ++n) {
+		if (! _tagger->next()) break;
+		std::cout << "nbest n=" << n << "  prob=" << _tagger->prob() << std::endl;
+		for (size_t i = 0; i < _tagger->size(); ++i) {
+			/*for (size_t j = 0; j < _tagger->xsize(); ++j) {
+				std::cout << _tagger->x(i, j) << '\t';
+			}*/
+			std::cout << _tagger->x(i, 0) << '\t';
+			std::cout << _tagger->y2(i) << '\t';
+			std::cout << std::endl;
+		}
+	}
+	std::cout << std::endl;
+#endif
 
 	_tagger->clear();
 }
