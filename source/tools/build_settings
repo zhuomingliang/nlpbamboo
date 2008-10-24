@@ -6,7 +6,7 @@ build_dir=$top/build
 index_dir=$top/index
 
 corpus="$data_dir/people-daily.txt"
-number_trailing="$data_dir/number-trailing.txt"
+number_trailing="$data_dir/number_trailing.txt"
 user_combine="$data_dir/user_combine.txt"
 break="$data_dir/break.txt"
 
