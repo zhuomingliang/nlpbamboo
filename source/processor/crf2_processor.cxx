@@ -133,7 +133,7 @@ void CRF2Processor::_crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, st
 	}
 
 #ifdef DEBUG
-	std::cout << "nbest outputs:" << std::endl;
+	std::cout << "crf2 nbest outputs:" << std::endl;
 	for (size_t n = 0; n < 5; ++n) {
 		if (! _tagger->next()) break;
 		std::cout << "nbest n=" << n << "  prob=" << _tagger->prob() << std::endl;

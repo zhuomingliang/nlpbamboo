@@ -58,7 +58,11 @@ void SIMPLENERProcess::init(const char *ner_type) {
 	snprintf(model_name, max_model_name_len, "crf_simplener_%s_model", ner_type);
 	_config->get_value(model_name, model);
 
+#ifdef DEBUG
+	std::string model_param = std::string("-n5 -m ") + std::string(model);
+#else
 	std::string model_param = std::string("-m ") + std::string(model);
+#endif
 	if(stat(model, &buf)==0) {
 		_tagger = CRFPP::createTagger(model_param.c_str());
 	} else {
@@ -122,6 +126,24 @@ void SIMPLENERProcess::process(std::vector<TokenImpl *> &in, std::vector<TokenIm
 		ner_str.clear();
 		ner_str_orig.clear();
 	}
+
+#ifdef DEBUG
+	std::cout << "simplener nbest outputs:" << std::endl;
+	for (size_t n = 0; n < 5; ++n) {
+		if (! _tagger->next()) break;
+		std::cout << "nbest n=" << n << "  prob=" << _tagger->prob() << std::endl;
+		for (size_t i = 0; i < _tagger->size(); ++i) {
+			/*for (size_t j = 0; j < _tagger->xsize(); ++j) {
+				std::cout << _tagger->x(i, j) << '\t';
+			}*/
+			std::cout << _tagger->x(i, 0) << '\t';
+			std::cout << _tagger->y2(i) << '\t';
+			std::cout << std::endl;
+		}
+	}
+	std::cout << std::endl;
+#endif
+
 }
 
 
