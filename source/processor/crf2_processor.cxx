@@ -39,7 +39,9 @@ namespace bamboo {
 PROCESSOR_MAGIC
 PROCESSOR_MODULE(CRF2Processor)
 
-CRF2Processor::CRF2Processor(IConfig *config) {
+CRF2Processor::CRF2Processor(IConfig *config)
+	:_output_type(0)
+{
 	const char *s;
 	_token = new char[8];
 	struct stat st;
@@ -57,6 +59,13 @@ CRF2Processor::CRF2Processor(IConfig *config) {
 	} else {
 		throw std::runtime_error(std::string("can not load model ") + s + ": " + strerror(errno));
 	}
+}
+
+void CRF2Processor::init(const char *type) {
+	if(*type == '1')
+		_output_type = 1;
+	else
+		_output_type = 0;
 }
 
 CRF2Processor::~CRF2Processor()
@@ -92,6 +101,10 @@ void CRF2Processor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl 
 			offset = i - _tagger->size();
 			_crf2_tagger(in, offset, out);
 			_tagger->clear();
+
+			if(_output_type==1)
+				cur_tok->set_pos("S");
+
 			out.push_back(cur_tok);
 			continue;
 		} else {
@@ -117,19 +130,24 @@ void CRF2Processor::_crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, st
 	_result_orig.clear();
 
 	for (size_t i = 0; i < _tagger->size(); ++i) {
-		_result.append(_tagger->x(i, 0));
 		TokenImpl *cur_tok = in[offset+i];
-		_result_orig.append(cur_tok->get_orig_token());
 		const char * tag = _tagger->y2(i);
-		int attr = cur_tok->get_attr();
-		if(attr==TokenImpl::attr_unknow) attr = TokenImpl::attr_cword;
-		if(attr==TokenImpl::attr_alpha || attr==TokenImpl::attr_number || attr==TokenImpl::attr_punct)	tag = "S";
-		if (*tag=='S' || *tag=='E') {
-			out.push_back(new TokenImpl(_result.c_str(), _result_orig.c_str(), attr));
-			_result.clear();
-			_result_orig.clear();
+		if(_output_type==1) {
+			cur_tok->set_pos(tag);
+			out.push_back(cur_tok);
+		} else {
+			_result.append(_tagger->x(i, 0));
+			_result_orig.append(cur_tok->get_orig_token());
+			int attr = cur_tok->get_attr();
+			if(attr==TokenImpl::attr_unknow) attr = TokenImpl::attr_cword;
+			if(attr==TokenImpl::attr_alpha || attr==TokenImpl::attr_number || attr==TokenImpl::attr_punct)	tag = "S";
+			if (*tag=='S' || *tag=='E') {
+				out.push_back(new TokenImpl(_result.c_str(), _result_orig.c_str(), attr));
+				_result.clear();
+				_result_orig.clear();
+			}
+			delete cur_tok;
 		}
-		delete cur_tok;
 	}
 
 #ifdef DEBUG

@@ -16,7 +16,7 @@
  * THIS SOFTWARE IS PROVIDED BY weibingzheng@gmail.com ''AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL detrox@gmail.com BE LIABLE FOR ANY
+ * DISCLAIMED. IN NO EVENT SHALL weibingzheng@gmail.com BE LIABLE FOR ANY
  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -26,8 +26,8 @@
  * 
  */
 
-#ifndef CRF2_PROCESSOR_HXX
-#define CRF2_PROCESSOR_HXX
+#ifndef NERAS_PROCESSOR_HXX
+#define NERAS_PROCESSOR_HXX
 
 #include "token_impl.hxx"
 #include "processor.hxx"
@@ -38,29 +38,26 @@
 namespace bamboo {
 
 
-class CRF2Processor: public Processor {
+class NERASProcessor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
-	char *_token;
+	IConfig *_config;
+	char * _ner_type;
 	std::string _result;
 	std::string _result_orig;
-	int _output_type;
-
-	inline const char *_get_crf2_tag(int attr);
-
-	CRF2Processor();
-	bool _can_process(TokenImpl *token) {return true;};
-	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {};
-	void _crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out);
-	void init(const char *);
+	
+	NERASProcessor();
+	bool _can_process(TokenImpl *token) {return true;}
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {}
 
 public:
-	CRF2Processor(IConfig *config);
-	~CRF2Processor();
+	NERASProcessor(IConfig *config);
+	~NERASProcessor();
 
 	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
+	void init(const char * ner_type);
 };
 
 } //namespace bamboo
 
-#endif // CRF2_PROCESSOR_HXX
+#endif // NERAS_PROCESSOR_HXX
