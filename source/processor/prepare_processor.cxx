@@ -97,13 +97,14 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 			state = PS_IDENT;
 
 		if (state != parent || ( _characterize && state == PS_UNKNOW) ){
-			if (parent == PS_WHITESPACE) {
-				// do nothing
-			} else if (sbc.top > sbc.base) {
+			if (parent == PS_WHITESPACE)
+				*(sbc.top++) = ' ';
+			if (sbc.top > sbc.base) {
 				switch (parent) {
-					case PS_IDENT:
+					case PS_IDENT: /* no break here */
 					case PS_ALPHA: attr = TokenImpl::attr_alpha; break;
 					case PS_NUMBER: attr = TokenImpl::attr_number; break;
+					case PS_WHITESPACE: /* no break here */
 					case PS_PUNCT: attr = TokenImpl::attr_punct; break;
 					default: attr = TokenImpl::attr_unknow; break;
 				}

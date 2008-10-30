@@ -192,7 +192,8 @@ namespace bamboo {
 		_parse(s);
 		length = _in->size();
 		for (i = 0; i < length; i++) {
-			vec.push_back(new Token(*(*_in)[i]));
+			if (*((*_in)[i]->get_orig_token()) != ' ')
+				vec.push_back(new Token(*(*_in)[i]));
 			delete (*_in)[i];
 		}
 
