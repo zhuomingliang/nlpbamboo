@@ -86,8 +86,8 @@ void NERASProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 		token = in[i];
 		unsigned short POS = token->get_pos();
 		if(token->get_pos() > 256) {
-			pos_str[0] = POS >> 8;
-			pos_str[1] = POS % 256;
+			pos_str[0] = 'M';
+			pos_str[1] = '\0';
 		} else {
 			pos_str[0] = POS % 256;
 			pos_str[1] = '\0';
