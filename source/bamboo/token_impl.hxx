@@ -78,6 +78,10 @@ public:
 		if (rhs._orig_token) _orig_token = strdup(rhs._orig_token);
 		_attr = rhs._attr;
 		_pos = rhs._pos;
+		_length = rhs._length;
+		_orig_length = rhs._orig_length;
+		_bytes = rhs._bytes;
+		_orig_bytes = rhs._orig_bytes;
 	}
 
 	~TokenImpl()
