@@ -144,9 +144,8 @@ public:
 	void get_value(const char *key, std::vector<std::string> &val) {get_value(std::string(key), val);}
 	void get_value(const char *key, const char *&val) 
 	{
-		std::string s(_deep_parse(_map[key]));
-		_storage[key] = s;
-		val = s.c_str();
+		_storage[key] = _deep_parse(_map[key]);
+		val = _storage[key].c_str();
 	}
 	void get_value(std::string key, int &val)  {val = atoi(_deep_parse(_map[key]).c_str());}
 	void get_value(std::string key, long &val) {val = atol(_deep_parse(_map[key]).c_str());}
