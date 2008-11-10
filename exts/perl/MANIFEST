@@ -1,0 +1,8 @@
+bamboo.xs
+Changes
+Makefile.PL
+MANIFEST
+ppport.h
+README
+t/bamboo.t
+lib/bamboo.pm
