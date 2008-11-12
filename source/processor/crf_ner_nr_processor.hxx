@@ -26,8 +26,8 @@
  * 
  */
 
-#ifndef POS_PROCESSOR_HXX
-#define POS_PROCESSOR_HXX
+#ifndef CRF_NER_NR_PROCESSOR_HXX
+#define CRF_NER_NR_PROCESSOR_HXX
 
 #include "token_impl.hxx"
 #include "processor.hxx"
@@ -38,21 +38,22 @@
 namespace bamboo {
 
 
-class POSProcessor: public Processor {
+class CRFNRProcessor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
+	const char * _ner_type;
 	
-	POSProcessor();
+	CRFNRProcessor();
 	bool _can_process(TokenImpl *token) {return true;}
-	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {}
+	void _process(TokenImpl *token, std::vector<TokenImpl *> &out){};
 
 public:
-	POSProcessor(IConfig *config);
-	~POSProcessor();
+	CRFNRProcessor(IConfig *config);
+	~CRFNRProcessor();
 
 	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
 };
 
 } //namespace bamboo
 
-#endif // POS_PROCESSOR_HXX
+#endif // CRF_NER_NR_PROCESSOR_HXX

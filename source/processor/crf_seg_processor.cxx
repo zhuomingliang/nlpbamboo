@@ -27,7 +27,7 @@
  */
 
 #include "lexicon_factory.hxx"
-#include "crf2_processor.hxx"
+#include "crf_seg_processor.hxx"
 #include "utf8.hxx"
 #include <cassert>
 #include <cstdio>
@@ -37,16 +37,16 @@ namespace bamboo {
 
 
 PROCESSOR_MAGIC
-PROCESSOR_MODULE(CRF2Processor)
+PROCESSOR_MODULE(CRFSegProcessor)
 
-CRF2Processor::CRF2Processor(IConfig *config)
+CRFSegProcessor::CRFSegProcessor(IConfig *config)
 	:_output_type(0)
 {
 	const char *s;
 	_token = new char[8];
 	struct stat st;
 
-	config->get_value("crf2_token_model", s);
+	config->get_value("crf_seg_model", s);
 
 	std::string model;
 #ifdef DEBUG
@@ -61,20 +61,20 @@ CRF2Processor::CRF2Processor(IConfig *config)
 	}
 }
 
-void CRF2Processor::init(const char *type) {
+void CRFSegProcessor::init(const char *type) {
 	if(*type == '1')
 		_output_type = 1;
 	else
 		_output_type = 0;
 }
 
-CRF2Processor::~CRF2Processor()
+CRFSegProcessor::~CRFSegProcessor()
 {
 	delete []_token;
 	delete _tagger;
 }
 
-inline const char *CRF2Processor::_get_crf2_tag(int attr) {
+inline const char *CRFSegProcessor::_get_crf2_tag(int attr) {
 	switch(attr) {
 	case TokenImpl::attr_number:
 	case TokenImpl::attr_alpha:
@@ -88,7 +88,7 @@ inline const char *CRF2Processor::_get_crf2_tag(int attr) {
 	}
 }
 
-void CRF2Processor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
+void CRFSegProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
 	size_t i, offset, size = in.size();
 
 	_tagger->clear();
@@ -122,7 +122,7 @@ void CRF2Processor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl 
 	_crf2_tagger(in, offset, out);
 }
 
-void CRF2Processor::_crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out) {
+void CRFSegProcessor::_crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out) {
 	if(_tagger->size()==0) return;
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 

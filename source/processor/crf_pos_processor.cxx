@@ -26,41 +26,69 @@
  * 
  */
 
-#ifndef CRF2_PROCESSOR_HXX
-#define CRF2_PROCESSOR_HXX
-
-#include "token_impl.hxx"
-#include "processor.hxx"
-#include "ilexicon.hxx"
-#include <sstream>
-#include <crfpp.h>
+#include "lexicon_factory.hxx"
+#include "crf_pos_processor.hxx"
+#include <cassert>
+#include <cstdio>
+#include <stdexcept>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace bamboo {
 
 
-class CRF2Processor: public Processor {
-protected:
-	CRFPP::Tagger *_tagger;
-	char *_token;
-	std::string _result;
-	std::string _result_orig;
-	int _output_type;
+PROCESSOR_MAGIC
+PROCESSOR_MODULE(CRFPosProcessor)
 
-	inline const char *_get_crf2_tag(int attr);
+CRFPosProcessor::CRFPosProcessor(IConfig *config) {
+	const char *s;
+	struct stat buf;
 
-	CRF2Processor();
-	bool _can_process(TokenImpl *token) {return true;};
-	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {};
-	void _crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out);
-	void init(const char *);
+	config->get_value("crf_pos_model", s);
+	std::string model_param = std::string("-m ") + std::string(s);
+	if(stat(s, &buf)==0) {
+		_tagger = CRFPP::createTagger(model_param.c_str());
+	} else {
+		throw std::runtime_error(std::string("can not load model ") + s + ": " + strerror(errno));
+	}
+}
 
-public:
-	CRF2Processor(IConfig *config);
-	~CRF2Processor();
+CRFPosProcessor::~CRFPosProcessor() {
+	delete _tagger;
+}
 
-	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
-};
+void CRFPosProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
+	_tagger->clear();
+
+	size_t i, size = in.size();
+
+	for(i=0; i<size; ++i) {
+		TokenImpl *token = in[i];
+		const char *str = token->get_orig_token();
+		_tagger->add(1, &str); 
+	}
+
+#ifdef TIMING	
+	static double t = 0;
+	struct timeval tv1, tv2;
+	gettimeofday(&tv1, 0);
+#endif
+	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
+#ifdef TIMING	
+	gettimeofday(&tv2, 0);
+	t += (tv2.tv_sec - tv1.tv_sec)*1000000 + tv2.tv_usec - tv1.tv_usec;
+	std::cerr<<"pos processor consumed: "<< t/1000 << std::endl;
+#endif
+
+	assert(size==_tagger->size());
+	for(i=0; i<size; ++i) {
+		const char *pos = _tagger->y2(i);
+		TokenImpl *token = in[i];
+		token->set_pos(pos);
+		out.push_back(token);
+	}
+}
+
 
 } //namespace bamboo
-
-#endif // CRF2_PROCESSOR_HXX

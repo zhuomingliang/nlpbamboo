@@ -16,7 +16,7 @@
  * THIS SOFTWARE IS PROVIDED BY weibingzheng@gmail.com ''AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL weibingzheng@gmail.com BE LIABLE FOR ANY
+ * DISCLAIMED. IN NO EVENT SHALL detrox@gmail.com BE LIABLE FOR ANY
  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -26,36 +26,39 @@
  * 
  */
 
-#ifndef SIMPLE_NER_PROCESSOR_HXX
-#define SIMPLE_NER_PROCESSOR_HXX
-
-#include "token_impl.hxx"
-#include "processor.hxx"
-#include "ilexicon.hxx"
-#include <sstream>
-#include <crfpp.h>
+#include "lexicon_factory.hxx"
+#include "crf_seg4ner_processor.hxx"
+#include "utf8.hxx"
+#include <cassert>
+#include <cstdio>
+#include <stdexcept>
 
 namespace bamboo {
 
 
-class SIMPLENERProcess: public Processor {
-protected:
-	CRFPP::Tagger *_tagger;
-	IConfig *_config;
-	char * _ner_type;
-	
-	SIMPLENERProcess();
-	bool _can_process(TokenImpl *token) {return true;}
-	void _process(TokenImpl *token, std::vector<TokenImpl *> &out){};
+PROCESSOR_MAGIC
+PROCESSOR_MODULE(CRFSeg4nerProcessor)
 
-public:
-	SIMPLENERProcess(IConfig *config);
-	~SIMPLENERProcess();
+CRFSeg4nerProcessor::CRFSeg4nerProcessor(IConfig *config)
+	:_output_type(1)
+{
+	const char *s;
+	_token = new char[8];
+	struct stat st;
 
-	void init(const char *ner_type);
-	void process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out);
-};
+	config->get_value("crf_seg_model", s);
+
+	std::string model;
+#ifdef DEBUG
+	model = std::string("-n5 -m ") + std::string(s);
+#else
+	model = std::string("-m ") + std::string(s);
+#endif
+	if (stat(s, &st) == 0) {
+		_tagger = CRFPP::createTagger(model.c_str());
+	} else {
+		throw std::runtime_error(std::string("can not load model ") + s + ": " + strerror(errno));
+	}
+}
 
 } //namespace bamboo
-
-#endif // SIMPLE_NER_PROCESSOR_HXX

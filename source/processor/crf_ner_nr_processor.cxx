@@ -27,66 +27,96 @@
  */
 
 #include "lexicon_factory.hxx"
-#include "pos_processor.hxx"
+#include "crf_ner_nr_processor.hxx"
 #include <cassert>
 #include <cstdio>
 #include <stdexcept>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <iostream>
+#include "bamboo.hxx"
+
+using namespace std;
 
 namespace bamboo {
 
 
 PROCESSOR_MAGIC
-PROCESSOR_MODULE(POSProcessor)
+PROCESSOR_MODULE(CRFNRProcessor)
 
-POSProcessor::POSProcessor(IConfig *config) {
-	const char *s;
+CRFNRProcessor::CRFNRProcessor(IConfig *config)
+	:_ner_type("nr")
+{
+	const char * model;
 	struct stat buf;
+	config->get_value("crf_ner_nr_model", model);
 
-	config->get_value("crf_pos_model", s);
-	std::string model_param = std::string("-m ") + std::string(s);
-	if(stat(s, &buf)==0) {
+#ifdef DEBUG
+	std::string model_param = std::string("-n5 -m ") + std::string(model);
+#else
+	std::string model_param = std::string("-m ") + std::string(model);
+#endif
+
+	if(stat(model, &buf)==0) {
 		_tagger = CRFPP::createTagger(model_param.c_str());
 	} else {
-		throw std::runtime_error(std::string("can not load model ") + s + ": " + strerror(errno));
+		throw std::runtime_error(std::string("can not load model ") + model + ": " + strerror(errno));
 	}
+
 }
 
-POSProcessor::~POSProcessor() {
+CRFNRProcessor::~CRFNRProcessor() {
 	delete _tagger;
 }
 
-void POSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
+void CRFNRProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
 	_tagger->clear();
 
-	size_t i, size = in.size();
+	size_t i, size = in.size(), max_token_size = 0;
 
 	for(i=0; i<size; ++i) {
 		TokenImpl *token = in[i];
-		const char *str = token->get_orig_token();
-		_tagger->add(str); 
+		const char * str = token->get_token();
+		_tagger->add(1, &str);
+		max_token_size += token->get_bytes();
 	}
 
-#ifdef TIMING	
-	static double t = 0;
-	struct timeval tv1, tv2;
-	gettimeofday(&tv1, 0);
-#endif
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
-#ifdef TIMING	
-	gettimeofday(&tv2, 0);
-	t += (tv2.tv_sec - tv1.tv_sec)*1000000 + tv2.tv_usec - tv1.tv_usec;
-	std::cerr<<"pos processor consumed: "<< t/1000 << std::endl;
-#endif
 
-	assert(size==_tagger->size());
+	std::string ner_str(""), ner_str_orig("");
+	ner_str.reserve(max_token_size);
+	ner_str_orig.reserve(max_token_size);
+	assert(in.size() == _tagger->size());
+	size = _tagger->size();
 	for(i=0; i<size; ++i) {
-		const char *pos = _tagger->y2(i);
+		const char *tag = _tagger->y2(i);
 		TokenImpl *token = in[i];
-		token->set_pos(pos);
-		out.push_back(token);
+		if(*tag == 'O') {
+			/*if(ner_str.size() > 0) {
+				out.push_back(new TokenImpl(ner_str.c_str(), ner_str_orig.c_str()));
+				out.back()->set_pos(_ner_type);
+				ner_str.clear();
+				ner_str_orig.clear();
+			}
+			out.push_back(new TokenImpl(*token));*/
+		} else {
+			ner_str += token->get_token();
+			ner_str_orig += token->get_orig_token();
+			if( (*tag=='E'||*tag=='S') && ner_str.size()>0) {
+				out.push_back(new TokenImpl(ner_str.c_str(), ner_str_orig.c_str()));
+				out.back()->set_pos(_ner_type);
+				ner_str.clear();
+				ner_str_orig.clear();
+			}
+		}
+		delete token;
+	}
+	if(ner_str.size() > 0) {
+		out.push_back(new TokenImpl(ner_str.c_str(), ner_str_orig.c_str()));
+		out.back()->set_pos(_ner_type);
+		ner_str.clear();
+		ner_str_orig.clear();
 	}
 }
 

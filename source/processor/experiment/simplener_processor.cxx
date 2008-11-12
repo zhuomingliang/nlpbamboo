@@ -43,14 +43,14 @@ namespace bamboo {
 
 
 PROCESSOR_MAGIC
-PROCESSOR_MODULE(SIMPLENERProcess)
+PROCESSOR_MODULE(SimpleNERProcessor)
 
-SIMPLENERProcess::SIMPLENERProcess(IConfig *config) {
+SimpleNERProcessor::SimpleNERProcessor(IConfig *config) {
 	_config = config;
 	_ner_type = NULL;
 }
 
-void SIMPLENERProcess::init(const char *ner_type) {
+void SimpleNERProcessor::init(const char *ner_type) {
 	const char * model;
 	struct stat buf;
 	enum {max_model_name_len = 32};
@@ -73,12 +73,12 @@ void SIMPLENERProcess::init(const char *ner_type) {
 	delete [] model_name;
 }
 
-SIMPLENERProcess::~SIMPLENERProcess() {
+SimpleNERProcessor::~SimpleNERProcessor() {
 	delete _tagger;
 	if(_ner_type) free(_ner_type);
 }
 
-void SIMPLENERProcess::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
+void SimpleNERProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
 	_tagger->clear();
 
 	size_t i, size = in.size(), max_token_size = 0;
