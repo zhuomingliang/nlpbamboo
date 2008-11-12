@@ -5,6 +5,7 @@ set(components
 	lexicon
 	config
 	processor
+	processor/experiment
 	debugger
 	bamboo
 	tools
