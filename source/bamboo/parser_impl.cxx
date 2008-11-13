@@ -147,7 +147,8 @@ void ParserImpl::_lazy_create_config(const char *custom)
 		throw std::runtime_error("can not find configuration");
 }
 
-void ParserImpl::_parse(const char *s)
+std::vector<TokenImpl *> 
+ParserImpl::parse(const char *s)
 {
 #ifdef TIMING	
 	struct timeval tv[2];
@@ -178,6 +179,24 @@ void ParserImpl::_parse(const char *s)
 		_out = _in;
 		_in = _swap;
 	}
+
+	return *_in;
+}
+
+void ParserImpl::set(std::string s) 
+{
+	(*_config) << s;
+}
+
+void ParserImpl::set(std::string key, std::string val) 
+{
+	(*_config)[key] = val;
+}
+
+void ParserImpl::reload() 
+{
+	_fini();
+	_init();
 }
 
 } //namespace bamboo

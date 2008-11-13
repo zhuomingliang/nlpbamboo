@@ -35,6 +35,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <iostream>
+#include "parser_impl.hxx"
 #include "bamboo.hxx"
 
 using namespace std;
@@ -88,7 +89,7 @@ void CRFNTProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
-	enum { begin_ner, end_ner, non_ner } state;
+	enum { begin_ner, end_ner, non_ner } state = non_ner;
 	for(i=0; i<size; ++i) {
 		token = in[i];
 		const char *ner_tag = _tagger->y2(i);

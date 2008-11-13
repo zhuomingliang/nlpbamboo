@@ -44,6 +44,10 @@ namespace bamboo {
 class ParserImpl {
 public:
 	ParserImpl(const char *file);
+	std::vector<TokenImpl *> parse(const char *s);
+	void reload();
+	void set(std::string key, std::string val); 
+	void set(std::string s);
 	~ParserImpl();
 protected:
 	typedef Processor* (*_create_processor_t)(IConfig *);
@@ -57,7 +61,6 @@ protected:
 	std::vector<Processor *> _processors;
 	std::vector<void *> _dl_handles;
 
-	void _parse(const char *s);
 	void _init();
 	void _fini();
 	inline void _lazy_create_config(const char *);

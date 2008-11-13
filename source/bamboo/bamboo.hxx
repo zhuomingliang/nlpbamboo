@@ -34,6 +34,7 @@
 #include <string>
 
 namespace bamboo {
+class TokenImpl;
 class Token {
 public:
 	Token();
@@ -45,12 +46,12 @@ public:
 	int pos;
 };
 
-class ParserImpl;
-class Parser: public ParserImpl {
-
+class Parser {
+private:
+	void *_handle;
 public:
 	Parser (const char *s);
-
+	~Parser();
 	void set(std::string s);
 	void set(std::string key, std::string val);
 	void reload();

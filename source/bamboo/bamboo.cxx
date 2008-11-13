@@ -221,26 +221,50 @@ namespace bamboo {
 		return pos_str;
 	}
 
-	Parser::Parser (const char *s): ParserImpl(s) 
+	Parser::Parser (const char *s)
+		:_handle(NULL)
 	{
+		if (s == NULL)
+			throw std::runtime_error("invalid argument");
+		_handle = new ParserImpl(s);
 	}
 
-	void Parser::set(std::string s) {(*_config) << s;}
-	void Parser::set(std::string key, std::string val) {(*_config)[key] = val;}
-	void Parser::reload() {_fini();_init();}
+	Parser::~Parser()
+	{
+		if (_handle)
+			delete static_cast<ParserImpl *>(_handle);
+	}
+
+	void Parser::set(std::string s) 
+	{
+		ParserImpl *parser = static_cast<ParserImpl *>(_handle);
+		parser->set(s);
+	}
+	void Parser::set(std::string key, std::string val) 
+	{
+		ParserImpl *parser = static_cast<ParserImpl *>(_handle);
+		parser->set(key, val);
+	}
+	void Parser::reload() 
+	{
+		ParserImpl *parser = static_cast<ParserImpl *>(_handle);
+		parser->reload();
+	}
 
 	size_t Parser::parse(std::vector<Token> &vec, const char *s)
 	{
 		size_t i, length;
+		ParserImpl *parser = static_cast<ParserImpl *>(_handle);
+		std::vector<TokenImpl *> in;
 
-		_parse(s);
-		length = _in->size();
+		in = parser->parse(s);
+		length = in.size();
 		vec.clear();
 		vec.reserve(length);
 		for (i = 0; i < length; i++) {
-			if (*((*_in)[i]->get_orig_token()) != ' ') 
-				vec.push_back(*(*_in)[i]);
-			delete (*_in)[i];
+			if (*(in[i]->get_orig_token()) != ' ') 
+				vec.push_back(*in[i]);
+			delete in[i];
 		}
 
 		return length;
