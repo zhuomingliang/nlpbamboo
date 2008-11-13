@@ -173,9 +173,6 @@ public:
 			return get_orig_bytes();
 		}
 	}
-<<<<<<< HEAD:source/bamboo/token_impl.hxx
-	unsigned short get_pos() const {return _pos;}
-=======
 	unsigned short get_pos() const 
 	{
 		return _pos;
@@ -190,7 +187,6 @@ public:
 			--refcount;
 		return refcount;
 	}
->>>>>>> e525acac499c04d813213690deea091cdc04359b:source/bamboo/token_impl.hxx
 };
 
 } //namespace bamboo
