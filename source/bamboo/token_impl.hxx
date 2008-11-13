@@ -97,7 +97,7 @@ public:
 	}
 	int get_attr() {return _attr;}
 	char *get_token() {return _token;}
-	char *get_orig_token() {
+	char *get_orig_token() const {
 		if(_orig_token) return _orig_token;
 		return _token;
 	}
@@ -151,7 +151,7 @@ public:
 			return get_orig_bytes();
 		}
 	}
-	unsigned short get_pos() {return _pos;}
+	unsigned short get_pos() const {return _pos;}
 };
 
 } //namespace bamboo

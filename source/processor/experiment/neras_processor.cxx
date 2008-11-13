@@ -35,6 +35,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <iostream>
+#include "parser_impl.hxx"
 #include "bamboo.hxx"
 
 using namespace std;

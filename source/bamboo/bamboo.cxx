@@ -30,18 +30,21 @@
 #include <stdexcept>
 #include <cstdlib>
 
+#include "token_impl.hxx"
+#include "parser_impl.hxx"
 #include "bamboo.hxx"
 
-static std::vector<bamboo::Token *> g_tokens;
+static std::vector<bamboo::Token> g_tokens;
 static std::string g_str;
+static struct token_queue *g_tq = NULL;
 
-static void _strftoks(std::string &str, std::vector<bamboo::Token *> &vec, const char *delim)
+static void _strftoks(std::string &str, std::vector<bamboo::Token> &vec, const char *delim)
 {
 	size_t i, length;
 
 	length = vec.size();
 	for (i = 0; i < length; i++) {
-		str += vec[i]->token;
+		str += vec[i].token;
 		if (i < length - 1) str += delim;
 	}
 }
@@ -50,6 +53,9 @@ static void _strftoks(std::string &str, std::vector<bamboo::Token *> &vec, const
 void *bamboo_init(const char *cfg)
 {
 	try {
+		g_tq = (struct token_queue *)realloc(g_tq, sizeof(struct token_queue));
+		if (!g_tq) throw new std::bad_alloc();
+		memset(g_tq, 0, sizeof(struct token_queue));
 		return new bamboo::Parser(cfg);
 	} catch(std::exception &e) {
 		std::cerr << __FUNCTION__ << ": " << e.what();
@@ -59,9 +65,14 @@ void *bamboo_init(const char *cfg)
 
 void bamboo_clean(void *handle)
 {
+	size_t i;
+
 	try {
 		if (handle == NULL)
 			throw new std::runtime_error("handle is null");
+		for (i = 0; i < g_tq->length; i++) 
+			free(g_tq->tokens[i].token);
+		free(g_tq);
 		delete static_cast<bamboo::Parser *>(handle);
 	} catch(std::exception &e) {
 		std::cerr << __FUNCTION__ << ": " << e.what();
@@ -79,7 +90,7 @@ ssize_t bamboo_parse(void *handle, const char **t, const char *s)
 			*t = '\0';
 			return 0;
 		}
-
+		
 		g_tokens.clear();
 		g_str.clear();
 		bamboo::Parser *bamboo = static_cast<bamboo::Parser *>(handle);
@@ -92,6 +103,48 @@ ssize_t bamboo_parse(void *handle, const char **t, const char *s)
 		return -1;
 	}
 }
+
+ssize_t bamboo_parse_more(void *handle, struct token_queue **queue, const char *s)
+{
+	size_t i, length, new_size;
+
+	try {
+		if (handle == NULL) throw new std::runtime_error("handle is null");
+		if (s == NULL) return 0;
+		if (queue == NULL) return 0;
+
+		if (*s == '\0') {
+			*queue = NULL;
+			return 0;
+		}
+
+		g_tokens.clear();
+		bamboo::Parser *bamboo = static_cast<bamboo::Parser *>(handle);
+		bamboo->parse(g_tokens, s);
+		length = g_tokens.size();
+		for (i = 0; g_tq->tokens[i].token; i++) {
+			free(g_tq->tokens[i].token);
+			g_tq->tokens[i].token = NULL;
+		}
+		if (g_tq == NULL || g_tq->length < length) {
+			new_size = sizeof(struct token_queue)  + sizeof(g_tq->tokens) * length;
+			g_tq = (struct token_queue *)realloc(g_tq, new_size);
+			if (!g_tq) throw new std::bad_alloc();
+			memset(g_tq, 0, new_size);
+			g_tq->length = length;
+		}
+		for (i = 0; i < length; i++) {
+			g_tq->tokens[i].token = strdup(g_tokens[i].token);
+			strncpy(g_tq->tokens[i].attr, bamboo::strfpos(g_tokens[i].pos), sizeof(g_tq->tokens[i].attr));
+		}
+		*queue = g_tq;
+		return length;
+	} catch(std::exception &e) {
+		std::cerr << __FUNCTION__ << ": " << e.what();
+		return -1;
+	}
+}
+
 /* This function is for test purpose */
 ssize_t bamboo_parse_with_pos(void *handle, const char **t, const char *s)
 {
@@ -113,10 +166,10 @@ ssize_t bamboo_parse_with_pos(void *handle, const char **t, const char *s)
 		bamboo->parse(g_tokens, s);
 		length = g_tokens.size();
 		for (i = 0; i < length; i++) {
-			g_str += g_tokens[i]->token;
-			if (g_tokens[i]->pos) {
+			g_str += g_tokens[i].token;
+			if (g_tokens[i].pos) {
 				g_str += "/"; 
-				g_str += bamboo::strfpos(g_tokens[i]->pos);
+				g_str += bamboo::strfpos(g_tokens[i].pos);
 			}
 			if (i < length - 1) g_str += " ";
 		}
@@ -168,15 +221,6 @@ namespace bamboo {
 		return pos_str;
 	}
 
-	void freetoks(std::vector<Token *> &vec)
-	{
-		size_t i, length;
-
-		length = vec.size();
-		for (i = 0; i < length; i++) 
-			delete vec[i];
-	}
-
 	Parser::Parser (const char *s): ParserImpl(s) 
 	{
 	}
@@ -185,30 +229,51 @@ namespace bamboo {
 	void Parser::set(std::string key, std::string val) {(*_config)[key] = val;}
 	void Parser::reload() {_fini();_init();}
 
-	size_t Parser::parse(std::vector<Token *> &vec, const char *s)
+	size_t Parser::parse(std::vector<Token> &vec, const char *s)
 	{
 		size_t i, length;
 
 		_parse(s);
 		length = _in->size();
+		vec.clear();
+		vec.reserve(length);
 		for (i = 0; i < length; i++) {
-			if (*((*_in)[i]->get_orig_token()) != ' ')
-				vec.push_back(new Token(*(*_in)[i]));
+			if (*((*_in)[i]->get_orig_token()) != ' ') 
+				vec.push_back(*(*_in)[i]);
 			delete (*_in)[i];
 		}
 
 		return length;
 	}
 
-	Token::Token(TokenImpl &rhs)
+	Token::Token()
+		:token(NULL)
+	{
+	}
+
+	Token::Token(const Token &rhs)
+	{
+		token = strdup(rhs.token);
+		pos = rhs.pos;
+	}
+
+	Token::Token(const TokenImpl &rhs)
 	{
 		token = strdup(rhs.get_orig_token());
 		pos = rhs.get_pos();
 	}
 
+	Token& Token::operator=(const TokenImpl &rhs)
+	{
+		token = strdup(rhs.get_orig_token());
+		pos = rhs.get_pos();
+
+		return *this;
+	}
+
 	Token::~Token()
 	{
-		free(token);
+		if (token) free(token);
 		pos = 0;
 	}
 }

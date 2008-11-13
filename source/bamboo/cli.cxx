@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "parser_impl.hxx"
 #include "bamboo.hxx"
 
 int g_pos = 0;
@@ -63,8 +64,8 @@ static int _do()
 	struct timeval tv[2];
 	struct timezone tz;
 	unsigned long consume = 0;
-	std::vector<bamboo::Token *> vec;
-	std::vector<bamboo::Token *>::iterator it;
+	std::vector<bamboo::Token> vec;
+	std::vector<bamboo::Token>::iterator it;
 
 	try {
 		bamboo::Parser parser(g_config);
@@ -95,12 +96,11 @@ static int _do()
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 
 			for (it = vec.begin(); it < vec.end(); ++it) {
-				std::cout << (*it)->token;
-				if (g_pos && (*it)->pos) std::cout << "/" << bamboo::strfpos((*it)->pos);
+				std::cout << (*it).token;
+				if (g_pos && (*it).pos) std::cout << "/" << bamboo::strfpos((*it).pos);
 				std::cout << " ";
 			}
 			std::cout << std::endl;
-			bamboo::freetoks(vec);
 		}
 		free(s);
 	} catch (std::exception &e) {

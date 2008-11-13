@@ -1,8 +1,5 @@
 /*
  * Copyright (c) 2008, detrox@gmail.com
-namespace bamboo {
-
- * Copyright (c) 2008, detrox@gmail.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,20 +30,22 @@ namespace bamboo {
 #define LIB_BAMBOO_HXX
 
 #ifdef __cplusplus
-#include "token_impl.hxx"
-#include "parser_impl.hxx"
 #include <vector>
+#include <string>
 
 namespace bamboo {
 class Token {
 public:
 	Token();
 	~Token();
-	Token(TokenImpl &rhs);
+	Token(const TokenImpl &rhs);
+	Token(const Token &rhs);
+	Token& operator=(const TokenImpl &rhs);
 	char *token;
 	int pos;
 };
 
+class ParserImpl;
 class Parser: public ParserImpl {
 
 public:
@@ -55,21 +54,31 @@ public:
 	void set(std::string s);
 	void set(std::string key, std::string val);
 	void reload();
-	size_t parse(std::vector<Token *> &vec, const char *s);
+	size_t parse(std::vector<Token> &vec, const char *s);
 };
 
 
 char *strfpos(unsigned short p);
-void freetoks(std::vector<Token *> &vec);
 
 }
 #endif
 
 #ifdef __cplusplus
 extern "C" {
-#endif	
+#endif
+
+#include <stdlib.h>
+
+struct token_queue {
+	size_t length;
+	struct {
+		char *token;
+		char attr[4];
+	} tokens[1];
+};
 void *bamboo_init(const char *s);
 ssize_t bamboo_parse(void *handle, const char **t, const char *s);
+ssize_t bamboo_parse_more(void *handle, struct token_queue **queue, const char *s);
 ssize_t bamboo_parse_with_pos(void *handle, const char **t, const char *s);
 void bamboo_set(void *handle, const char *s);
 void bamboo_reload(void *handle);
