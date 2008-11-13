@@ -29,6 +29,7 @@
 #include <ctype.h>
 #include <iostream>
 
+#include "token_holder.hxx"
 #include "token_impl.hxx"
 #include "prepare_processor.hxx"
 

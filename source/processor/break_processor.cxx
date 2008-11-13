@@ -82,7 +82,7 @@ BreakProcessor::~BreakProcessor()
 void BreakProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 {
 	size_t length, i, j, mark;
-	char *s;
+	const char *s;
 
 	s = token->get_token();
 	length = token->get_length();

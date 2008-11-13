@@ -158,8 +158,8 @@ void ParserImpl::_parse(const char *s)
 	length = utf8::length(s);
 	_in->clear();
 	if (length > _in->capacity()) {
-		_in->reserve(length);
-		_out->reserve(length);
+		_in->reserve(length << 1);
+		_out->reserve(length << 1);
 	}
 	_in->push_back(new TokenImpl(s));
 	length = _processors.size();

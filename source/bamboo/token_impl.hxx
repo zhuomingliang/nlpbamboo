@@ -39,12 +39,12 @@ namespace bamboo {
 
 class TokenImpl {
 protected:
-	char *_orig_token;
+	char *_orig_token, *_token;
 	int _attr;
 	size_t _length, _orig_length;
 	size_t _bytes, _orig_bytes;
-	char *_token;
 	unsigned short _pos;
+	size_t refcount;
 public:
 	enum attr_t {
 		attr_unknow = 0,
@@ -54,28 +54,28 @@ public:
 		attr_punct,
 	};
 	TokenImpl()
-		:_orig_token(NULL), _attr(attr_unknow), _length(0), _orig_length(0), 
-		_bytes(0), _orig_bytes(0), _token(NULL), _pos(0)
+		:_orig_token(NULL), _token(NULL), _attr(attr_unknow), _length(0), 
+		_orig_length(0), _bytes(0), _orig_bytes(0), _pos(0), refcount(0)
 	{
 	}
 	TokenImpl(const char *s, const char *os, int attr = attr_unknow)
-		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), 
-		_orig_bytes(0), _token(NULL), _pos(0)
+		:_orig_token(NULL), _token(NULL), _attr(attr), _length(0), 
+		_orig_length(0), _bytes(0), _orig_bytes(0), _pos(0), refcount(0)
 	{
-		_token = strdup(s);
-		_orig_token = strdup(os);
+		set_token(s);
+		set_orig_token(os);
 	}
 	TokenImpl(const char *s, int attr = attr_unknow)
-		:_orig_token(NULL), _attr(attr), _length(0), _orig_length(0), _bytes(0), 
-		_orig_bytes(0), _token(NULL), _pos(0)
+		:_orig_token(NULL),_token(NULL),  _attr(attr), _length(0), 
+		_orig_length(0), _bytes(0), _orig_bytes(0), _pos(0), refcount(0)
 	{
-		_token = strdup(s);
+		set_token(s);
 	}
 	TokenImpl(const TokenImpl &rhs)
 		:_orig_token(NULL), _token(NULL)
 	{
-		if (rhs._token) _token = strdup(rhs._token);
-		if (rhs._orig_token) _orig_token = strdup(rhs._orig_token);
+		if (rhs._token) set_token(rhs._token);
+		if (rhs._orig_token) set_orig_token(rhs._orig_token);
 		_attr = rhs._attr;
 		_pos = rhs._pos;
 		_length = rhs._length;
@@ -95,50 +95,71 @@ public:
 			_orig_token = NULL;
 		}
 	}
-	int get_attr() {return _attr;}
-	char *get_token() {return _token;}
-	char *get_orig_token() const {
-		if(_orig_token) return _orig_token;
+	int get_attr() const 
+	{
+		return _attr;
+	}
+	const char *get_token() const 
+	{
 		return _token;
 	}
-	void set_token(const char *s, int attr) {
-		set_token(s);
-		set_attr(attr);
-	}
-	void set_token(const char *s) {
-		if(!_orig_token) {
-			_orig_token = _token;
-		} else {
+	void set_token(const char *s)
+	{
+		assert(s);
+		
+		if (_token) 
 			free(_token);
-		}
 		_token = strdup(s);
+		if (!_token)
+			throw std::bad_alloc();
 	}
-	void set_attr(int attr) {
+	const char *get_orig_token() const
+	{
+		return (_orig_token)?_orig_token:_token;
+	}
+	void set_orig_token(const char *s)
+	{
+		assert(s);
+
+		if (_orig_token) 
+			free(_orig_token);
+		_orig_token = strdup(s);
+		if (!_orig_token)
+			throw std::bad_alloc();
+	}
+	void set_attr(int attr) 
+	{
 		_attr = attr;
 	}
-	void set_pos(unsigned short pos) {
+	void set_pos(unsigned short pos) 
+	{
 		_pos = pos;
 	}
-	void set_pos(const char *s) {
-		_pos = *s;
-		if(*(s+1)!=0) {
-			_pos = _pos*256 + *(s+1);
-		}
-	}
-	size_t get_length() 
+	void set_pos(const char *s) 
 	{
-		if (_length == 0) _length = utf8::length(_token);
+		assert(s);
+
+		_pos = *s;
+		if(*(s + 1)) 
+			_pos = _pos * 256 + *(s + 1);
+	}
+	size_t get_length()
+	{
+		if (_length == 0) 
+			_length = utf8::length(_token);
 		return _length;
 	}
 	size_t get_bytes() 
 	{
-		if (_bytes == 0) _bytes = strlen(_token);
+		if (_bytes == 0)
+			_bytes = strlen(_token);
 		return _bytes;
 	}
 	size_t get_orig_length() 
 	{
 		if (_orig_token) {
-			if (_orig_length == 0) _orig_length = utf8::length(_orig_token);
+			if (_orig_length == 0) 
+				_orig_length = utf8::length(_orig_token);
 		} else {
 			return get_length();
 		}
@@ -146,12 +167,30 @@ public:
 	size_t get_orig_bytes() 
 	{
 		if (_orig_token) {
-			if (_orig_bytes == 0) _orig_bytes = strlen(_orig_token);
+			if (_orig_bytes == 0) 
+				_orig_bytes = strlen(_orig_token);
 		} else {
 			return get_orig_bytes();
 		}
 	}
+<<<<<<< HEAD:source/bamboo/token_impl.hxx
 	unsigned short get_pos() const {return _pos;}
+=======
+	unsigned short get_pos() const 
+	{
+		return _pos;
+	}
+	size_t incref()
+	{
+		return ++refcount;
+	}
+	size_t decref()
+	{
+		if (refcount)
+			--refcount;
+		return refcount;
+	}
+>>>>>>> e525acac499c04d813213690deea091cdc04359b:source/bamboo/token_impl.hxx
 };
 
 } //namespace bamboo

@@ -59,7 +59,7 @@ MaxforwardProcessor::~MaxforwardProcessor()
 void MaxforwardProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 {
 	size_t length, max_token_length, i, j, k;
-	char *s;
+	const char *s;
 
 	s = token->get_token();
 	length = token->get_length();
