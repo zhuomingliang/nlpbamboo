@@ -66,14 +66,13 @@ CRFNTProcessor::~CRFNTProcessor() {
 }
 
 void CRFNTProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
-
-	size_t i, size = in.size();
-	_tagger->clear();
-
-	TokenImpl *token;
+	size_t i, offset, size = in.size();
 	char pos_str[3] = {0};
-	for(i=0; i<size; ++i) {
-		token = in[i];
+
+	_tagger->clear();
+	for (i = 0; i < size; ++i) {
+		TokenImpl *token = in[i];
+		const char *tok_str = token->get_token();
 		unsigned short POS = token->get_pos();
 		if(token->get_pos() > 256) {
 			pos_str[0] = 'M';
@@ -82,16 +81,33 @@ void CRFNTProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 			pos_str[0] = POS % 256;
 			pos_str[1] = '\0';
 		}
-		const char *data[] = {token->get_token(), pos_str};
-		_tagger->add(2, data);
-	}
 
+		if(token->get_attr() == TokenImpl::attr_punct) {
+			offset = i - _tagger->size();
+			_process_ner(in, offset, out);
+			_tagger->clear();
+
+			//out.push_back(cur_tok);
+			continue;
+		} else {
+			const char *data[] = {tok_str, pos_str};
+			_tagger->add(2, data);
+		}
+	}
+	offset = i - _tagger->size();
+	_process_ner(in, offset, out);
+	_tagger->clear();
+}
+
+void CRFNTProcessor::_process_ner(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out) {
+	size_t i, size = _tagger->size();
 
 	if (!_tagger->parse()) throw std::runtime_error("crf parse failed!");
 
-	enum { begin_ner, end_ner, non_ner } state = non_ner;
+	enum { begin_ner, end_ner, non_ner } state;
+	TokenImpl *token;
 	for(i=0; i<size; ++i) {
-		token = in[i];
+		token = in[offset + i];
 		const char *ner_tag = _tagger->y2(i);
 		const char *seg_tag = _tagger->x(i, 1);
 		int attr = token->get_attr();
@@ -130,6 +146,5 @@ void CRFNTProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 		}*/
 	}
 }
-
 
 } //namespace bamboo

@@ -48,6 +48,7 @@ protected:
 	CRFNSProcessor();
 	bool _can_process(TokenImpl *token) {return true;}
 	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {}
+	void _process_ner(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out);
 
 public:
 	CRFNSProcessor(IConfig *config);

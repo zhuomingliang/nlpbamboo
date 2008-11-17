@@ -29,7 +29,7 @@
 #ifndef CRF_NER_NT_PROCESSOR_HXX
 #define CRF_NER_NT_PROCESSOR_HXX
 
-#include "token_impl.hxx"
+#include "parser_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
 #include <sstream>
@@ -48,6 +48,7 @@ protected:
 	CRFNTProcessor();
 	bool _can_process(TokenImpl *token) {return true;}
 	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {}
+	void _process_ner(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out);
 
 public:
 	CRFNTProcessor(IConfig *config);
