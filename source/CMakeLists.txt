@@ -9,6 +9,7 @@ set(components
 	debugger
 	bamboo
 	tools
+	ycake
 )
 
 include_directories(${components})
