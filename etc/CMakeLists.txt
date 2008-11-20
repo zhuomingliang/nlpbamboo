@@ -1,1 +1,2 @@
 install(FILES bamboo.cfg DESTINATION ${ETC_INSTALL_DIR})
+install(FILES ycake.cfg DESTINATION ${ETC_INSTALL_DIR})
