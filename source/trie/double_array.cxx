@@ -42,6 +42,7 @@ DoubleArray::DoubleArray(int num)
 	_header->num_insert = 0;
 	strcpy(_header->magic, "double_array");
 	_inflate(num);
+	_last = 1;
 }
 
 DoubleArray::DoubleArray(const char *filename)
@@ -56,9 +57,8 @@ int DoubleArray::_find_base(int *key, int min, int max)
 {
 	bool found;
 	int i, *p;
-	static int last = 1;
 
-	for (i = last, found = false;!found;) {
+	for (i = _last, found = false;!found;) {
 		i++;
 		if (i + _key2state(max) >= _header->num) 
 			_inflate(_key2state(max));
@@ -75,7 +75,7 @@ int DoubleArray::_find_base(int *key, int min, int max)
 			//i += min;
 		}
 	}
-	last = i;
+	_last = i;
 	return i;
 }
 

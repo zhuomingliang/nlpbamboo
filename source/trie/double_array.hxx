@@ -110,6 +110,8 @@ protected:
 		int check;
 	} _state_t;
 
+	int _last;
+
 	_header_t *_header;
 	_state_t *_state;
 	MMap *_mmap;
