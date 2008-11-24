@@ -1,5 +1,6 @@
 #include "graph_ranker.hxx"
 #include "udgraph.hxx"
+#include <algorithm>
 
 namespace bamboo { namespace ycake {
 

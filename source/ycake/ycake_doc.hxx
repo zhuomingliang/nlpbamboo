@@ -1,6 +1,7 @@
 #ifndef YCAKE_DOC_HXX
 #define YCAKE_DOC_HXX
 
+#include <cstdlib>
 #include <cstring>
 #include <vector>
 #include <map>
