@@ -1,4 +1,6 @@
 #include "ycake.hxx"
+#include <algorithm>
+#include <cstdlib>
 
 namespace bamboo { namespace ycake {
 
