@@ -18,13 +18,6 @@ GraphRanker::GraphRanker(IConfig * config)
 GraphRanker::~GraphRanker() {
 }
 
-struct my_cmp {
-	bool operator() (const std::pair<int, double> &l,
-			const std::pair<int, double> &r) {
-		return l.second > r.second;
-	}
-};
-
 void GraphRanker::rank(YCDoc &doc, std::map<int, double> &token_rank, int top_n) {
 	TermIndex index;
 	UDGraph * udg_sent;
@@ -69,20 +62,6 @@ void GraphRanker::rank(YCDoc &doc, std::map<int, double> &token_rank, int top_n)
 	/*
 	 * end iteration
 	 */
-
-	std::vector<std::pair<int ,double> > v;
-	for(i=0; i<size; ++i) {
-		v.push_back(std::make_pair(i, sent_rank[i]));
-	}
-	std::sort(v.begin(), v.end(), my_cmp());
-	for(i=0; i<v.size(); i++) {
-		YCSentence * stc = doc.sent_list[v[i].first];
-		size_t j, s = stc->token_list.size();
-		for(j=0; j<s; ++j) {
-			printf("%s\t", stc->token_list[j]->get_token());
-		}
-		printf("\n");
-	}
 
 	delete [] last_sent_rank;
 	delete [] sent_rank;
