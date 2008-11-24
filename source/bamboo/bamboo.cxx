@@ -58,7 +58,7 @@ void *bamboo_init(const char *cfg)
 		memset(g_tq, 0, sizeof(struct token_queue));
 		return new bamboo::Parser(cfg);
 	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
+		std::cerr << __func__ << ": " << e.what();
 		return NULL;
 	}
 }
@@ -75,7 +75,7 @@ void bamboo_clean(void *handle)
 		free(g_tq);
 		delete static_cast<bamboo::Parser *>(handle);
 	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
+		std::cerr << __func__ << ": " << e.what();
 	}
 }
 
@@ -99,7 +99,7 @@ ssize_t bamboo_parse(void *handle, const char **t, const char *s)
 		*t = g_str.c_str();
 		return g_str.length();
 	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
+		std::cerr << __func__ << ": " << e.what();
 		return -1;
 	}
 }
@@ -140,7 +140,7 @@ ssize_t bamboo_parse_more(void *handle, struct token_queue **queue, const char *
 		*queue = g_tq;
 		return length;
 	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
+		std::cerr << __func__ << ": " << e.what();
 		return -1;
 	}
 }
@@ -176,7 +176,7 @@ ssize_t bamboo_parse_with_pos(void *handle, const char **t, const char *s)
 		*t = g_str.c_str();
 		return g_str.length();
 	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
+		std::cerr << __func__ << ": " << e.what();
 		return -1;
 	}
 }
@@ -190,7 +190,7 @@ void bamboo_set(void *handle, const char *s)
 		bamboo::Parser *bamboo = static_cast<bamboo::Parser *>(handle);
 		bamboo->set(s);
 	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
+		std::cerr << __func__ << ": " << e.what();
 	}
 }
 
@@ -202,7 +202,7 @@ void bamboo_reload(void *handle)
 		bamboo::Parser *bamboo = static_cast<bamboo::Parser *>(handle);
 		bamboo->reload();
 	} catch(std::exception &e) {
-		std::cerr << __FUNCTION__ << ": " << e.what();
+		std::cerr << __func__ << ": " << e.what();
 	}
 }
 
