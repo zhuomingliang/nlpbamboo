@@ -21,12 +21,12 @@ KeywordExtractor::KeywordExtractor(const char * config)
 	SegmentTool & seg_tool = SegmentTool::get_instance();
 	seg_tool.init(_config);
 
-	_config->get_value("token_aff_dict", s);
+	_config->get_value("ke_token_aff_dict", s);
 	TokenAffDict & token_aff_dict = TokenAffDict::get_instance();
 	token_aff_dict.init(s);
 
-	_config->get_value("token_id_dict", s);
-	_config->get_value("token_df_dict", t);
+	_config->get_value("ke_token_id_dict", s);
+	_config->get_value("ke_token_df_dict", t);
 	TokenDict & token_dict = TokenDict::get_instance();
 	token_dict.init(s, t);
 
@@ -35,10 +35,10 @@ KeywordExtractor::KeywordExtractor(const char * config)
 	_graph_ranker = new GraphRanker(_config);
 	_tfidf_ranker = new TfidfRanker(_config);
 
-	_config->get_value("top_n", _top_n);
+	_config->get_value("ke_top_n", _top_n);
 
 	_algo = graph;
-	_config->get_value("algorithm", s);
+	_config->get_value("ke_algorithm", s);
 	if(!strcmp(s, "tfidf")) {
 		_algo = tfidf;
 	} else if(!strcmp(s, "graph")) {

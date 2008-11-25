@@ -35,7 +35,7 @@ public:
 
 	int init(IConfig * config) {
 		const char * bamboo_cfg;
-		config->get_value("bamboo_cfg", bamboo_cfg);
+		config->get_value("ke_bamboo_cfg", bamboo_cfg);
 
 		try {
 			_parser = new bamboo::Parser(bamboo_cfg);
@@ -48,7 +48,7 @@ public:
 		_is_init = true;
 
 		const char * punctuation;
-		config->get_value("punctuation", punctuation);
+		config->get_value("ke_punctuation", punctuation);
 
 		size_t length, i;
 		char uch[4];

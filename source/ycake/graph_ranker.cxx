@@ -7,10 +7,10 @@ namespace bamboo { namespace ycake {
 GraphRanker::GraphRanker(IConfig * config)
 	:_token_aff_dict(NULL)
 {
-	config->get_value("wordrank_eta", _eta);
-	config->get_value("wordrank_alpha", _alpha);
-	config->get_value("wordrank_beta", _beta);
-	config->get_value("wordrank_maxiter", _maxiter);
+	config->get_value("ke_wordrank_eta", _eta);
+	config->get_value("ke_wordrank_alpha", _alpha);
+	config->get_value("ke_wordrank_beta", _beta);
+	config->get_value("ke_wordrank_maxiter", _maxiter);
 
 	_token_aff_dict = &TokenAffDict::get_instance();
 }

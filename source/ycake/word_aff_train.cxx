@@ -40,14 +40,14 @@ public:
 		const char * s;
 		_config = ConfigFactory::create(cfg);
 
-		_config->get_value("bamboo_cfg", s);
+		_config->get_value("ke_bamboo_cfg", s);
 		_parser = new Parser(s);
 
-		_config->get_value("token_id_dict", s);
+		_config->get_value("ke_token_id_dict", s);
 		_token_id_dict = LexiconFactory::load(s);
 
-		_config->get_value("freq_threshold", _freq_threshold);
-		_config->get_value("word_top_relation", _top_relation);
+		_config->get_value("ke_freq_threshold", _freq_threshold);
+		_config->get_value("ke_word_top_relation", _top_relation);
 		_config->get_value("verbose", _verbose);
 		_N = 0;
 	}
@@ -172,7 +172,7 @@ public:
 		}
 
 		const char * file;
-		_config->get_value("token_aff_dict", file);
+		_config->get_value("ke_token_aff_dict", file);
 		int t, hash_size = (int)((float)all_affinity.size() * 1.5);
 		YCHash<double> * hash = new YCHash<double>(file, hash_size);
 		for(t=0; t<(int)all_affinity.size(); ++t) {

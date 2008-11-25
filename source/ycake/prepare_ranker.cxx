@@ -7,7 +7,7 @@ PrepareRanker::PrepareRanker(IConfig * config)
 	:_token_dict(NULL)
 {
 	_token_dict = &TokenDict::get_instance();
-	config->get_value("title_weight", _title_weight);
+	config->get_value("ke_title_weight", _title_weight);
 }
 	
 PrepareRanker::~PrepareRanker() {

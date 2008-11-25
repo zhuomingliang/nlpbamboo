@@ -46,13 +46,13 @@ public:
 		const char * s;
 		_config = ConfigFactory::create(cfg);
 
-		_config->get_value("bamboo_cfg", s);
+		_config->get_value("ke_bamboo_cfg", s);
 		_parser = new Parser(s);
 		
-		_config->get_value("freq_threshold", _freq_threshold);
-		_config->get_value("feature_min_length", _feature_min_length);
-		_config->get_value("feature_min_utf8_length", _feature_min_utf8_length);
-		_config->get_value("df_threshold", _df_threshold);
+		_config->get_value("ke_freq_threshold", _freq_threshold);
+		_config->get_value("ke_feature_min_length", _feature_min_length);
+		_config->get_value("ke_feature_min_utf8_length", _feature_min_utf8_length);
+		_config->get_value("ke_df_threshold", _df_threshold);
 		_config->get_value("verbose", _verbose);
 	}
 	~WordTrain() {
@@ -77,10 +77,10 @@ public:
 		}
 
 		const char * s;
-		_config->get_value("token_id_dict", s);
+		_config->get_value("ke_token_id_dict", s);
 		token_id_dict.save(s);
 
-		_config->get_value("token_df_dict", s);
+		_config->get_value("ke_token_df_dict", s);
 		token_df_dict.save(s);
 
 		return 0;

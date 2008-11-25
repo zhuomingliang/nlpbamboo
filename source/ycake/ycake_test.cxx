@@ -27,28 +27,34 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if(!test_file) {
-		std::cerr << USAGE << std::endl;
-		exit(1);
-	}
-
         KeywordExtractor p(ycake_cfg);
 	std::string file_content, tmp_str;
 
-	std::ifstream fin(test_file, std::ios::in);
-	while(!fin.eof()) {
-		std::getline(fin, tmp_str);
+	std::istream * file_stream;
+	std::ifstream fin;
+
+	if(test_file) {
+		fin.open(test_file);
+		file_stream = &fin;
+	} else {
+		file_stream = & std::cin;
+	}
+
+	while(!file_stream->eof()) {
+		std::getline(*file_stream, tmp_str);
 		file_content += tmp_str;
 	}
-	fin.close();
+
+	if(test_file)
+		fin.close();
 
         std::vector<std::string> res;
 	p.get_keyword(file_content.c_str(), res);
 
         for(size_t i=0; i<res.size(); ++i) {
-                printf("%s\t", res[i].c_str());
+		std::cout << res[i] << "\t";
         }
-	printf("\n");
+	std::cout<<std::endl;
         return 0;
 }
 

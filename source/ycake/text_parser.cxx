@@ -12,8 +12,8 @@ TextParser::TextParser(IConfig * config)
 	SegmentTool &tool = SegmentTool::get_instance();
 	_segment_tool = &tool;
 
-	config->get_value("feature_min_length", _feature_min_length);
-	config->get_value("feature_min_utf8_length", _feature_min_utf8_length);
+	config->get_value("ke_feature_min_length", _feature_min_length);
+	config->get_value("ke_feature_min_utf8_length", _feature_min_utf8_length);
 }
 
 TextParser::~TextParser() {
