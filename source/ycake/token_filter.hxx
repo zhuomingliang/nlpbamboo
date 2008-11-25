@@ -69,11 +69,12 @@ protected:
 			return true;
 
 		size_t step, len = 0;
-		char uch[8];
+		char uch[8], cch;
 		const char * p = token;
 		for(; *p; p+=step) {
 			step = utf8::first(p, uch);
-			if(uch[1]==0 && ispunct(uch[0])) {
+			cch = utf8::sbc2dbc(uch, step);
+			if(ispunct(cch)) {
 				return true;
 			}
 			len++;
