@@ -6,6 +6,7 @@ set(ycake_src
 	segment_tool.cxx
 	token_dict.cxx
 	token_aff_dict.cxx
+	token_filter.cxx
 	ranker.cxx
 	prepare_ranker.cxx
 	tfidf_ranker.cxx

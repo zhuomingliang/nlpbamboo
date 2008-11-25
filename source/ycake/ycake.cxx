@@ -1,4 +1,5 @@
 #include "ycake.hxx"
+#include "token_filter.hxx"
 #include <algorithm>
 #include <cstdlib>
 
@@ -29,6 +30,9 @@ KeywordExtractor::KeywordExtractor(const char * config)
 	_config->get_value("ke_token_df_dict", t);
 	TokenDict & token_dict = TokenDict::get_instance();
 	token_dict.init(s, t);
+
+	TokenFilter & token_filter = TokenFilter::get_instance();
+	token_filter.init(_config);
 
 	_text_parser = new TextParser(_config);
 	_prepare_ranker = new PrepareRanker(_config);

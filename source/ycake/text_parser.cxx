@@ -11,6 +11,8 @@ TextParser::TextParser(IConfig * config)
 {
 	SegmentTool &tool = SegmentTool::get_instance();
 	_segment_tool = &tool;
+	TokenFilter &fil = TokenFilter::get_instance();
+	_token_filter = &fil;
 
 	config->get_value("ke_feature_min_length", _feature_min_length);
 	config->get_value("ke_feature_min_utf8_length", _feature_min_utf8_length);
@@ -60,7 +62,7 @@ int TextParser::_split_sentence(std::vector<YCToken *> &token_list, YCDoc & doc)
 				sent = new YCSentence();
 			}
 			delete token_list[i];
-		} else if(_token_filter(token)) {
+		} else if(_is_filter_word(token)) {
 			delete token_list[i];
 		}else {
 			sent->token_list.push_back(token_list[i]);
@@ -74,13 +76,8 @@ int TextParser::_split_sentence(std::vector<YCToken *> &token_list, YCDoc & doc)
 	return 0;
 }
 
-bool TextParser::_token_filter(const char * token) {
-	if(int(utf8::length(token)) < _feature_min_utf8_length) {
-		return true;
-	} else if((int)strlen(token) < _feature_min_length) {
-		return true;
-	}
-	return false;
+bool TextParser::_is_filter_word(const char * token) {
+	return _token_filter->is_filter_word(token);
 }
 
 int TextParser::parse_text(const char * text, YCDoc & doc) {
