@@ -74,7 +74,7 @@ protected:
 		for(; *p; p+=step) {
 			step = utf8::first(p, uch);
 			cch = utf8::sbc2dbc(uch, step);
-			if(ispunct(cch)) {
+			if(ispunct(cch) || isdigit(cch)) {
 				return true;
 			}
 			len++;
