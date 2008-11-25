@@ -6,6 +6,7 @@
 #include "datrie.hxx"
 #include "config_factory.hxx"
 #include "utf8.hxx"
+#include <cctype>
 
 namespace bamboo { namespace ycake {
 
@@ -64,11 +65,23 @@ public:
 
 protected:
 	bool _rule_filter(const char *token) {
-		if(int(utf8::length(token)) < _feature_min_utf8_length) {
+		if((int)strlen(token) < _feature_min_length)
 			return true;
-		} else if((int)strlen(token) < _feature_min_length) {
+
+		size_t step, len = 0;
+		char uch[8];
+		const char * p = token;
+		for(; *p; p+=step) {
+			step = utf8::first(p, uch);
+			if(uch[1]==0 && ispunct(uch[0])) {
+				return true;
+			}
+			len++;
+		}
+		if((int)len < _feature_min_utf8_length) {
 			return true;
 		}
+
 		return false;
 	}
 
