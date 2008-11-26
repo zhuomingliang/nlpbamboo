@@ -44,6 +44,7 @@ protected:
 	char * _ner_type;
 	std::string _result;
 	std::string _result_orig;
+	int _ner_output_type;
 	
 	CRFNTProcessor();
 	bool _can_process(TokenImpl *token) {return true;}

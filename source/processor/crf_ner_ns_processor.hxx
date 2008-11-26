@@ -62,6 +62,7 @@ protected:
 	std::string _result;
 	std::string _result_orig;
 	bamboo::ILexicon * _suffix_dict;
+	int _ner_output_type;
 	
 	CRFNSProcessor();
 	bool _can_process(TokenImpl *token) {return true;}

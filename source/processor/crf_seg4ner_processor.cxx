@@ -102,8 +102,8 @@ void CRFSeg4nerProcessor::process(std::vector<TokenImpl *> &in, std::vector<Toke
 			_crf2_tagger(in, offset, out);
 			_tagger->clear();
 
-			if(_output_type==1)
-				cur_tok->set_pos("S");
+			/*if(_output_type==1)
+				cur_tok->set_pos("S");*/
 
 			out.push_back(cur_tok);
 			continue;

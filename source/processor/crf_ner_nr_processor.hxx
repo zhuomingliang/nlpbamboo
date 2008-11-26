@@ -42,6 +42,7 @@ class CRFNRProcessor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
 	const char * _ner_type;
+	int _ner_output_type;
 	
 	CRFNRProcessor();
 	bool _can_process(TokenImpl *token) {return true;}

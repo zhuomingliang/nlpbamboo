@@ -47,7 +47,7 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(CRFNSProcessor)
 
 CRFNSProcessor::CRFNSProcessor(IConfig *config)
-	:_tagger(NULL), _ner_type("ns"), _suffix_dict(NULL)
+	:_tagger(NULL), _ner_type("ns"), _suffix_dict(NULL), _ner_output_type(0)
 {
 	const char * model;
 	struct stat buf;
@@ -62,6 +62,7 @@ CRFNSProcessor::CRFNSProcessor(IConfig *config)
 
 	config->get_value("crf_ner_ns_suffix", model);
 	_suffix_dict = LexiconFactory::load(model);
+	config->get_value("ner_output_type", _ner_output_type);
 }
 
 CRFNSProcessor::~CRFNSProcessor() {
@@ -95,8 +96,13 @@ void CRFNSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 		const char *tok_str = token->get_token();
 		unsigned short POS = token->get_pos();
 		if(token->get_pos() > 256) {
-			pos_str[0] = 'M';
-			pos_str[1] = '\0';
+			if(token->get_pos()/256 == 'n') {
+				pos_str[0] = 'S';
+				pos_str[1] = '\0';
+			} else {
+				pos_str[0] = 'M';
+				pos_str[1] = '\0';
+			}
 		} else {
 			pos_str[0] = POS % 256;
 			pos_str[1] = '\0';
@@ -110,6 +116,10 @@ void CRFNSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 			_tagger->clear();
 
 			//out.push_back(cur_tok);
+			if(_ner_output_type==1) {
+				out.push_back(token);
+				out.back()->set_pos((unsigned short)0);
+			}
 			continue;
 		} else {
 			const char *data[] = {tok_str, pos_str, label};
@@ -128,6 +138,7 @@ void CRFNSProcessor::_process_ner(std::vector<TokenImpl *> &in, size_t offset, s
 
 	enum { begin_ner, end_ner, non_ner } state;
 	TokenImpl *token;
+	std::string seg_res, seg_res_orig;
 	for(i=0; i<size; ++i) {
 		token = in[offset + i];
 		const char *ner_tag = _tagger->y2(i);
@@ -146,6 +157,10 @@ void CRFNSProcessor::_process_ner(std::vector<TokenImpl *> &in, size_t offset, s
 		}
 
 		if(state != non_ner) {
+			if(_ner_output_type==1) {
+				seg_res.clear();
+				seg_res_orig.clear();
+			}
 			_result.append(token->get_token());
 			_result_orig.append(token->get_orig_token());
 
@@ -160,12 +175,25 @@ void CRFNSProcessor::_process_ner(std::vector<TokenImpl *> &in, size_t offset, s
 		} else {
 			_result.clear();
 			_result_orig.clear();
+			if(_ner_output_type==1) {
+				seg_res.append(token->get_token());
+				seg_res_orig.append(token->get_orig_token());
+
+				if(*seg_tag=='S'||*seg_tag=='E') {
+					out.push_back(new TokenImpl(seg_res.c_str(), seg_res_orig.c_str()));
+					if(token->get_pos()/256 == 'n')
+						out.back()->set_pos(token->get_pos());
+					seg_res.clear();
+					seg_res_orig.clear();
+				}
+			}
 		}
 
 		/*if(state == end_ner) {
 			out.push_back(new TokenImpl(",", attr));
 			out.back()->set_pos("w");
 		}*/
+		delete token;
 	}
 }
 

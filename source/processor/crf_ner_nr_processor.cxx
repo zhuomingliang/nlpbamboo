@@ -47,7 +47,7 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(CRFNRProcessor)
 
 CRFNRProcessor::CRFNRProcessor(IConfig *config)
-	:_ner_type("nr")
+	:_ner_type("nr"), _ner_output_type(0)
 {
 	const char * model;
 	struct stat buf;
@@ -64,6 +64,7 @@ CRFNRProcessor::CRFNRProcessor(IConfig *config)
 	} else {
 		throw std::runtime_error(std::string("can not load model ") + model + ": " + strerror(errno));
 	}
+	config->get_value("ner_output_type", _ner_output_type);
 
 }
 
@@ -94,13 +95,14 @@ void CRFNRProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 		const char *tag = _tagger->y2(i);
 		TokenImpl *token = in[i];
 		if(*tag == 'O') {
-			/*if(ner_str.size() > 0) {
+			if(ner_str.size() > 0) {
 				out.push_back(new TokenImpl(ner_str.c_str(), ner_str_orig.c_str()));
 				out.back()->set_pos(_ner_type);
 				ner_str.clear();
 				ner_str_orig.clear();
 			}
-			out.push_back(new TokenImpl(*token));*/
+			if(_ner_output_type==1)
+				out.push_back(new TokenImpl(*token));
 		} else {
 			ner_str += token->get_token();
 			ner_str_orig += token->get_orig_token();
