@@ -31,6 +31,7 @@
 
 #include "parser_impl.hxx"
 #include "processor.hxx"
+#include "lexicon_factory.hxx"
 #include "ilexicon.hxx"
 #include <sstream>
 #include <crfpp.h>
@@ -38,17 +39,35 @@
 namespace bamboo {
 
 
+enum {
+	LOC_OTHER=0,
+	LOC_SUFFIX=1,
+	LOC_DIRECTION=2,
+	LOC_CNDIGIT=3,
+	LOC_ARABIC=4
+};
+
+static const char * loc_label[] = {
+	"5",
+	"1",
+	"2",
+	"3",
+	"4"
+};
+
 class CRFNSProcessor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
 	char * _ner_type;
 	std::string _result;
 	std::string _result_orig;
+	bamboo::ILexicon * _suffix_dict;
 	
 	CRFNSProcessor();
 	bool _can_process(TokenImpl *token) {return true;}
 	void _process(TokenImpl *token, std::vector<TokenImpl *> &out) {}
 	void _process_ner(std::vector<TokenImpl *> &in, size_t offset, std::vector<TokenImpl *> &out);
+	const char * _get_label(const char * token);
 
 public:
 	CRFNSProcessor(IConfig *config);

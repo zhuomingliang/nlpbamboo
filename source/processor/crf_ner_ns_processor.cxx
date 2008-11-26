@@ -47,7 +47,7 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(CRFNSProcessor)
 
 CRFNSProcessor::CRFNSProcessor(IConfig *config)
-	:_tagger(NULL), _ner_type("ns")
+	:_tagger(NULL), _ner_type("ns"), _suffix_dict(NULL)
 {
 	const char * model;
 	struct stat buf;
@@ -59,10 +59,30 @@ CRFNSProcessor::CRFNSProcessor(IConfig *config)
 	} else {
 		throw std::runtime_error(std::string("can not load model ") + model + ": " + strerror(errno));
 	}
+
+	config->get_value("crf_ner_ns_suffix", model);
+	_suffix_dict = LexiconFactory::load(model);
 }
 
 CRFNSProcessor::~CRFNSProcessor() {
 	if(_tagger) delete _tagger;
+	if(_suffix_dict) delete _suffix_dict;
+}
+
+const char * CRFNSProcessor::_get_label(const char * token) {
+	int val = _suffix_dict->search(token);
+	if(val>0) {
+		//assert((val>=1 && val<=4));
+		return loc_label[val];
+	}
+
+	const char * p = token;
+	while(*p) {
+		if(*p<'0' || *p>'9')
+			return loc_label[LOC_OTHER];
+		p++;
+	}
+	return loc_label[LOC_ARABIC];
 }
 
 void CRFNSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
@@ -82,6 +102,8 @@ void CRFNSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 			pos_str[1] = '\0';
 		}
 
+		const char * label = _get_label(tok_str);
+
 		if(token->get_attr() == TokenImpl::attr_punct) {
 			offset = i - _tagger->size();
 			_process_ner(in, offset, out);
@@ -90,8 +112,8 @@ void CRFNSProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 			//out.push_back(cur_tok);
 			continue;
 		} else {
-			const char *data[] = {tok_str, pos_str};
-			_tagger->add(2, data);
+			const char *data[] = {tok_str, pos_str, label};
+			_tagger->add(3, data);
 		}
 	}
 	offset = i - _tagger->size();
