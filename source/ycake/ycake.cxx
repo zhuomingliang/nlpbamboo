@@ -107,8 +107,16 @@ int KeywordExtractor::get_keyword(const char * title, const char * text, std::ve
 		_tfidf_ranker->rank(doc, token_map, _top_n);
 	}
 
+	TokenDict & td = TokenDict::get_instance();
 	std::vector<std::pair<int, double> > res;
-	copy(token_map.begin(), token_map.end(), back_inserter(res));
+	std::map<int, double>::iterator tm_it
+		= token_map.begin();
+	for(; tm_it != token_map.end(); ++tm_it) {
+		double score = tm_it -> second;
+		score *= td.get_idf(doc.token_id_map[tm_it->first]);
+		res.push_back(std::make_pair(tm_it->first, score));
+	}
+	//copy(token_map.begin(), token_map.end(), back_inserter(res));
 
 	int res_size = res.size();
 	int i, N = _top_n < res_size ? _top_n : res_size;

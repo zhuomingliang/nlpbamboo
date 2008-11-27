@@ -62,7 +62,7 @@ int TextParser::_split_sentence(std::vector<YCToken *> &token_list, YCDoc & doc)
 				sent = new YCSentence();
 			}
 			delete token_list[i];
-		} else if(_is_filter_word(token)) {
+		} else if(_is_filter_word(token_list[i])) {
 			delete token_list[i];
 		}else {
 			sent->token_list.push_back(token_list[i]);
@@ -76,7 +76,7 @@ int TextParser::_split_sentence(std::vector<YCToken *> &token_list, YCDoc & doc)
 	return 0;
 }
 
-bool TextParser::_is_filter_word(const char * token) {
+bool TextParser::_is_filter_word(YCToken * token) {
 	return _token_filter->is_filter_word(token);
 }
 

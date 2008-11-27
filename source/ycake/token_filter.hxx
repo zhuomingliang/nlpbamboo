@@ -5,6 +5,7 @@
 #include "ilexicon.hxx"
 #include "datrie.hxx"
 #include "config_factory.hxx"
+#include "ycake_doc.hxx"
 #include "utf8.hxx"
 #include <cctype>
 
@@ -46,7 +47,9 @@ public:
 		return dict;
 	}
 
-	bool is_filter_word(const char * word) {
+	bool is_filter_word(YCToken * token) {
+		const char * word = token->get_token();
+
 		if(_rule_filter(word)) {
 			return true;
 		}

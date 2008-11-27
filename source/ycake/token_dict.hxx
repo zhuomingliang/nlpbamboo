@@ -18,6 +18,8 @@ protected:
 	bamboo::ILexicon * _token_id;
 	bamboo::ILexicon * _token_df;
 
+	int _df_avg;
+
 protected:
 	int _get_df(const char * token) {
 		int df = 0;
@@ -38,7 +40,7 @@ protected:
 	}
 
 public:
-	TokenDict():_D(0),_max_id(0),_is_init(false),_token_id(NULL),_token_df(NULL) {}
+	TokenDict():_D(0),_max_id(0),_is_init(false),_token_id(NULL),_token_df(NULL),_df_avg(0) {}
 	~TokenDict() {
 		if(_token_id)
 			delete _token_id;
@@ -49,6 +51,7 @@ public:
 	int init(const char * token_id_dict, const char * token_df_dict) {
 		_token_id = LexiconFactory::load(token_id_dict);
 		_token_df = LexiconFactory::load(token_df_dict);
+		_df_avg = _token_df->sum_value() / _token_df->num_insert();
 		_is_init = true;
 		return 0;
 	}
@@ -85,6 +88,9 @@ public:
 
 	double get_idf(const char * token) {
 		int df = _get_df(token);
+		if(df == 0) {
+			df = _df_avg;
+		}
 		float idf = 1;
 		int d = _get_total_docs();
 		if(df>0 && d>0) {

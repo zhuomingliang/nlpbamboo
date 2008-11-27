@@ -16,7 +16,7 @@ protected:
 	SegmentTool *_segment_tool;
 	TokenFilter *_token_filter;
 
-	bool _is_filter_word(const char * token);
+	bool _is_filter_word(YCToken * token);
 
 protected:
 	int _feature_min_length;
