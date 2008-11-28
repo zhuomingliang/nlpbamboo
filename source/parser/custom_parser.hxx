@@ -26,8 +26,8 @@
  * 
  */
 
-#ifndef PARSER_IMPL_HXX
-#define PARSER_IMPL_HXX
+#ifndef CUSTOM_PARSER_HXX
+#define CUSTOM_PARSER_HXX
 
 #include <stdexcept>
 #include <cstring>
@@ -35,20 +35,21 @@
 
 #include "lexicon_factory.hxx"
 #include "config_factory.hxx"
-#include "processor.hxx"
+#include "processor_factory.hxx"
 #include "token_impl.hxx"
+#include "parser.hxx"
 
 namespace bamboo {
 
 
-class ParserImpl {
+class CustomParser:public Parser {
 public:
-	ParserImpl(const char *file);
-	std::vector<TokenImpl *> parse(const char *s);
+	CustomParser(const char *file);
+	int parse(std::vector<Token *> &out, const char *s);
 	void reload();
 	void set(std::string key, std::string val); 
 	void set(std::string s);
-	~ParserImpl();
+	~CustomParser();
 protected:
 	typedef Processor* (*_create_processor_t)(IConfig *);
 
@@ -59,7 +60,6 @@ protected:
 	std::vector<TokenImpl *> _token_fifo[2];
 	std::vector<TokenImpl *> *_in, *_out, *_swap;
 	std::vector<Processor *> _processors;
-	std::vector<void *> _dl_handles;
 
 	void _init();
 	void _fini();

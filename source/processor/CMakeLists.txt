@@ -1,4 +1,5 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+add_library(processor_factory STATIC processor_factory.cxx)
 add_library(processor STATIC processor.cxx)
 macro(build_processor name)
 	add_library(processor_${name} MODULE ${name}_processor.cxx)

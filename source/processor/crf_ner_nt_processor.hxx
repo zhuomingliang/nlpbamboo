@@ -29,7 +29,7 @@
 #ifndef CRF_NER_NT_PROCESSOR_HXX
 #define CRF_NER_NT_PROCESSOR_HXX
 
-#include "parser_impl.hxx"
+#include "token_impl.hxx"
 #include "processor.hxx"
 #include "ilexicon.hxx"
 #include <sstream>

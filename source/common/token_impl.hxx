@@ -32,12 +32,12 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "token.hxx"
 #include "utf8.hxx"
 
 namespace bamboo {
 
-
-class TokenImpl {
+class TokenImpl:public Token {
 protected:
 	char *_orig_token, *_token;
 	int _attr;

@@ -7,9 +7,12 @@ set(components
 	processor
 	processor/experiment
 	debugger
-	bamboo
+#	bamboo
 	tools
-	ycake
+#	ycake
+	common
+	parser
+	cli
 )
 
 include_directories(${components})

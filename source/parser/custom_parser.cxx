@@ -34,12 +34,12 @@
 #include <stdexcept>
 #include <dlfcn.h>
 
-#include "parser_impl.hxx"
+#include "custom_parser.hxx"
 
 namespace bamboo {
 
 
-ParserImpl::ParserImpl(const char *file)
+CustomParser::CustomParser(const char *file)
 :_verbose(0), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
 {
 	_lazy_create_config(file);
@@ -49,7 +49,7 @@ ParserImpl::ParserImpl(const char *file)
 #endif
 }
 
-ParserImpl::~ParserImpl()
+CustomParser::~CustomParser()
 {
 	_fini();
 	delete _config;
@@ -62,62 +62,36 @@ ParserImpl::~ParserImpl()
 #endif
 }
 
-void ParserImpl::_fini()
+void CustomParser::_fini()
 {
 	size_t i;
 
 	i = _processors.size();
 	while(i--) delete _processors[i];
 	_processors.clear();
-
-	i = _dl_handles.size();
-	while(i--) {
-		/* do not switch condition order */
-		if (dlclose(_dl_handles[i]) && _verbose) 
-			std::cerr << strerror(errno) << std::endl;
-	}
-	_dl_handles.clear();
 }
 
-void ParserImpl::_init()
+void CustomParser::_init()
 {
 	std::vector<std::string>::iterator it;
 	std::string module;
+	ProcessorFactory *factory;
 
 	_config->get_value("verbose", _verbose);
 	_config->get_value("process_chain", _process_chain);
 	_config->get_value("processor_root", processor_root);
 
+	factory = ProcessorFactory::get_instance();
+	factory->set_config(_config);
+
 	for (it = _process_chain.begin(); it != _process_chain.end(); it++) {
-		_create_processor_t create = NULL;
-		void *handle = NULL;
 		Processor *processor = NULL;
-
-		std::string processor_str = *it;
-		std::string parameter("");
-		std::string::size_type ptr = processor_str.find_first_of('/');
-		if(ptr!=std::string::npos) {
-			parameter = processor_str.substr(ptr+1, processor_str.size());
-			processor_str = processor_str.substr(0, ptr);
-		}
-		module.clear();
-		module.append(processor_root).append("/").append(processor_str).append(".so");
-		if (_verbose)
-			std::cerr << "loading processor " << module << std::endl;
-		if (!(handle = dlopen(module.c_str(), RTLD_NOW)))
-			throw std::runtime_error(std::string(dlerror()));
-		if (!(create = (_create_processor_t)dlsym(handle, "create_processor")))
-			throw std::runtime_error(std::string(dlerror()));
-		if (!(processor = create(_config)))
-			throw std::runtime_error(std::string("can not create processor: ") + *it);
-
-		if(parameter.size()>0) processor->init(parameter.c_str());
+		processor = factory->create(it->c_str(),_verbose);
 		_processors.push_back(processor);
-		_dl_handles.push_back(handle);
 	}
 }
 
-void ParserImpl::_lazy_create_config(const char *custom)
+void CustomParser::_lazy_create_config(const char *custom)
 {
 	std::vector<std::string>::size_type i;
 	bool flag = false;
@@ -147,8 +121,8 @@ void ParserImpl::_lazy_create_config(const char *custom)
 		throw std::runtime_error("can not find configuration");
 }
 
-std::vector<TokenImpl *> 
-ParserImpl::parse(const char *s)
+int
+CustomParser::parse(std::vector<Token *> &out, const char *s)
 {
 #ifdef TIMING	
 	struct timeval tv[2];
@@ -180,20 +154,24 @@ ParserImpl::parse(const char *s)
 		_in = _swap;
 	}
 
-	return *_in;
+	length = _in->size();
+	for (i = 0; i < length; i++) 
+		out.push_back((*_in)[i]);	
+
+	return _in->size();
 }
 
-void ParserImpl::set(std::string s) 
+void CustomParser::set(std::string s) 
 {
 	(*_config) << s;
 }
 
-void ParserImpl::set(std::string key, std::string val) 
+void CustomParser::set(std::string key, std::string val) 
 {
 	(*_config)[key] = val;
 }
 
-void ParserImpl::reload() 
+void CustomParser::reload() 
 {
 	_fini();
 	_init();

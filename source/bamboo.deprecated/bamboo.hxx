@@ -34,30 +34,6 @@
 #include <string>
 
 namespace bamboo {
-class TokenImpl;
-class Token {
-public:
-	Token();
-	~Token();
-	Token(const TokenImpl &rhs);
-	Token(const Token &rhs);
-	Token& operator=(const TokenImpl &rhs);
-	char *token;
-	int pos;
-};
-
-class Parser {
-private:
-	void *_handle;
-public:
-	Parser (const char *s);
-	~Parser();
-	void set(std::string s);
-	void set(std::string key, std::string val);
-	void reload();
-	size_t parse(std::vector<Token> &vec, const char *s);
-};
-
 
 char *strfpos(unsigned short p);
 
