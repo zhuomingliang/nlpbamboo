@@ -33,7 +33,7 @@ public:
 	long long get_id() {
 		return _id;
 	}
-	void set_id(int i) {
+	void set_id(long long i) {
 		_id = i;
 	}
 	T get_value() {
