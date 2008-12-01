@@ -29,8 +29,8 @@ public:
 
 	static ProcessorFactory *get_instance()
 	{
-//		if (_instance == NULL)
-//			_instance = new ProcessorFactory();
+		if (_instance == NULL)
+			_instance = new ProcessorFactory();
 
 		return _instance;
 	}

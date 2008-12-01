@@ -1,4 +1,11 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(custom_parser STATIC custom_parser.cxx)
-target_link_libraries(custom_parser processor_factory)
+macro(build_parser name)
+	add_library(parser_${name} STATIC ${name}_parser.cxx)
+	target_link_libraries(parser_${name} ${ARGN} processor_factory)
+	set_target_properties(parser_${name} PROPERTIES PREFIX "" OUTPUT_NAME ${name})
+endmacro(build_parser)
+
+build_parser(custom)
+build_parser(crf_seg)
+

@@ -51,11 +51,8 @@ public:
 	void set(std::string s);
 	~CustomParser();
 protected:
-	typedef Processor* (*_create_processor_t)(IConfig *);
-
 	int _verbose;
 	IConfig *_config;
-	const char *processor_root;
 	std::vector<std::string> _process_chain;
 	std::vector<TokenImpl *> _token_fifo[2];
 	std::vector<TokenImpl *> *_in, *_out, *_swap;

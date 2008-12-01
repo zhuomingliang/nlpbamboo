@@ -74,12 +74,10 @@ void CustomParser::_fini()
 void CustomParser::_init()
 {
 	std::vector<std::string>::iterator it;
-	std::string module;
 	ProcessorFactory *factory;
 
 	_config->get_value("verbose", _verbose);
 	_config->get_value("process_chain", _process_chain);
-	_config->get_value("processor_root", processor_root);
 
 	factory = ProcessorFactory::get_instance();
 	factory->set_config(_config);

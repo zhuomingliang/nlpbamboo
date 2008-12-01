@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "crf_seg_parser.hxx"
 #include "custom_parser.hxx"
 
 int g_pos = 0;
@@ -67,13 +68,15 @@ static int _do()
 	std::vector<bamboo::Token *>::iterator it;
 
 	try {
-		bamboo::CustomParser parser(g_config);
+		bamboo::CRFSegParser parser(g_config);
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
+		/*
 		for (i = 0; i < g_override.size(); i++) {
 			std::cerr << "overriding " << g_override[i] << std::endl;
 			parser.set(g_override[i]);
 		}
 		if (i > 0) parser.reload();
+		*/
 		if (strcmp(g_file, "-") == 0) {
 			fp = stdin;
 		} else {
