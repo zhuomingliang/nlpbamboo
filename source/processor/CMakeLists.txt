@@ -10,7 +10,7 @@ endmacro(build_processor)
 
 build_processor(prepare utf8 lexicon trie)
 build_processor(maxforward utf8 lexicon trie)
-build_processor(unigram utf8 lexicon trie)
+build_processor(ugm_seg utf8 lexicon trie)
 build_processor(single_combine utf8 lexicon trie)
 build_processor(maxforward_combine utf8 lexicon trie)
 build_processor(break utf8 lexicon trie)

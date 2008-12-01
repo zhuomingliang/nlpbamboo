@@ -8,4 +8,5 @@ endmacro(build_parser)
 
 build_parser(custom)
 build_parser(crf_seg)
+build_parser(ugm_seg)
 

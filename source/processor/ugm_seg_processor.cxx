@@ -27,7 +27,7 @@
  */
 
 #include "lexicon_factory.hxx"
-#include "unigram_processor.hxx"
+#include "ugm_seg_processor.hxx"
 #include "utf8.hxx"
 #include <cassert>
 #include <iostream>
@@ -44,6 +44,7 @@ UnigramProcessor::UnigramProcessor(IConfig *config)
 
 	config->get_value("ele_lambda", _lambda);
 	config->get_value("unigram_lexicon", s);
+	printf("ll = %s\n", s);
 	config->get_value("max_token_length", _max_token_length);
 	_lexicon = LexiconFactory::load(s);
 

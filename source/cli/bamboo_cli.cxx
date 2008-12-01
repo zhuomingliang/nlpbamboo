@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "crf_seg_parser.hxx"
+#include "ugm_seg_parser.hxx"
 #include "custom_parser.hxx"
 
 int g_pos = 0;
@@ -68,7 +69,7 @@ static int _do()
 	std::vector<bamboo::Token *>::iterator it;
 
 	try {
-		bamboo::CRFSegParser parser(g_config);
+		bamboo::UGMSegParser parser(g_config);
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
 		/*
 		for (i = 0; i < g_override.size(); i++) {
