@@ -26,77 +26,35 @@
  * 
  */
 
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <iostream>
-#include <stdexcept>
-#include <dlfcn.h>
-#include <string>
+#ifndef KEYWORD_PARSER_HXX
+#define KEYWORD_PARSER_HXX
 
-#include "config_finder.hxx"
-#include "crf_ner_nt_parser.hxx"
+#include <stdexcept>
+#include <cstring>
+#include <vector>
+
+#include "lexicon_factory.hxx"
+#include "config_factory.hxx"
+#include "processor_factory.hxx"
+#include "token_impl.hxx"
+#include "parser.hxx"
+#include "ycake.hxx"
 
 namespace bamboo {
 
 
-CRFNTParser::CRFNTParser(const char *file)
-:_verbose(0), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
-{
-	ConfigFinder * finder;
-	ProcessorFactory * factory;
-
-	finder = ConfigFinder::get_instance();
-	_config = finder->find("crfnt.cfg");
-	(*_config)["prepare_characterize"] = "1";
-
-	_config->get_value("verbose", _verbose);
-
-	factory = ProcessorFactory::get_instance();
-	factory->set_config(_config);
-
-	_procs.push_back(factory->create("prepare"));
-	_procs.push_back(factory->create("crf_seg4ner"));
-	_procs.push_back(factory->create("crf_ner_nt"));
-}
-
-CRFNTParser::~CRFNTParser()
-{
-	size_t i;
-	i = _procs.size();
-	while(i--) delete _procs[i];
-	_procs.clear();
-	delete _config;
-}
-
-int
-CRFNTParser::parse(std::vector<Token *> &out, const char *s)
-{
-	size_t i, length;
-
-	length = utf8::length(s);
-	_in->clear();
-	if (length > _in->capacity()) {
-		_in->reserve(length << 1);
-		_out->reserve(length << 1);
-	}
-	_in->push_back(new TokenImpl(s));
-	length = _procs.size();
-	for (i = 0; i < length; i++) {
-		_out->clear();
-		_procs[i]->process(*_in, *_out);
-		/* switch in & out queue */
-		_swap = _out;
-		_out = _in;
-		_in = _swap;
-	}
-
-	length = _in->size();
-	for (i = 0; i < length; i++) 
-		out.push_back((*_in)[i]);	
-
-	return _in->size();
-}
+class KeywordParser:public Parser {
+public:
+	KeywordParser(const char *file);
+	~KeywordParser();
+	int parse(std::vector<Token *> &out, const char * text);
+	int parse(std::vector<Token *> &out, const char * title, const char * text);
+protected:
+	int _verbose;
+	IConfig	* _config;
+	bamboo::ycake::KeywordExtractor * _ke;
+};
 
 } //namespace bamboo
+
+#endif

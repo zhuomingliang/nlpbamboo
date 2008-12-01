@@ -62,6 +62,10 @@ CRFNRParser::CRFNRParser(const char *file)
 
 CRFNRParser::~CRFNRParser()
 {
+	size_t i;
+	i = _procs.size();
+	while(i--) delete _procs[i];
+	_procs.clear();
 	delete _config;
 }
 

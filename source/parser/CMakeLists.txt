@@ -12,4 +12,5 @@ build_parser(ugm_seg)
 build_parser(crf_ner_nr)
 build_parser(crf_ner_ns)
 build_parser(crf_ner_nt)
+build_parser(keyword ycake)
 

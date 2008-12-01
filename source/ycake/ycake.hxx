@@ -31,14 +31,13 @@ protected:
 
 public:
 
-	KeywordExtractor(const char * config);
+	KeywordExtractor(IConfig * config);
 	~KeywordExtractor();
 
 	int get_keyword(const char * text, std::vector<std::string> &);
 	int get_keyword(const char * title, const char * text, std::vector<std::string> &);
 
-protected:
-	void _lazy_create_config(const char *custom);
+	int max_keywords();
 
 };
 

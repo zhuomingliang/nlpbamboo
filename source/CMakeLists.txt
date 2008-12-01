@@ -9,7 +9,7 @@ set(components
 	debugger
 #	bamboo
 	tools
-#	ycake
+	ycake
 	common
 	parser
 	cli

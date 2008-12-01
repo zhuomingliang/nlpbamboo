@@ -11,11 +11,9 @@ struct pair_cmp {
 	}
 };
 
-KeywordExtractor::KeywordExtractor(const char * config)
-	:_config(NULL),_verbose(0)
+KeywordExtractor::KeywordExtractor(IConfig * config)
+	:_config(config),_verbose(0)
 {
-	_lazy_create_config(config);
-
 	const char * s, * t;
 	_config->get_value("verbose", _verbose);
 
@@ -60,35 +58,6 @@ KeywordExtractor::~KeywordExtractor() {
 	delete _config;
 }
 
-void KeywordExtractor::_lazy_create_config(const char * custom) {
-	std::vector<std::string>::size_type i;
-	bool flag = false;
-	struct stat buf;
-	std::vector<std::string> v;
-
-	if (custom)
-		v.push_back(custom);
-	v.push_back("ycake.cfg");
-	v.push_back("etc/ycake.cfg");
-	v.push_back("/opt/bamboo/etc/ycake.cfg");
-	v.push_back("/etc/ycake.cfg");
-	for (i = 0; i < v.size(); i++) {
-		if (_verbose)
-			std::cerr << "loading configuration " << v[i] << " ... ";
-		if (stat(v[i].c_str(), &buf) == 0) {
-			if (_verbose) std::cerr << "found." << std::endl;
-			_config = ConfigFactory::create(v[i].c_str());
-			flag = true;
-			break;
-		} else {
-			if (_verbose) std::cerr << "not found." << std::endl;
-		}
-	}
-
-	if (!flag)
-		throw std::runtime_error("can not find ycake configuration");
-}
-
 int KeywordExtractor::get_keyword(const char * text, std::vector<std::string> & words) {
 	return get_keyword(NULL, text, words);
 }
@@ -127,6 +96,10 @@ int KeywordExtractor::get_keyword(const char * title, const char * text, std::ve
 	}
 
 	return 0;
+}
+
+int KeywordExtractor::max_keywords() {
+	return _top_n;
 }
 
 }} //end of namespace bamboo::ycake

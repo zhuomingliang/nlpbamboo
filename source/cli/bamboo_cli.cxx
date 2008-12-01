@@ -38,6 +38,7 @@
 #include "crf_ner_nr_parser.hxx"
 #include "crf_ner_ns_parser.hxx"
 #include "crf_ner_nt_parser.hxx"
+#include "keyword_parser.hxx"
 #include "custom_parser.hxx"
 
 int g_pos = 0;

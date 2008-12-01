@@ -1,6 +1,5 @@
 #include "text_parser.hxx"
 #include "ycake_mmap.hxx"
-#include "bamboo.hxx"
 #include "segment_tool.hxx"
 #include <cstdio>
 
