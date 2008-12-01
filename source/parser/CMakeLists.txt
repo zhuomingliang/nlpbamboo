@@ -9,4 +9,7 @@ endmacro(build_parser)
 build_parser(custom)
 build_parser(crf_seg)
 build_parser(ugm_seg)
+build_parser(crf_ner_nr)
+build_parser(crf_ner_ns)
+build_parser(crf_ner_nt)
 
