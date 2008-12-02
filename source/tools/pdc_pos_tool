@@ -1,0 +1,88 @@
+#!/usr/bin/env perl
+
+#
+#  Copyright (c) 2008, weibingzheng@gmail.com
+#  All rights reserved.
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions are met:
+#      * Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#      * Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#      * Neither the name of the <organization> nor the
+#        names of its contributors may be used to endorse or promote products
+#        derived from this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY weibingzheng@gmail.com ''AS IS'' AND ANY
+#  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#  DISCLAIMED. IN NO EVENT SHALL weibingzheng@gmail.com BE LIABLE FOR ANY
+#  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+#  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+#  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+use strict;
+use Data::Dumper;
+use Getopt::Std;
+use utf8;
+use Encode qw/encode decode/;
+use vars '$opt_v', '$opt_h';
+
+################################################################################
+#
+# generate training file from people daily corpus
+#
+################################################################################
+
+sub normalize
+{
+	my $file = shift @_;
+	my $count = 0;
+	open FH, "<$file" or die "can not open $file";
+	print STDERR "Normalizing $file: \n" if ($opt_v);
+	while (<FH>) {
+		s/^\s+|\s+$//g;
+		$_ = decode('UTF-8', $_);
+		(undef, $_) = split(/\s+/, $_, 2);
+		s/\[|\]\w+//g;
+		my @tokens = split(/\s+/, $_);
+		my $i = 0;
+		for(my $t = 0; $t < $#tokens; $t++) {
+			my $cur_tok = $tokens[$t];
+			my $str, my $pos;
+			($str, $pos) = split(/\//, $cur_tok);
+			print encode('UTF-8', "$str $pos\n");
+			$i++;
+		}
+		if($i > 0) {
+			print "\n";
+		}
+		$count++;
+		print STDERR "\r\t\t$count items processed." if ($opt_v && $count % 500 == 0);
+	}
+	print STDERR "\r\t\t$count items processed.\n" if ($opt_v);
+	close FH;
+}
+
+################################################################################
+#
+# main
+#
+################################################################################
+
+
+if (!getopts("hlv") || $opt_h || !$ARGV[0]) {
+	print "Usage: pos_tool [OPTIONS] CORPUS\n";
+	print "Generate Training file for Part-Of-Speech\n";
+	print "OPTIONS:\n";
+	print "        -v            verbose\n";
+	exit
+}
+
+&normalize($ARGV[0]);

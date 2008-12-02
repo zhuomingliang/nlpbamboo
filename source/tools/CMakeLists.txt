@@ -8,6 +8,7 @@ SET(tools
 	auto_build
 	update_user_combine
 	convert_pos
+	pdc_pos_tool
 	)
 find_package(CRFPP)
 if (CRFPP_FOUND)
