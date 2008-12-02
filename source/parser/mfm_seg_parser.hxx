@@ -26,57 +26,38 @@
  * 
  */
 
+#ifndef MFMSEG_PARSER_HXX
+#define MFMSEG_PARSER_HXX
+
+#include <stdexcept>
+#include <cstring>
+#include <vector>
+
 #include "lexicon_factory.hxx"
-#include "maxforward_processor.hxx"
-#include "utf8.hxx"
-#include <cassert>
-#include <iostream>
+#include "config_factory.hxx"
+#include "processor_factory.hxx"
+#include "token_impl.hxx"
+#include "parser.hxx"
 
 namespace bamboo {
 
 
-PROCESSOR_MAGIC
-PROCESSOR_MODULE(MaxforwardProcessor)
-
-MaxforwardProcessor::MaxforwardProcessor(IConfig *config)
-	:_token(NULL)
-{
-	const char *s;
-
-	config->get_value("unigram_lexicon", s);
-	if (s == NULL)
-		throw std::runtime_error("unigram_lexicon is null");
-	config->get_value("max_token_length", _max_token_length);
-	_lexicon = LexiconFactory::load(s);
-
-	_token = new char[(_max_token_length << 2) + 1]; /* x4 for unicode */
-}
-
-MaxforwardProcessor::~MaxforwardProcessor()
-{
-	delete []_token;
-	delete _lexicon;
-}
-
-void MaxforwardProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
-{
-	size_t length, max_token_length, i, j, k;
-	const char *s;
-
-	s = token->get_token();
-	length = token->get_length();
-	for (i = 0; i < length; i++) {
-		max_token_length = ((unsigned int)_max_token_length + i< length)?_max_token_length:length - i;
-		for (k = 0, j = max_token_length; j > 0; j--) {
-			k = utf8::sub(_token, s, i, j);
-			if (_lexicon->search(_token) > 0) break;
-		}
-		if (j == 0) {j = 1;}
-		out.push_back(new TokenImpl(_token, TokenImpl::attr_cword));
-		i = i + j - 1;
-	}
-}
-
+class MFMSegParser:public Parser {
+public:
+	MFMSegParser(const char *file);
+	~MFMSegParser();
+	int parse(std::vector<Token *> &out, const char *s);
+protected:
+	int							_verbose;
+	int							_use_break;
+	int							_use_single_combine;
+	IConfig						*_config;
+	std::vector<TokenImpl *>	_token_fifo[2];
+	std::vector<TokenImpl *>	*_in, *_out, *_swap;
+	std::vector<Processor *>	_procs;
+	static char					*_initial_settings;
+};
 
 } //namespace bamboo
 
+#endif

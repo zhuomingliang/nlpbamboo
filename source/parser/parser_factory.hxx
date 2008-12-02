@@ -73,6 +73,7 @@ public:
 	{
 #define register_parser(N, C) if (strcmp(name, (N)) == 0) return new (C)(cfg);
 		register_parser("ugm_seg", UGMSegParser);
+		register_parser("mfm_seg", UGMSegParser);
 		register_parser("crf_seg", CRFSegParser);
 		register_parser("crf_ner_nr", CRFNRParser);
 		register_parser("crf_ner_ns", CRFNSParser);
