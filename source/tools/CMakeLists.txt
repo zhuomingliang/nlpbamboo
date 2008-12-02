@@ -6,6 +6,10 @@ SET(tools
 	switch_column
 	make_turing_data
 	auto_build
+	auto_build_pos
+	auto_build_nr
+	auto_build_ns
+	auto_build_nt
 	update_user_combine
 	convert_pos
 	pdc_pos_tool

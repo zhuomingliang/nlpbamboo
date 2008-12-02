@@ -1,0 +1,24 @@
+#!/bin/bash
+
+top="$(dirname $(readlink -f $0))/.."
+source $top/etc/build_settings
+
+mkdir -p $data_dir $build_dir $index_dir
+
+if [ ! -f "$corpus" ]; then 
+	wget -O - $corpus_url | gzip -cd > $corpus
+	[ "$?" != "0" ] && exit 1 
+fi
+
+if [ ! -f "${ns_suffix}" ]; then 
+	wget ${ns_suffix_url} -O ${ns_suffix}
+	[ "$?" != "0" ] && exit 1 
+fi
+
+$bin/lexicon -v -b -i ${index_dir}/ns_suffix.idx -s ${ns_suffix} || exit 1
+
+echo "Generating Training file for NS entity recognition"
+$bin/ner_tool -s $corpus -t ns > ${build_dir}/pd_ns_training.txt || exit 1
+
+echo "Begin CRF Training"
+crf_learn -t -c 4.0 -f 2 -p 1 $data_dir/ns.tmpl ${build_dir}/pd_ns_training.txt ${index_dir}/crf_ner_ns.model || exit 1

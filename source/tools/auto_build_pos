@@ -1,0 +1,17 @@
+#!/bin/bash
+
+top="$(dirname $(readlink -f $0))/.."
+source $top/etc/build_settings
+
+mkdir -p $data_dir $build_dir $index_dir
+
+if [ ! -f "$corpus" ]; then 
+	wget -O - $corpus_url | gzip -cd > $corpus
+	[ "$?" != "0" ] && exit 1 
+fi
+
+echo "Generating Training file for POS"
+$bin/pdc_pos_tool $corpus > ${build_dir}/pd_pos_training.txt || exit 1
+
+echo "Begin CRF Training"
+crf_learn -t -c 4.0 -f 2 -p 1 $data_dir/pos.tmpl ${build_dir}/pd_pos_training.txt ${index_dir}/crf_pos.model || exit 1

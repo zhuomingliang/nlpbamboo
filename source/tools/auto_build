@@ -54,7 +54,11 @@ case $choice in
 	fi
 	$bin/crf2_tool -i ${build_dir}/normalized.txt -o ${build_dir}/pd_crf2_training.txt || exit 1
 	# Train CRF2
-	crf_learn -t -c 4.0 -f 2 ${data_dir}/crf2.tmpl ${build_dir}/pd_crf2_training.txt ${index_dir}/crf2.model || exit 1
+	crf_learn -t -c 4.0 -f 2 ${data_dir}/crf2.tmpl ${build_dir}/pd_crf2_training.txt ${index_dir}/crf_seg.model || exit 1
 	;;
 	*) ;;
 esac
+
+echo "Done."
+echo "You can use auto_build_{pos,nr,ns,nt} tools to build your {pos,nr,ns,nt} model manually."
+echo 

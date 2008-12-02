@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 				std::cout << vec2[j] << "\t"
 					<< tag <<std::endl;
 			}
-			if(size==1)
+			if(len==1)
 				tag = "S";
 			else
 				tag = "E";
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 			std::cout << vec2[j] << "\t"
 				<< tag << std::endl;
 		}
-		std::cout<<std::endl<<std::endl;
+		std::cout<<std::endl;
 	}
 	fin.close();
 	return 0;

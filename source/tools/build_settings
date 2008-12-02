@@ -12,3 +12,6 @@ break="$data_dir/break.txt"
 
 corpus_url="http://nlpbamboo.googlecode.com/files/people-daily.txt.gz" 
 number_trailing_url="http://nlpbamboo.googlecode.com/files/number_trailing.txt"
+
+ns_suffix="${data_dir}/ns_suffix.txt"
+ns_suffix_url="http://nlpbamboo.googlecode.com/files/ns_suffix.txt"
