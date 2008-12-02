@@ -9,6 +9,7 @@ SET(tools
 	update_user_combine
 	convert_pos
 	pdc_pos_tool
+	pdc_normalize_4nr
 	)
 
 macro(build_training_tool name)
@@ -21,6 +22,7 @@ find_package(CRFPP)
 if (CRFPP_FOUND)
 	build_training_tool(crf2_tool utf8)
 	build_training_tool(ner_nr_tool utf8)
+	build_training_tool(ner_tool utf8)
 endif (CRFPP_FOUND)
 
 install(FILES build_settings DESTINATION ${ETC_INSTALL_DIR})
