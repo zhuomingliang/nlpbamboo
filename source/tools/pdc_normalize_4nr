@@ -36,7 +36,7 @@ use vars '$opt_v', '$opt_h';
 
 ################################################################################
 #
-# generate training file from people daily corpus
+# Normalize People Daily Corpus for ner_nr_tool
 #
 ################################################################################
 
@@ -57,7 +57,11 @@ sub normalize
 			my $cur_tok = $tokens[$t];
 			my $str, my $pos;
 			($str, $pos) = split(/\//, $cur_tok);
-			print encode('UTF-8', "$str $pos\n");
+			if($pos eq "nr") {
+				print encode('UTF-8', " $str/nr ");
+			} else {
+				print encode('UTF-8', $str);
+			}
 			$i++;
 		}
 		if($i > 0) {
@@ -78,8 +82,8 @@ sub normalize
 
 
 if (!getopts("hlv") || $opt_h || !$ARGV[0]) {
-	print "Usage: pos_tool [OPTIONS] CORPUS\n";
-	print "Generate Training file for Part-Of-Speech\n";
+	print "Usage: pdc_normalize_4nr [OPTIONS] CORPUS\n";
+	print "Normalize People Daily Corpus for ner_nr_tool\n";
 	print "OPTIONS:\n";
 	print "        -v            verbose\n";
 	exit
