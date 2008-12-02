@@ -50,8 +50,12 @@ SingleCombineProcessor::SingleCombineProcessor(IConfig *config)
 	config->get_value("combine_backward", _combine_backward);
 	config->get_value("combine_neighbor", _combine_neighbor);
 	config->get_value("single_combination_lexicon", s);
+	if (s == NULL)
+		throw std::runtime_error("single_combination_lexicon is null");
 	_lexicon_combine = LexiconFactory::load(s);
 	config->get_value("number_trailing_lexicon", s);
+	if (s == NULL)
+		throw std::runtime_error("number_trailing_lexicon is null");
 	_lexicon_number_trailing = LexiconFactory::load(s);
 }
 

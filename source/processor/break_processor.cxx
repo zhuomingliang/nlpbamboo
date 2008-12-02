@@ -47,6 +47,8 @@ BreakProcessor::BreakProcessor(IConfig *config)
 	config->get_value("max_token_length", _max_token_length);
 	config->get_value("break_min_length", _min_token_length);
 	config->get_value("break_lexicon", s);
+	if (s == NULL)
+		throw std::runtime_error("break_lexicon is null");
 	_lexicon = LexiconFactory::load(s);
 	if (_min_token_length < 2) _min_token_length = 2;
 	if (_max_token_length < 1) throw std::runtime_error("max_token_length must greater than 0");
