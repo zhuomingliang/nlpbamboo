@@ -44,7 +44,7 @@ UnigramProcessor::UnigramProcessor(IConfig *config)
 
 	config->get_value("ele_lambda", _lambda);
 	config->get_value("unigram_lexicon", s);
-	if (s == NULL)
+	if (*s == '\0')
 		throw std::runtime_error("unigram_lexicon is null");
 	config->get_value("max_token_length", _max_token_length);
 	_lexicon = LexiconFactory::load(s);

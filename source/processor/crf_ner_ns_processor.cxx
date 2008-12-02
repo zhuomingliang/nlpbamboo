@@ -60,6 +60,8 @@ CRFNSProcessor::CRFNSProcessor(IConfig *config)
 	}
 
 	config->get_value("crf_ner_ns_suffix", model);
+	if (*model == '\0')
+		throw std::runtime_error("crf_ner_ns_suffix is null");
 	_suffix_dict = LexiconFactory::load(model);
 	config->get_value("ner_output_type", _ner_output_type);
 }
