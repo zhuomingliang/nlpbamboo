@@ -26,53 +26,63 @@
  * 
  */
 
-#ifndef CONFIG_FINDER_HXX
-#define CONFIG_FINDER_HXX
+#ifndef PARSER_FACTORY_HXX
+#define PARSER_FACTORY_HXX
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <config_factory.hxx>
+#include <dlfcn.h>
+
+#include <string>
+#include <cassert>
+
+
+#include "parser.hxx"
+#include "crf_ner_nr_parser.hxx"
+#include "crf_ner_ns_parser.hxx"
+#include "crf_ner_nt_parser.hxx"
+#include "crf_seg_parser.hxx"
+#include "custom_parser.hxx"
+#include "keyword_parser.hxx"
+#include "ugm_seg_parser.hxx"
 
 namespace bamboo {
 
-class ConfigFinder
+class ParserFactory
 {
 private:
-	static ConfigFinder		*_instance;
 
-	ConfigFinder() {};
+	static ParserFactory		*_instance;
+
+protected:
+	IConfig 					*_config;
+	
+	ParserFactory():_config(NULL) {}
+	ParserFactory(const ParserFactory&):_config(NULL) {}
+	ParserFactory& operator= (const ParserFactory &) { return *this;}
 public:
-	static ConfigFinder *get_instance()
+
+	static ParserFactory *get_instance()
 	{
 		if (_instance == NULL)
-			_instance = new ConfigFinder();
-		
+			_instance = new ParserFactory();
+
 		return _instance;
 	}
 
-	IConfig *find(const char *file, const char *top = NULL, bool verbose = false) 
+	Parser *create(	const char *name,
+					const char *cfg = NULL, bool verbose=false)
 	{
-		std::vector<std::string>::size_type i;
-		struct stat buf;
-		std::vector<std::string> v;
-
-		if (top)
-			v.push_back(top);
-		v.push_back(file);
-		v.push_back(std::string("etc/bamboo/").append(file));
-		v.push_back(std::string("/opt/bamboo/etc/bamboo/").append(file));
-		for (i = 0; i < v.size(); i++) {
-			if (stat(v[i].c_str(), &buf) == 0) {
-				if (verbose)
-					std::cerr	<< "use configuration: " << v[i]
-								<< "." << std::endl;
-				return ConfigFactory::create(v[i].c_str());
-			}
-		}
-
-		throw std::runtime_error(std::string("can not find configuration: ") + file);
+#define register_parser(N, C) if (strcmp(name, (N)) == 0) return new (C)(cfg);
+		register_parser("ugm_seg", UGMSegParser);
+		register_parser("crf_seg", CRFSegParser);
+		register_parser("crf_ner_nr", CRFNRParser);
+		register_parser("crf_ner_ns", CRFNSParser);
+		register_parser("crf_ner_nt", CRFNTParser);
+		register_parser("keyword", KeywordParser);
+#undef register_parser
+		return NULL;
 	}
 };
 
-} /* namespace bamboo */
-#endif
+};
+
+#endif /* PARSER_FACTORY_HXX */

@@ -33,18 +33,13 @@
 #include <stdexcept>
 #include <vector>
 
-#include "crf_seg_parser.hxx"
-#include "ugm_seg_parser.hxx"
-#include "crf_ner_nr_parser.hxx"
-#include "crf_ner_ns_parser.hxx"
-#include "crf_ner_nt_parser.hxx"
-#include "keyword_parser.hxx"
+#include "parser_factory.hxx"
 #include "custom_parser.hxx"
 
-int g_pos = 0;
+const char g_default_parser[] = "crf_seg";
 const char g_default_config[] = "";
 const char g_default_file[] = "-";
-const char *g_config = g_default_config, *g_file = g_default_file;
+const char *g_config = g_default_config, *g_file = g_default_file, *g_parser = g_default_parser;
 
 std::vector<std::string> g_override;
 
@@ -54,7 +49,7 @@ static void _help_message()
 				 "OPTIONS:\n"
 				 "        -c|--config           configuration\n"
 				 "        -h|--help             help message\n"
-				 "        -p|--pos              show pos tag\n"
+				 "        -p|--parser           parser, default: crf_seg\n"
 				 "\n"
 				 "Report bugs to detrox@gmail.com\n"
 			  << std::endl;
@@ -64,7 +59,7 @@ static int _do()
 {
 	char *s, *t;
 	ssize_t length;
-	size_t n, i;
+	size_t n;
 	FILE *fp = NULL;
 	struct timeval tv[2];
 	struct timezone tz;
@@ -73,7 +68,13 @@ static int _do()
 	std::vector<bamboo::Token *>::iterator it;
 
 	try {
-		bamboo::UGMSegParser parser(g_config);
+		bamboo::Parser *parser;
+		bamboo::ParserFactory *factory;
+
+		factory = bamboo::ParserFactory::get_instance();
+		parser = factory->create(g_parser);
+		if (parser == NULL)
+			throw std::runtime_error("parser can not be found.");
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
 		/*
 		for (i = 0; i < g_override.size(); i++) {
@@ -98,13 +99,13 @@ static int _do()
 			if (s[length - 2] == '\r') s[length - 2] = '\0';
 			gettimeofday(&tv[0], &tz);
 			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n"))
-				parser.parse(vec, t);
+				parser->parse(vec, t);
 			gettimeofday(&tv[1], &tz);
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 
 			for (it = vec.begin(); it < vec.end(); ++it) {
 				std::cout << (*it)->get_orig_token();
-				if (g_pos && (*it)->get_pos()) std::cout << "/" << (*it)->get_pos();
+				//if (g_pos && (*it)->get_pos()) std::cout << "/" << (*it)->get_pos();
 				std::cout << " ";
 				delete *it;
 			}
@@ -129,13 +130,13 @@ int main(int argc, char *argv[])
 		{
 			{"help", no_argument, 0, 'h'},
 			{"config", required_argument, 0, 'c'},
-			{"pos", no_argument, 0, 'p'},
+			{"parser", required_argument, 0, 'p'},
 			{"set", required_argument, 0, 's'},
 			{0, 0, 0, 0}
 		};
 		int option_index;
 		
-		c = getopt_long(argc, argv, "c:hps:", long_options, &option_index);
+		c = getopt_long(argc, argv, "c:hp:s:", long_options, &option_index);
 		if (c == -1) break;
 
 		switch(c) {
@@ -146,7 +147,7 @@ int main(int argc, char *argv[])
 				g_config = optarg;
 				break;
 			case 'p':
-				g_pos = 1;
+				g_parser = optarg;
 				break;
 			case 's':
 				g_override.push_back(optarg);

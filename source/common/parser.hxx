@@ -1,6 +1,7 @@
 #ifndef PARSER_HXX
 #define PARSER_HXX
 
+#include <vector>
 #include "token.hxx"
 
 namespace bamboo {
