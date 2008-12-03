@@ -25,9 +25,10 @@ int main()
 
 	delete p;
 
-	void *handle = bamboo_init_ex("crf_seg",NULL);
+	void *handle = bamboo_init("crf_seg",NULL);
 	char *t = NULL;
-	bamboo_parse(handle, &t, "我爱北京天安门");
+	bamboo_setopt(handle, BAMBOO_OPTION_TEXT, const_cast<char *>(text));
+	t = bamboo_parse(handle);
 	printf("==> %s\n", t);
 	free(t);
 	bamboo_clean(handle);

@@ -120,6 +120,9 @@ protected:
 
 		length = _in->size();
 
+		if(out.size() > 0 ) out.clear();
+		out.reserve(length);
+
 		for(i=0; i<length; ++i) {
 			out.push_back(new YCToken((*_in)[i]->get_orig_token(), (*_in)[i]->get_pos()));
 			delete (*_in)[i];

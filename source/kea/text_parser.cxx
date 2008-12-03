@@ -89,7 +89,14 @@ int TextParser::parse_text(const char * title, const char * text, YCDoc & doc) {
 		YCSentence * sent = new YCSentence();
 		sent->is_title = true;
 		_segment_tool->segment(title, tokens);
-		copy(tokens.begin(), tokens.end(), back_inserter(sent->token_list));
+		size_t i, size = tokens.size();
+		for(i=0; i<size; ++i) {
+			if(_is_filter_word(tokens[i])) {
+				delete tokens[i];
+			} else {
+				sent->token_list.push_back(tokens[i]);
+			}
+		}
 		doc.sent_list.push_back(sent);
 	}
 	if(text) {
