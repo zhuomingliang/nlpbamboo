@@ -120,13 +120,16 @@ void CustomParser::_lazy_create_config(const char *custom)
 }
 
 int
-CustomParser::parse(std::vector<Token *> &out, const char *s)
+CustomParser::parse(std::vector<Token *> &out)
 {
 #ifdef TIMING	
 	struct timeval tv[2];
 	struct timezone tz;
 #endif
 	size_t i, length;
+	const char *s;
+
+	s = (const char *)getopt(BAMBOO_OPTION_TEXT);
 
 	length = utf8::length(s);
 	_in->clear();

@@ -59,12 +59,13 @@ KeywordParser::~KeywordParser() {
 	}
 }
 
-int KeywordParser::parse(std::vector<Token *> &out, const char * text) {
-	return parse(out, NULL, text);
-}
-
-int KeywordParser::parse(std::vector<Token *> &out, const char * title, const char * text) {
+int KeywordParser::parse(std::vector<Token *> &out) {
 	size_t i, len;
+	const char *title, *text;
+
+	title = (const char *)getopt(BAMBOO_OPTION_TITLE);
+	text = (const char *)getopt(BAMBOO_OPTION_TEXT);
+
 	std::vector<std::string> res;
 	res.reserve(_ke->max_keywords());
 	_ke->get_keyword(title, text, res);

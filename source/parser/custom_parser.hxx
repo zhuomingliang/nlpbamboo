@@ -45,7 +45,7 @@ namespace bamboo {
 class CustomParser:public Parser {
 public:
 	CustomParser(const char *file);
-	int parse(std::vector<Token *> &out, const char *s);
+	int parse(std::vector<Token *> &out);
 	void reload();
 	void set(std::string key, std::string val); 
 	void set(std::string s);

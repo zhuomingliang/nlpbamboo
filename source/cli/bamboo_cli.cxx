@@ -76,13 +76,6 @@ static int _do()
 		if (parser == NULL)
 			throw std::runtime_error("parser can not be found.");
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
-		/*
-		for (i = 0; i < g_override.size(); i++) {
-			std::cerr << "overriding " << g_override[i] << std::endl;
-			parser.set(g_override[i]);
-		}
-		if (i > 0) parser.reload();
-		*/
 		if (strcmp(g_file, "-") == 0) {
 			fp = stdin;
 		} else {
@@ -98,14 +91,15 @@ static int _do()
 			if (s[length - 1] == '\n') s[length - 1] = '\0';
 			if (s[length - 2] == '\r') s[length - 2] = '\0';
 			gettimeofday(&tv[0], &tz);
-			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n"))
-				parser->parse(vec, t);
+			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n")) {
+				parser->setopt(BAMBOO_OPTION_TEXT, t);
+				parser->parse(vec);
+			}
 			gettimeofday(&tv[1], &tz);
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 
 			for (it = vec.begin(); it < vec.end(); ++it) {
 				std::cout << (*it)->get_orig_token();
-				//if (g_pos && (*it)->get_pos()) std::cout << "/" << (*it)->get_pos();
 				std::cout << " ";
 				delete *it;
 			}

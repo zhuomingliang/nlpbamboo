@@ -46,7 +46,7 @@ class UGMSegParser:public Parser {
 public:
 	UGMSegParser(const char *file);
 	~UGMSegParser();
-	int parse(std::vector<Token *> &out, const char *s);
+	int parse(std::vector<Token *> &out);
 protected:
 	int							_verbose;
 	int							_use_break;

@@ -47,8 +47,7 @@ class KeywordParser:public Parser {
 public:
 	KeywordParser(const char *file);
 	~KeywordParser();
-	int parse(std::vector<Token *> &out, const char * text);
-	int parse(std::vector<Token *> &out, const char * title, const char * text);
+	int parse(std::vector<Token *> &out);
 protected:
 	int _verbose;
 	IConfig	* _config;

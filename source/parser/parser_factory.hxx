@@ -29,23 +29,10 @@
 #ifndef PARSER_FACTORY_HXX
 #define PARSER_FACTORY_HXX
 
-#include <dlfcn.h>
-
-#include <string>
-#include <cassert>
-
-
 #include "parser.hxx"
-#include "crf_ner_nr_parser.hxx"
-#include "crf_ner_ns_parser.hxx"
-#include "crf_ner_nt_parser.hxx"
-#include "crf_seg_parser.hxx"
-#include "custom_parser.hxx"
-#include "keyword_parser.hxx"
-#include "ugm_seg_parser.hxx"
 
 namespace bamboo {
-
+class IConfig;
 class ParserFactory
 {
 private:
@@ -55,18 +42,13 @@ private:
 protected:
 	IConfig 					*_config;
 	
-	ParserFactory():_config(NULL) {}
-	ParserFactory(const ParserFactory&):_config(NULL) {}
-	ParserFactory& operator= (const ParserFactory &) { return *this;}
+	ParserFactory();
+	ParserFactory(const ParserFactory&);
+	ParserFactory& operator= (const ParserFactory &);
+
 public:
 
-	static ParserFactory *get_instance()
-	{
-		if (_instance == NULL)
-			_instance = new ParserFactory();
-
-		return _instance;
-	}
+	static ParserFactory *get_instance();
 
 	Parser *create(	const char *name,
 					const char *cfg = NULL, bool verbose=false)

@@ -12,6 +12,7 @@ set(components
 	ycake
 	common
 	parser
+	interface
 	cli
 )
 

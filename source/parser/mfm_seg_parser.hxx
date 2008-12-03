@@ -46,7 +46,7 @@ class MFMSegParser:public Parser {
 public:
 	MFMSegParser(const char *file);
 	~MFMSegParser();
-	int parse(std::vector<Token *> &out, const char *s);
+	int parse(std::vector<Token *> &out);
 protected:
 	int							_verbose;
 	int							_use_break;

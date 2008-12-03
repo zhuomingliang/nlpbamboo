@@ -46,7 +46,7 @@ class CRFNSParser:public Parser {
 public:
 	CRFNSParser(const char *file);
 	~CRFNSParser();
-	int parse(std::vector<Token *> &out, const char *s);
+	int parse(std::vector<Token *> &out);
 protected:
 	int _verbose;
 	IConfig	* _config;

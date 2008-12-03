@@ -77,9 +77,12 @@ MFMSegParser::~MFMSegParser()
 }
 
 int
-MFMSegParser::parse(std::vector<Token *> &out, const char *s)
+MFMSegParser::parse(std::vector<Token *> &out)
 {
 	size_t					i, length;
+	const char				*s;
+
+	s = (char *)getopt(BAMBOO_OPTION_TEXT);
 
 	length = utf8::length(s);
 	_in->clear();
