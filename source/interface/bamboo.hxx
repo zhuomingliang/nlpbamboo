@@ -1,6 +1,8 @@
 #ifndef BAMBOO_HXX
 #define BAMBOO_HXX
 
+#include "bamboo_defs.h"
+
 #ifdef __cplusplus
 
 #include "parser_factory.hxx"
