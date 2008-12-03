@@ -14,7 +14,7 @@ struct pair_cmp {
 KeywordExtractor::KeywordExtractor(IConfig * config)
 	:_config(config),_verbose(0)
 {
-	const char * s, * t;
+	const char * s;
 	_config->get_value("verbose", _verbose);
 
 	SegmentTool & seg_tool = SegmentTool::get_instance();
@@ -24,10 +24,8 @@ KeywordExtractor::KeywordExtractor(IConfig * config)
 	TokenAffDict & token_aff_dict = TokenAffDict::get_instance();
 	token_aff_dict.init(s);
 
-	_config->get_value("ke_token_id_dict", s);
-	_config->get_value("ke_token_df_dict", t);
 	TokenDict & token_dict = TokenDict::get_instance();
-	token_dict.init(s, t);
+	token_dict.init(_config);
 
 	TokenFilter & token_filter = TokenFilter::get_instance();
 	token_filter.init(_config);

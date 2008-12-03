@@ -40,8 +40,9 @@ public:
 		const char * s;
 		_config = ConfigFactory::create(cfg);
 
-		_config->get_value("ke_bamboo_cfg", s);
-		_parser = new Parser(s);
+		bamboo::ParserFactory *factory;
+		factory = bamboo::ParserFactory::get_instance();
+		_parser = factory->create("crf_seg");
 
 		_config->get_value("ke_token_id_dict", s);
 		_token_id_dict = LexiconFactory::load(s);
@@ -67,17 +68,18 @@ public:
 	};
 
 	int parse_file(const char * file) {
-		std::vector<bamboo::Token> tokens;
+		std::vector<bamboo::Token*> tokens;
 		std::map<int, int> doc_token_map;
 		MMap mmap;
 		mmap.open(file);
 		char * buf = (char *)malloc(mmap.getlen() + 1);
 		memcpy(buf, mmap.ptr(), mmap.getlen());
 		buf[mmap.getlen()] = 0;
-		_parser->parse(tokens, buf);
+		_parser->setopt(BAMBOO_OPTION_TEXT, buf);
+		_parser->parse(tokens);
 		int i, j, len = tokens.size();
 		for(i=0; i<len; ++i) {
-			const char * t = tokens[i].token;
+			const char * t = tokens[i]->get_orig_token();
 			int id = _token_id_dict->search(t);
 			if(id>0) {
 				doc_token_map[id] += 1;
@@ -90,6 +92,7 @@ public:
 						std::make_pair(id, t));
 				}
 			}
+			delete tokens[i];
 		}
 
 		std::vector<std::pair<int, int> > token_vec;

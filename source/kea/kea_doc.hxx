@@ -73,12 +73,11 @@ public:
 class YCSentence {
 public:
 	bool is_title;
-	double abs_weight;
 	double rel_weight;
 	std::vector<YCToken *> token_list;
 	std::map<int, int> token_id_list;
 
-	YCSentence():is_title(false),abs_weight(0),rel_weight(0) {}
+	YCSentence():is_title(false),rel_weight(0) {}
 	~YCSentence() {
 		std::vector<YCToken *>::iterator yct_it
 			= token_list.begin();

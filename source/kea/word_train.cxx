@@ -4,6 +4,7 @@
 #include <libgen.h>
 #include <unistd.h>
 
+#include <cstdio>
 #include <vector>
 #include <map>
 #include <string>
@@ -20,12 +21,6 @@
 namespace bamboo { namespace kea {
 
 class WordTrain {
-public:
-	struct str_cmp {
-		bool operator() (const char * l, const char *r) {
-			return strcmp(l, r) < 0;
-		}
-	};
 
 private:
 	bamboo::Parser *_parser;
@@ -43,12 +38,12 @@ public:
 	WordTrain(const char * cfg)
 		:_verbose(0)
 	{
-		const char * s;
 		_config = ConfigFactory::create(cfg);
 
-		_config->get_value("ke_bamboo_cfg", s);
-		_parser = new Parser(s);
-		
+		bamboo::ParserFactory *factory;
+		factory = bamboo::ParserFactory::get_instance();
+		_parser = factory->create("crf_seg");
+
 		_config->get_value("ke_freq_threshold", _freq_threshold);
 		_config->get_value("ke_feature_min_length", _feature_min_length);
 		_config->get_value("ke_feature_min_utf8_length", _feature_min_utf8_length);
@@ -64,7 +59,7 @@ public:
 		int id = 1;
 		DATrie token_id_dict;
 		DATrie token_df_dict;
-		std::map<std::string, int, str_cmp>::iterator
+		std::map<std::string, int>::iterator
 			it = _token_map.begin();
 		for(; it != _token_map.end(); ++it) {
 			const char * t = it->first.c_str();
@@ -86,9 +81,11 @@ public:
 		return 0;
 	}
 
-	int parse_dir(const char * path) {
+	int parse_dir(const char * path, const char * output_sgmted) {
 		std::list<std::string> file_list;
 		_walk_dir(path, file_list);
+
+		FILE * fp = fopen(output_sgmted, "w");
 
 		int i = 0;
 		std::list<std::string>::iterator it
@@ -98,32 +95,37 @@ public:
 			if(_verbose && i++%1000 == 0) 
 				std::cerr<<"processed " << i << " files" << std::endl;
 
-			parse_file(it->c_str());
+			parse_file(it->c_str(), fp/*, output_sgmted*/);
 		}
 
 		if(_verbose) 
 			std::cerr<<"processed " << i << " files total." << std::endl;
 
+		fclose(fp);
 		return 0;
 	}
 
-	int parse_file(const char * file) {
-		std::vector<bamboo::Token> tokens;
-		std::map<const char *, int, str_cmp> doc_token_map;
-		std::map<const char *, int, str_cmp>::iterator mit;
+	int parse_file(const char * file, FILE * fp) {
+		std::vector<bamboo::Token*> tokens;
+		std::map<std::string, int> doc_token_map;
+		std::map<std::string, int>::iterator mit;
 		MMap mmap;
 		mmap.open(file);
 		char * buf = (char *)malloc(mmap.getlen() + 1);
 		memcpy(buf, mmap.ptr(), mmap.getlen());
 		buf[mmap.getlen()] = 0;
-		_parser->parse(tokens, buf);
+		_parser->setopt(BAMBOO_OPTION_TEXT, buf);
+		_parser->parse(tokens);
 		size_t i, len = tokens.size();
 		for(i=0; i<len; ++i) {
-			const char * t = tokens[i].token;
+			const char * t = tokens[i]->get_orig_token();
 			doc_token_map[t] += 1;
+			fprintf(fp, "%s ", t);
+			delete tokens[i];
 		}
+		fprintf(fp, "\n");
 		for(mit=doc_token_map.begin(); mit!=doc_token_map.end(); ++mit) {
-			const char * t = mit->first;
+			const char * t = mit->first.c_str();
 			int cnt = mit->second;
 			if(_feature_filter(t, cnt)) continue;
 
@@ -184,13 +186,13 @@ protected:
 
 using namespace bamboo::kea;
 
-#define USAGE "kea_word_train -c config -s corpus_dir"
+#define USAGE "kea_word_train -c config -s corpus_dir -o corpus_after_segmented"
 
 int main(int argc, char * argv[]) {
-	const char * kea_cfg = NULL, * corpus_dir = NULL;
+	const char * kea_cfg = NULL, * corpus_dir = NULL, * output_sgmted = NULL;
 
 	int opt;
-	while( (opt=getopt(argc, argv, "c:s:")) != -1) {
+	while( (opt=getopt(argc, argv, "c:s:o:")) != -1) {
 		switch(opt) {
 		case 'c':
 			kea_cfg = optarg;
@@ -198,19 +200,22 @@ int main(int argc, char * argv[]) {
 		case 's':
 			corpus_dir = optarg;
 			break;
+		case 'o':
+			output_sgmted = optarg;
+			break;
 		case '?':
 			printf("%s\n", USAGE);
 			exit(1);
 		}
 	}
 
-	if(!kea_cfg || !corpus_dir) {
+	if(!kea_cfg || !corpus_dir || !output_sgmted) {
 		printf("%s\n", USAGE);
 		exit(1);
 	}
 
 	WordTrain a(kea_cfg);
-	a.parse_dir(corpus_dir);
+	a.parse_dir(corpus_dir, output_sgmted);
 	a.save_token_dict();
 
 	return 0;

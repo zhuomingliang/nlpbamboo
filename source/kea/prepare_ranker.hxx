@@ -7,10 +7,17 @@
 
 namespace bamboo { namespace kea {
 
+#define MAX_BLOCK 256
+
 class PrepareRanker : public Ranker{
 protected:
 	TokenDict * _token_dict;
 	double _title_weight;
+	double _firstocc_w;
+	double _firstocc_t;
+	double _numocc_w;
+	double _numocc_s;
+	double _numocc_t;
 
 public:
 	PrepareRanker(IConfig * config);
