@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 
 #include "bamboo.hxx"
 
@@ -23,6 +24,14 @@ int main()
 	}
 
 	delete p;
+
+	void *handle = bamboo_init_ex("crf_seg",NULL);
+	char *t = NULL;
+	bamboo_parse(handle, &t, "我爱北京天安门");
+	printf("==> %s\n", t);
+	free(t);
+	bamboo_clean(handle);
+
 
 	return 0;
 }

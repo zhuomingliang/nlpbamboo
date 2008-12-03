@@ -1,7 +1,7 @@
 #include "parser.hxx"
 
 namespace bamboo {
-void Parser::setopt(enum bamboo_option option, void *arg)
+void Parser::setopt(enum bamboo_option option, const void *arg)
 {
 	switch (option) {
 		case BAMBOO_OPTION_TEXT:
@@ -13,7 +13,7 @@ void Parser::setopt(enum bamboo_option option, void *arg)
 	}
 }
 
-void *Parser::getopt(enum bamboo_option option)
+const void *Parser::getopt(enum bamboo_option option)
 {
 	switch (option) {
 		case BAMBOO_OPTION_TEXT:
