@@ -15,6 +15,7 @@ void bamboo_clean_ex(void *handle);
 void *bamboo_init(const char *cfg);
 void bamboo_clean(void *handle);
 ssize_t bamboo_parse(void *handle, char **t, const char *s);
+const char *bamboo_strerror();
 #ifdef __cplusplus
 }
 #endif

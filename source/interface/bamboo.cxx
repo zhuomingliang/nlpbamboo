@@ -11,6 +11,12 @@
 
 static char error_buffer[ERROR_BUFFER_SIZE];
 
+
+const char *bamboo_strerror()
+{
+	return error_buffer;
+}
+
 void *bamboo_init_ex(const char *parser, const char *cfg)
 {
 	bamboo::ParserFactory *factory;
