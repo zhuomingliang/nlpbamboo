@@ -51,19 +51,7 @@ public:
 	static ParserFactory *get_instance();
 
 	Parser *create(	const char *name,
-					const char *cfg = NULL, bool verbose=false)
-	{
-#define register_parser(N, C) if (strcmp(name, (N)) == 0) return new (C)(cfg);
-		register_parser("ugm_seg", UGMSegParser);
-		register_parser("mfm_seg", UGMSegParser);
-		register_parser("crf_seg", CRFSegParser);
-		register_parser("crf_ner_nr", CRFNRParser);
-		register_parser("crf_ner_ns", CRFNSParser);
-		register_parser("crf_ner_nt", CRFNTParser);
-		register_parser("keyword", KeywordParser);
-#undef register_parser
-		return NULL;
-	}
+					const char *cfg = NULL, bool verbose=false);
 };
 
 };
