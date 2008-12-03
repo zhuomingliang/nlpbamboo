@@ -17,7 +17,7 @@ const char *bamboo_strerror()
 	return error_buffer;
 }
 
-void *bamboo_init_ex(const char *parser, const char *cfg)
+void *bamboo_init(const char *parser, const char *cfg)
 {
 	bamboo::ParserFactory *factory;
 	try {
@@ -32,11 +32,6 @@ void *bamboo_init_ex(const char *parser, const char *cfg)
 	}
 }
 
-void *bamboo_init(const char *cfg)
-{
-	return bamboo_init_ex("custom", cfg);
-}
-
 void bamboo_setopt(void *handle, enum bamboo_option option, void *arg)
 {
 	bamboo::Parser *parser = static_cast<bamboo::Parser *>(handle);
@@ -49,7 +44,7 @@ const void *bamboo_getopt(void *handle, enum bamboo_option option)
 	return parser->getopt(option);
 }
 
-char *bamboo_parse_ex(void *handle)
+char *bamboo_parse(void *handle)
 {
 	std::vector<bamboo::Token *>				vec;
 	std::vector<bamboo::Token *>::iterator		it;
@@ -96,30 +91,8 @@ char *bamboo_parse_ex(void *handle)
 	}
 }
 
-ssize_t bamboo_parse(void *handle, char **t, const char *s)
-{
-	if (handle == NULL || t == NULL || s == NULL) {
-		set_error("%s", "invalid parameters");
-		return NULL;
-	}
-
-	bamboo::Parser *parser = static_cast<bamboo::Parser *>(handle);
-	parser->setopt(BAMBOO_OPTION_TEXT, s);
-
-	*t = bamboo_parse_ex(handle);
-	
-	if (*t == NULL) 
-		return -1;
-	
-	return strlen(*t);
-}
-
-void bamboo_clean_ex(void *handle)
+void bamboo_clean(void *handle)
 {
 	delete static_cast<bamboo::Parser *>(handle);
 }
 
-void bamboo_clean(void *handle)
-{
-	bamboo_clean_ex(handle);
-}
