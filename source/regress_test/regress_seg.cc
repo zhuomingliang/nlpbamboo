@@ -12,7 +12,10 @@ int main()
 
 	ParserFactory *factory = ParserFactory::get_instance();
 	Parser *p = factory->create("crf_seg");
-	p->parse(v, "我爱北京天安门");
+
+	const char * text = "我爱北京天安门";
+	p->setopt(BAMBOO_OPTION_TEXT, const_cast<char *>(text));
+	p->parse(v);
 
 	for (it = v.begin(); it != v.end(); it++) {
 		std::cout << (*it)->get_orig_token() << std::endl;
