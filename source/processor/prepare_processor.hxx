@@ -46,6 +46,7 @@ protected:
 	}
 	void _process(TokenImpl *token, std::vector<TokenImpl *> &out);
 	int _characterize;
+	int _concat;
 public:
 	PrepareProcessor(IConfig *config);
 	~PrepareProcessor() {};

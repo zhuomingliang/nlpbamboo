@@ -39,9 +39,10 @@ PROCESSOR_MAGIC
 PROCESSOR_MODULE(PrepareProcessor)
 
 PrepareProcessor::PrepareProcessor(IConfig *config)
-	:_characterize(0)
+	:_characterize(0), _concat(0)
 {
 	config->get_value("prepare_characterize", _characterize);
+	config->get_value("concat_hyphen", _concat);
 }
 
 void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
@@ -82,7 +83,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		if (isalpha(cch)) state = PS_ALPHA;
 		else if (cch == '.' && state == PS_NUMBER) state = PS_NUMBER;
 		else if (isdigit(cch)) state = PS_NUMBER;
-		else if (isconcat(cch)) state = PS_IDENT;
+		else if (_concat && isconcat(cch)) state = PS_IDENT;
 		else if (ispunct(cch)) state = PS_PUNCT;
 		else if (isspace(cch)) state = PS_WHITESPACE;
 		else if (*uch == '\0') state = PS_END;
@@ -96,7 +97,9 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		} else if (parent == PS_IDENT && (state == PS_ALPHA || state == PS_NUMBER || state == PS_IDENT))
 			state = PS_IDENT;
 
-		if (state != parent || ( _characterize && state == PS_UNKNOW) ){
+		if (state != parent || ( _characterize && state == PS_UNKNOW) 
+		   || state == PS_PUNCT)
+		{
 			if (parent == PS_WHITESPACE)
 				*(sbc.top++) = ' ';
 			if (sbc.top > sbc.base) {

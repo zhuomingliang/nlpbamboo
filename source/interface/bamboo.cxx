@@ -37,35 +37,47 @@ void *bamboo_init(const char *cfg)
 	return bamboo_init_ex("custom", cfg);
 }
 
-ssize_t bamboo_parse(void *handle, char **t, const char *s)
+void bamboo_setopt(void *handle, enum bamboo_option option, void *arg)
+{
+	bamboo::Parser *parser = static_cast<bamboo::Parser *>(handle);
+	parser->setopt(option, arg);
+}
+
+const void *bamboo_getopt(void *handle, enum bamboo_option option)
+{
+	bamboo::Parser *parser = static_cast<bamboo::Parser *>(handle);
+	return parser->getopt(option);
+}
+
+char *bamboo_parse_ex(void *handle)
 {
 	std::vector<bamboo::Token *>				vec;
 	std::vector<bamboo::Token *>::iterator		it;
+	char			 							*t;
 	char			 							*p;
 
 	try {
-		if (handle == NULL || t == NULL || s == NULL)
+		if (handle == NULL)
 			throw std::runtime_error("invalid parameters");
 		
-		size_t size = (strlen(s) + 1) << 1;
 		bamboo::Parser *parser = static_cast<bamboo::Parser *>(handle);
-		parser->setopt(BAMBOO_OPTION_TEXT, s);
 		parser->parse(vec);
 
-		*t = (char *)malloc(size + 1);
-		p = *t;
+		size_t size = (strlen((const char *)parser->getopt(BAMBOO_OPTION_TEXT)) + 1) << 1;
+		t = (char *)malloc(size + 1);
+		p = t;
 		*p = '\0';
 
 		for (it = vec.begin(); it < vec.end(); ++it) {
 			const char 	*token = (*it)->get_orig_token();
 			ssize_t		len = strlen(token);
 
-			if (p - *t <= len) {
+			if (p - t <= len) {
 				/* expand */
-				char *old = *t;
+				char *old = t;
 				size <<= 1;
-				*t = (char *)realloc(*t, size);
-				p = *t + (p - old);
+				t = (char *)realloc(t, size);
+				p = t + (p - old);
 			}
 
 			strcpy(p, (*it)->get_orig_token());
@@ -76,12 +88,30 @@ ssize_t bamboo_parse(void *handle, char **t, const char *s)
 
 		*p = '\0';
 		
-		return 0;
+		return t;
 
 	} catch(std::exception &e) {
 		set_error("%s", e.what());
-		return -1;
+		return NULL;
 	}
+}
+
+ssize_t bamboo_parse(void *handle, char **t, const char *s)
+{
+	if (handle == NULL || t == NULL || s == NULL) {
+		set_error("%s", "invalid parameters");
+		return NULL;
+	}
+
+	bamboo::Parser *parser = static_cast<bamboo::Parser *>(handle);
+	parser->setopt(BAMBOO_OPTION_TEXT, s);
+
+	*t = bamboo_parse_ex(handle);
+	
+	if (*t == NULL) 
+		return -1;
+	
+	return strlen(*t);
 }
 
 void bamboo_clean_ex(void *handle)
