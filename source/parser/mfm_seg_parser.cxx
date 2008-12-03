@@ -48,7 +48,7 @@ MFMSegParser::MFMSegParser(const char *file)
 	ProcessorFactory	*factory;
 
 	finder = ConfigFinder::get_instance();
-	_config = finder->find("mfmseg.cfg");
+	_config = finder->find("seg_mfm.conf");
 	(*_config)["prepare_characterize"] = "0";
 
 	_config->get_value("verbose", _verbose);

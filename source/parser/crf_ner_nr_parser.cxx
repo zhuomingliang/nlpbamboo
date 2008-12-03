@@ -48,7 +48,7 @@ CRFNRParser::CRFNRParser(const char *file)
 	ProcessorFactory * factory;
 
 	finder = ConfigFinder::get_instance();
-	_config = finder->find("crfnr.cfg");
+	_config = finder->find("ner_nr.conf");
 	(*_config)["prepare_characterize"] = "1";
 
 	_config->get_value("verbose", _verbose);
