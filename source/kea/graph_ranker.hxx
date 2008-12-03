@@ -1,12 +1,12 @@
-#ifndef YCAKE_GRAPH_RANKER_HXX
-#define YCAKE_GRAPH_RANKER_HXX
+#ifndef KEA_GRAPH_RANKER_HXX
+#define KEA_GRAPH_RANKER_HXX
 
-#include "ycake_doc.hxx"
+#include "kea_doc.hxx"
 #include "ranker.hxx"
 #include "udgraph.hxx"
 #include "token_aff_dict.hxx"
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class GraphRanker : public Ranker{
 protected:
@@ -42,6 +42,6 @@ public:
 	void rank(YCDoc & doc, std::map<int, double> & token_rank, int top_n);
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-#endif //end of YCAKE_GRAPH_RANKER_HXX
+#endif //end of KEA_GRAPH_RANKER_HXX

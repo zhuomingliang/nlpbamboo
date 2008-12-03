@@ -1,15 +1,15 @@
-#ifndef YCAKE_TOKEN_FILTER_HXX
-#define YCAKE_TOKEN_FILTER_HXX
+#ifndef KEA_TOKEN_FILTER_HXX
+#define KEA_TOKEN_FILTER_HXX
 
 #include "lexicon_factory.hxx"
 #include "ilexicon.hxx"
 #include "datrie.hxx"
 #include "config_factory.hxx"
-#include "ycake_doc.hxx"
+#include "kea_doc.hxx"
 #include "utf8.hxx"
 #include <cctype>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class TokenFilter {
 protected:
@@ -91,6 +91,6 @@ protected:
 
 };
 
-}} // end of namespace bamboo::ycake
+}} // end of namespace bamboo::kea
 
-#endif // end of YCAKE_TOKEN_FILTER_HXX
+#endif // end of KEA_TOKEN_FILTER_HXX

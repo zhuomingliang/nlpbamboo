@@ -9,7 +9,7 @@ set(components
 	debugger
 #	bamboo
 	tools
-	ycake
+	kea
 	common
 	parser
 	interface

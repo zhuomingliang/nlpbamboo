@@ -1,9 +1,9 @@
-#ifndef YCAKE_YCAKE_HXX
-#define YCAKE_YCAKE_HXX
+#ifndef KEA_KEA_HXX
+#define KEA_KEA_HXX
 
 #include "config_factory.hxx"
 #include "text_parser.hxx"
-#include "ycake_doc.hxx"
+#include "kea_doc.hxx"
 #include "segment_tool.hxx"
 #include "prepare_ranker.hxx"
 #include "graph_ranker.hxx"
@@ -11,7 +11,7 @@
 #include <vector>
 #include <string>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class KeywordExtractor {
 protected:
@@ -41,6 +41,6 @@ public:
 
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-#endif //end of YCAKE_YCAKE_HXX
+#endif //end of KEA_KEA_HXX

@@ -1,11 +1,11 @@
-#ifndef YCAKE_RANKER_HXX
-#define YCAKE_RANKER_HXX
+#ifndef KEA_RANKER_HXX
+#define KEA_RANKER_HXX
 
-#include "ycake_doc.hxx"
+#include "kea_doc.hxx"
 #include "token_dict.hxx"
 #include "config_factory.hxx"
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class Ranker {
 public:
@@ -19,6 +19,6 @@ public:
 
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-#endif //end of YCAKE_RANKER_HXX
+#endif //end of KEA_RANKER_HXX

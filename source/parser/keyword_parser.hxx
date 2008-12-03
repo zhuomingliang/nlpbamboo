@@ -38,7 +38,7 @@
 #include "processor_factory.hxx"
 #include "token_impl.hxx"
 #include "parser.hxx"
-#include "ycake.hxx"
+#include "kea.hxx"
 
 namespace bamboo {
 
@@ -51,7 +51,7 @@ public:
 protected:
 	int _verbose;
 	IConfig	* _config;
-	bamboo::ycake::KeywordExtractor * _ke;
+	bamboo::kea::KeywordExtractor * _ke;
 };
 
 } //namespace bamboo

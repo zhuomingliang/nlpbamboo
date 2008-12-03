@@ -50,7 +50,7 @@ KeywordParser::KeywordParser(const char *file)
 	_config = finder->find("keyword.cfg");
 	_config->get_value("verbose", _verbose);
 
-	_ke = new bamboo::ycake::KeywordExtractor(_config);
+	_ke = new bamboo::kea::KeywordExtractor(_config);
 }
 
 KeywordParser::~KeywordParser() {

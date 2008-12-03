@@ -1,9 +1,9 @@
-#include "ycake.hxx"
+#include "kea.hxx"
 #include "token_filter.hxx"
 #include <algorithm>
 #include <cstdlib>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 struct pair_cmp {
 	bool operator() (std::pair<int, double> &ls, std::pair<int, double> &rs) {
@@ -102,4 +102,4 @@ int KeywordExtractor::max_keywords() {
 	return _top_n;
 }
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea

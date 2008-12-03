@@ -1,13 +1,13 @@
-#ifndef YCAKE_TEXT_PARSER_HXX
-#define YCAKE_TEXT_PARSER_HXX
+#ifndef KEA_TEXT_PARSER_HXX
+#define KEA_TEXT_PARSER_HXX
 
-#include "ycake_doc.hxx"
+#include "kea_doc.hxx"
 #include "segment_tool.hxx"
 #include "config_factory.hxx"
 #include "token_filter.hxx"
 #include <vector>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class TextParser {
 protected:
@@ -30,6 +30,6 @@ public:
 	int parse_text(const char * title, const char * text, YCDoc &doc);
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
 #endif

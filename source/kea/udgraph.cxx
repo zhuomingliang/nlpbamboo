@@ -2,7 +2,7 @@
 #include <cstring>
 #include <cstdio>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 UDGraph::UDGraph(int max_num) {
 	this->_MAX = max_num;
@@ -68,5 +68,5 @@ int UDGraph::_get_index(int i, int j) {
 	return (int)((j-i) + this->_get_index(i-1, _MAX));
 }
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 

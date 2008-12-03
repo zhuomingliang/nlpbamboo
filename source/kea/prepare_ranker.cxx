@@ -1,6 +1,6 @@
 #include "prepare_ranker.hxx"
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 
 PrepareRanker::PrepareRanker(IConfig * config)
@@ -59,4 +59,4 @@ void PrepareRanker::rank(YCDoc & doc, std::map<int, double> & token_rank, int to
 	}
 }
 
-}} // end of namespace bamboo::ycake
+}} // end of namespace bamboo::kea

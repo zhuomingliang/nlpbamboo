@@ -1,9 +1,9 @@
 #include "text_parser.hxx"
-#include "ycake_mmap.hxx"
+#include "kea_mmap.hxx"
 #include "segment_tool.hxx"
 #include <cstdio>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 TextParser::TextParser(IConfig * config)
 	:_segment_tool(NULL)
@@ -112,5 +112,5 @@ int TextParser::parse_text(const char * title, const char * text, YCDoc & doc) {
 	return 0;
 }
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 

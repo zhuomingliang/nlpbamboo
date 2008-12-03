@@ -1,10 +1,10 @@
-#ifndef YCAKE_TFIDF_RANKER_HXX
-#define YCAKE_TFIDF_RANKER_HXX
+#ifndef KEA_TFIDF_RANKER_HXX
+#define KEA_TFIDF_RANKER_HXX
 
-#include "ycake_doc.hxx"
+#include "kea_doc.hxx"
 #include "ranker.hxx"
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class TfidfRanker : public Ranker{
 public:
@@ -14,6 +14,6 @@ public:
 	void rank(YCDoc & doc, std::map<int, double> & token_rank, int top_n);
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-#endif //end of YCAKE_TFIDF_RANKER_HXX
+#endif //end of KEA_TFIDF_RANKER_HXX

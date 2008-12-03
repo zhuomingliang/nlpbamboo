@@ -1,11 +1,11 @@
-#ifndef YCAKE_HASH_HXX
-#define YCAKE_HASH_HXX
+#ifndef KEA_HASH_HXX
+#define KEA_HASH_HXX
 
 #include <cstring>
 #include <stdexcept>
-#include "ycake_mmap.hxx"
+#include "kea_mmap.hxx"
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 enum status_t {
 	EMPTY = 0,
@@ -252,6 +252,6 @@ public:
 	}
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-#endif //end of YCAKE_HASH_HXX
+#endif //end of KEA_HASH_HXX

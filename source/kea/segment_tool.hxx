@@ -1,15 +1,15 @@
-#ifndef YCAKE_SEGMENT_TOOL_HXX
-#define YCAKE_SEGMENT_TOOL_HXX
+#ifndef KEA_SEGMENT_TOOL_HXX
+#define KEA_SEGMENT_TOOL_HXX
 
 #include "ilexicon.hxx"
 #include "datrie.hxx"
 #include "utf8.hxx"
 #include <vector>
-#include "ycake_doc.hxx"
+#include "kea_doc.hxx"
 #include "config_factory.hxx"
 #include "processor_factory.hxx"
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 
 class SegmentTool {
@@ -140,6 +140,6 @@ protected:
 	}
 };
 
-}} // end of namespace bamboo::ycake
+}} // end of namespace bamboo::kea
 
-#endif // end of YCAKE_SEGMENT_TOOL_HXX
+#endif // end of KEA_SEGMENT_TOOL_HXX

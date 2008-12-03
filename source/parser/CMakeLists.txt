@@ -17,7 +17,7 @@ build_parser(mfm_seg)
 build_parser(crf_ner_nr)
 build_parser(crf_ner_ns)
 build_parser(crf_ner_nt)
-build_parser(keyword ycake)
+build_parser(keyword kea)
 
 target_link_libraries(bamboo_parsers ${parser_links}) 
 install(FILES parser_factory.hxx DESTINATION ${INC_INSTALL_DIR})

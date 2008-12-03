@@ -1,11 +1,11 @@
-#ifndef YCAKE_TOKEN_AFF_DICT_HXX
-#define YCAKE_TOKEN_AFF_DICT_HXX
+#ifndef KEA_TOKEN_AFF_DICT_HXX
+#define KEA_TOKEN_AFF_DICT_HXX
 
-#include "ycake_mmap.hxx"
-#include "ycake_hash.hxx"
+#include "kea_mmap.hxx"
+#include "kea_hash.hxx"
 #include "token_dict.hxx"
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class TokenAffDict {
 protected:
@@ -51,6 +51,6 @@ public:
 	}
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-#endif //end of YCAKE_TOKEN_AFF_DICT_HXX
+#endif //end of KEA_TOKEN_AFF_DICT_HXX

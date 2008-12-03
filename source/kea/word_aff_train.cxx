@@ -1,5 +1,5 @@
-#include "ycake_hash.hxx"
-#include "ycake_mmap.hxx"
+#include "kea_hash.hxx"
+#include "kea_mmap.hxx"
 #include "bamboo.hxx"
 #include "lexicon_factory.hxx"
 #include "config_factory.hxx"
@@ -19,7 +19,7 @@
 #include <iostream>
 #include <algorithm>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class WordAffTrain {
 protected:
@@ -221,20 +221,20 @@ protected:
 	}
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-using namespace bamboo::ycake;
+using namespace bamboo::kea;
 
-#define USAGE "ycake_wordaff_train -c config -s corpus_dir"
+#define USAGE "kea_wordaff_train -c config -s corpus_dir"
 
 int main(int argc, char * argv[]) {
-	const char * ycake_cfg = NULL, * corpus_dir = NULL;
+	const char * kea_cfg = NULL, * corpus_dir = NULL;
 
 	int opt;
 	while( (opt=getopt(argc, argv, "c:s:")) != -1) {
 		switch(opt) {
 		case 'c':
-			ycake_cfg = optarg;
+			kea_cfg = optarg;
 			break;
 		case 's':
 			corpus_dir = optarg;
@@ -245,12 +245,12 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
-	if(!ycake_cfg || !corpus_dir) {
+	if(!kea_cfg || !corpus_dir) {
 		printf("%s\n", USAGE);
 		exit(1);
 	}
 
-	WordAffTrain a(ycake_cfg);
+	WordAffTrain a(kea_cfg);
 	a.parse_dir(corpus_dir);
 	a.stat_aff();
 	return 0;

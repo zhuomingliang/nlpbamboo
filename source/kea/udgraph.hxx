@@ -1,7 +1,7 @@
-#ifndef YCAKE_UDGRAPH_HXX
-#define YCAKE_UDGRAPH_HXX
+#ifndef KEA_UDGRAPH_HXX
+#define KEA_UDGRAPH_HXX
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class UDGraph {
 private:
@@ -23,6 +23,6 @@ private:
 	int _get_index(int i, int j);
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-#endif //end of YCAKE_UDGRAPH_HXX
+#endif //end of KEA_UDGRAPH_HXX

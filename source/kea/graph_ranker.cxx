@@ -2,7 +2,7 @@
 #include "udgraph.hxx"
 #include <algorithm>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 GraphRanker::GraphRanker(IConfig * config)
 	:_token_aff_dict(NULL)
@@ -242,4 +242,4 @@ void GraphRanker::_index_term(YCDoc &doc, TermIndex &index) {
 	}
 }
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea

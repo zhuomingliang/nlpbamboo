@@ -1,12 +1,12 @@
-#ifndef YCAKE_DOC_HXX
-#define YCAKE_DOC_HXX
+#ifndef KEA_DOC_HXX
+#define KEA_DOC_HXX
 
 #include <cstdlib>
 #include <cstring>
 #include <vector>
 #include <map>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class YCToken {
 protected:
@@ -114,6 +114,6 @@ public:
 	}
 };
 
-}} //end of namespace bamboo::ycake
+}} //end of namespace bamboo::kea
 
-#endif //end of YCAKE_DOC_HXX
+#endif //end of KEA_DOC_HXX

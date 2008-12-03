@@ -1,5 +1,5 @@
-#ifndef YCAKE_MMAP_HXX
-#define YCAKE_MMAP_HXX
+#ifndef KEA_MMAP_HXX
+#define KEA_MMAP_HXX
 
 #include <fcntl.h>
 #include <sys/types.h>
@@ -8,7 +8,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-namespace bamboo { namespace ycake {
+namespace bamboo { namespace kea {
 
 class MMap {
 protected:
@@ -101,6 +101,6 @@ public:
 	}
 };
 
-}} //end of namespace bamboo:ycake
+}} //end of namespace bamboo:kea
 
-#endif //end of YCAKE_MMAP_HXX
+#endif //end of KEA_MMAP_HXX
