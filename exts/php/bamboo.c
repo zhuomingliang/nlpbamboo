@@ -9,12 +9,8 @@
 #include "bamboo.hxx"
 
 static function_entry bamboo_functions[] = {
-    PHP_FE(bamboo_open, NULL)
     PHP_FE(bamboo_parse, NULL)
-    PHP_FE(bamboo_parse_with_pos, NULL)
-    PHP_FE(bamboo_set, NULL)
-    PHP_FE(bamboo_reload, NULL)
-    PHP_FE(bamboo_close, NULL)
+    PHP_FE(bamboo_setopt, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -41,18 +37,35 @@ ZEND_GET_MODULE(bamboo)
 
 
 PHP_INI_BEGIN()
-PHP_INI_ENTRY("bamboo.configuration", "xxx", PHP_INI_ALL, NULL)
+PHP_INI_ENTRY("bamboo.parsers", "crf_seg", PHP_INI_ALL, NULL)
 PHP_INI_END()
 
-void *handle;
 
+static HashTable bamboo_parser_handlers;
 
 PHP_MINIT_FUNCTION(bamboo)
 {
 	REGISTER_INI_ENTRIES();
 
-	handle = (void *)bamboo_init(INI_STR("bamboo.configuration"));
-	if (!handle) return FAILURE;
+	REGISTER_LONG_CONSTANT("BAMBOO_OPTION_TEXT", BAMBOO_OPTION_TEXT, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("BAMBOO_OPTION_TITLE", BAMBOO_OPTION_TITLE, CONST_CS | CONST_PERSISTENT);
+
+	char *p, *s = strdup(INI_STR("bamboo.parsers"));
+
+	if (s == NULL) return FAILURE;
+
+	zend_hash_init(&bamboo_parser_handlers, 0, NULL, NULL, 1);
+	for (p = strtok(s, ","); p; p = strtok(NULL, ",")) {
+		void *h = bamboo_init(p, NULL);
+		if (h == NULL) {
+			fprintf(stderr, "failed to init parser %s\n", p);
+			return FAILURE;
+		}
+		zend_hash_add(&bamboo_parser_handlers,
+			p, strlen(p)+1, &h, sizeof(void *), NULL);
+	}
+
+	free(s);
 
     return SUCCESS;
 }
@@ -60,63 +73,39 @@ PHP_MINIT_FUNCTION(bamboo)
 PHP_MSHUTDOWN_FUNCTION(bamboo)
 {
 	UNREGISTER_INI_ENTRIES();
-	bamboo_clean(handle);
+	zend_hash_destroy(&bamboo_parser_handlers);
     return SUCCESS;
 }
 
-PHP_FUNCTION(bamboo_open)
+PHP_FUNCTION(bamboo_setopt)
 {
-    RETURN_STRING("not impl", 1);
+	int opt, size;
+	const char *arg, *name;
+	void *hnd;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "is", &opt, &arg, &size) == FAILURE)
+		RETURN_NULL();
+
+	if (zend_hash_find(&bamboo_parser_handlers, name, size + 1, (void **) &hnd) == FAILURE)
+		RETUNR_NULL();
+
+	bamboo_setopt(hnd, opt, arg);
 }
 
 PHP_FUNCTION(bamboo_parse)
 {
-	char *ret = NULL, *s = NULL;
-	const char *t = NULL;
+	char *t = NULL, *name = NULL;
 	int size;
-		
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &s, &size) == FAILURE)
+	void *hnd;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &size) == FAILURE)
 		RETURN_NULL();
 
-	bamboo_parse(handle, &t, s);
+	if (zend_hash_find(&bamboo_parser_handlers, name, size + 1, (void **) &hnd) == FAILURE)
+		RETUNR_NULL();
+		
+	t = bamboo_parse(hnd);
 	if (!*t) RETURN_NULL();
 	RETURN_STRING(estrdup(t), 1);
 }
 
-PHP_FUNCTION(bamboo_parse_with_pos)
-{
-	char *ret = NULL, *s = NULL;
-	const char *t = NULL;
-	int size;
-		
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &s, &size) == FAILURE)
-		RETURN_NULL();
-
-	bamboo_parse_with_pos(handle, &t, s);
-	if (!*t) RETURN_NULL();
-	RETURN_STRING(estrdup(t), 1);
-}
-
-PHP_FUNCTION(bamboo_set)
-{
-	char *s = NULL;
-	int size;
-		
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &s, &size) == FAILURE)
-		RETURN_NULL();
-
-	bamboo_set(handle, s);
-	RETURN_BOOL(1);
-}
-
-PHP_FUNCTION(bamboo_reload)
-{
-		
-	bamboo_reload(handle);
-	RETURN_BOOL(1);
-}
-
-PHP_FUNCTION(bamboo_close)
-{
-    RETURN_STRING("not impl", 1);
-}

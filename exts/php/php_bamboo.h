@@ -7,12 +7,8 @@
 PHP_MINIT_FUNCTION(bamboo);
 PHP_MSHUTDOWN_FUNCTION(bamboo);
 
-PHP_FUNCTION(bamboo_open);
 PHP_FUNCTION(bamboo_parse);
-PHP_FUNCTION(bamboo_parse_with_pos);
-PHP_FUNCTION(bamboo_set);
-PHP_FUNCTION(bamboo_reload);
-PHP_FUNCTION(bamboo_close);
+PHP_FUNCTION(bamboo_setopt);
 
 extern zend_module_entry bamboo_module_entry;
 #define phpext_bamboo_ptr &bamboo_module_entry
