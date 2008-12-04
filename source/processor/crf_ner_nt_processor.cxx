@@ -96,6 +96,8 @@ void CRFNTProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl
 			if(_ner_output_type==1) {
 				out.push_back(token);
 				out.back()->set_pos((unsigned short)0);
+			} else {
+				delete token;
 			}
 			continue;
 		} else {

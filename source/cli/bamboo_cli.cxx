@@ -106,10 +106,10 @@ static int _do()
 				if (pos) {
 					char ch;
 					std::cout << "/";
-					ch = *(char *)&pos;
+					ch = pos/256;
 					if (ch)
 						std::cout << ch;
-					ch = *((char *)&pos + 1);
+					ch = pos%256;
 					if (ch)
 						std::cout << ch;
 				}
@@ -119,6 +119,7 @@ static int _do()
 			std::cout << std::endl;
 		}
 		free(s);
+		delete parser;
 	} catch (std::exception &e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
 		return 1;
