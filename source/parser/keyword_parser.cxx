@@ -47,7 +47,7 @@ KeywordParser::KeywordParser(const char *file)
 
 	finder = ConfigFinder::get_instance();
 
-	_config = finder->find("keyword.conf");
+	_config = finder->find("keyword.conf", file, _verbose);
 	_config->get_value("verbose", _verbose);
 
 	_ke = new bamboo::kea::KeywordExtractor(_config);

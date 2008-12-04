@@ -62,6 +62,8 @@ public:
 		v.push_back(std::string("etc/bamboo/").append(file));
 		v.push_back(std::string("/opt/bamboo/etc/bamboo/").append(file));
 		for (i = 0; i < v.size(); i++) {
+			if (verbose)
+				std::cerr << "trying " << v[i] << std::endl;
 			if (stat(v[i].c_str(), &buf) == 0) {
 				if (verbose)
 					std::cerr	<< "use configuration: " << v[i]

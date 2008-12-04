@@ -72,7 +72,7 @@ static int _do()
 		bamboo::ParserFactory *factory;
 
 		factory = bamboo::ParserFactory::get_instance();
-		parser = factory->create(g_parser);
+		parser = factory->create(g_parser, g_config);
 		if (parser == NULL)
 			throw std::runtime_error(std::string("parser can not be found: ") + g_parser);
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
@@ -99,7 +99,10 @@ static int _do()
 			consume += (tv[1].tv_sec - tv[0].tv_sec) * 1000000 + (tv[1].tv_usec - tv[0].tv_usec);
 
 			for (it = vec.begin(); it < vec.end(); ++it) {
+				unsigned short pos = (*it)->get_pos();
 				std::cout << (*it)->get_orig_token();
+				if (pos)
+					std::cout << "/" << *(char *)&pos << *((char *)&pos + 1);
 				std::cout << " ";
 				delete *it;
 			}

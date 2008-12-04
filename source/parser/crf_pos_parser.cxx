@@ -48,7 +48,7 @@ CRFPosParser::CRFPosParser(const char *file)
 	ProcessorFactory	*factory;
 
 	finder = ConfigFinder::get_instance();
-	_config = finder->find("pos_crf.conf");
+	_config = finder->find("crf_pos.conf", file, _verbose);
 	(*_config)["prepare_characterize"] = "1";
 
 	_config->get_value("verbose", _verbose);
@@ -59,11 +59,12 @@ CRFPosParser::CRFPosParser(const char *file)
 	factory->set_config(_config);
 
 	_procs.push_back(factory->create("prepare"));
-	_procs.push_back(factory->create("crf_pos"));
+	_procs.push_back(factory->create("crf_seg"));
 	if (_use_single_combine)
 		_procs.push_back(factory->create("single_combine"));
 	if (_use_break)
 		_procs.push_back(factory->create("break"));
+	_procs.push_back(factory->create("crf_pos"));
 }
 
 CRFPosParser::~CRFPosParser()
