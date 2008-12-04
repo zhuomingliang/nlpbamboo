@@ -24,11 +24,4 @@ target_link_libraries(bamboo_parsers ${parser_links})
 install(FILES parser_factory.hxx DESTINATION ${INC_INSTALL_DIR})
 install(FILES parser.hxx DESTINATION ${INC_INSTALL_DIR})
 
-#add_library(bamboo_shared SHARED parser_factory.cxx)
-#target_link_libraries(bamboo_shared parsers) 
-
-#set_target_properties(bamboo_shared PROPERTIES OUTPUT_NAME "bamboo")
-#set_target_properties(bamboo_shared PROPERTIES VERSION 2)
-
-#install(TARGETS bamboo_shared DESTINATION ${LIB_INSTALL_DIR})
 

@@ -4,11 +4,11 @@ cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_INSTALL_PREFIX "/opt/bamboo")
 
-set(LIB_INSTALL_DIR "lib")
+set(LIB_INSTALL_DIR "/usr/lib")
 set(BIN_INSTALL_DIR "bin")
 set(ETC_INSTALL_DIR "etc")
 set(TRAINING_INSTALL_DIR "template")
-set(INC_INSTALL_DIR "include")
+set(INC_INSTALL_DIR "/usr/include/bamboo")
 set(PROCESSOR_INSTALL_DIR "processor")
 set(EXT_INSTALL_DIR "exts")
 
@@ -25,4 +25,3 @@ foreach(subdir cmake source etc template exts)
 	endif ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${subdir} )
 
 endforeach(subdir)
-
