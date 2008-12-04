@@ -17,6 +17,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 
 namespace bamboo { namespace kea {
@@ -66,6 +67,75 @@ public:
 			return l.second > r.second;
 		}
 	};
+
+	size_t str_to_vec(std::string str, const char *sept, std::vector<std::string> &res) {
+		std::string tmpStr;
+		int pos;
+		res.clear();
+		if(res.capacity() < str.size()) res.reserve(str.size()); 
+		do {
+			pos = str.find_first_of(sept);
+			if(pos<0) {
+				if(str.length()>0) {
+					res.push_back(str);
+				}
+				break;
+			}
+			tmpStr = str.substr(0,pos);
+			if(tmpStr.length()>0) {
+				res.push_back(tmpStr);
+			}
+			str = str.substr(pos+1,str.length());
+		} while(pos>=0);
+		return res.size();
+	}
+
+	void read_file(const char * file) {
+		std::ifstream fin(file);
+		while(!fin.eof()) {
+			std::string line;
+			std::vector<std::string> tokens;
+			std::map<int, int> doc_token_map;
+			std::getline(fin, line);
+			if(line.size() == 0) continue;
+
+			size_t i, j, len = str_to_vec(line, " \r\n\t", tokens);
+			for(i=0; i<len; ++i) {
+				int id = _token_id_dict->search(tokens[i].c_str());
+				if(id>0) {
+					doc_token_map[id] += 1;
+					_N++;
+
+					std::map<int, std::string>::iterator p
+						= _token_str.lower_bound(id);
+					if(p==_token_str.end() || p->first!=id) {
+						_token_str.insert(p,
+							std::make_pair(id, tokens[i]));
+					}
+				}
+			}
+
+			std::vector<std::pair<int, int> > token_vec;
+
+			std::copy(doc_token_map.begin(), doc_token_map.end(), back_inserter(token_vec));
+			size_t top = doc_token_map.size()/2;
+			if(top > (unsigned int)_top_relation * 2) top = _top_relation * 2;
+			std::partial_sort(token_vec.begin(), token_vec.begin() + top, token_vec.end(), pair_cmp<int>());
+
+			for(i=0; i<top; ++i) {
+				int id1 = token_vec[i].first, freq1 = token_vec[i].second;
+				_token_df[id1] += 1;
+				for(j=i+1; j<top; ++j) {
+					int id2 = token_vec[j].first, freq2 = token_vec[j].second;
+					int min = freq1<freq2 ? freq1:freq2;
+					if(min < _freq_threshold || id1 == id2) continue;
+					_token_aff[id1][id2] += min;
+					_token_aff[id2][id1] += min;
+				}
+			}
+		}
+		fin.close();
+	}
 
 	int parse_file(const char * file) {
 		std::vector<bamboo::Token*> tokens;
@@ -228,13 +298,13 @@ protected:
 
 using namespace bamboo::kea;
 
-#define USAGE "kea_wordaff_train -c config -s corpus_dir"
+#define USAGE "kea_wordaff_train -c config [-s corpus_dir|-f plain_text_after_segmented]"
 
 int main(int argc, char * argv[]) {
-	const char * kea_cfg = NULL, * corpus_dir = NULL;
+	const char * kea_cfg = NULL, * corpus_dir = NULL, * train_text = NULL;
 
 	int opt;
-	while( (opt=getopt(argc, argv, "c:s:")) != -1) {
+	while( (opt=getopt(argc, argv, "c:s:f:")) != -1) {
 		switch(opt) {
 		case 'c':
 			kea_cfg = optarg;
@@ -242,19 +312,31 @@ int main(int argc, char * argv[]) {
 		case 's':
 			corpus_dir = optarg;
 			break;
+		case 'f':
+			train_text = optarg;
+			break;
 		case '?':
 			printf("%s\n", USAGE);
 			exit(1);
 		}
 	}
 
-	if(!kea_cfg || !corpus_dir) {
+	if(!kea_cfg) {
+		printf("%s\n", USAGE);
+		exit(1);
+	}
+
+	if( (!corpus_dir && !train_text) || (corpus_dir && train_text) ) {
 		printf("%s\n", USAGE);
 		exit(1);
 	}
 
 	WordAffTrain a(kea_cfg);
-	a.parse_dir(corpus_dir);
+	if(corpus_dir) {
+		a.parse_dir(corpus_dir);
+	} else {
+		a.read_file(train_text);
+	}
 	a.stat_aff();
 	return 0;
 }

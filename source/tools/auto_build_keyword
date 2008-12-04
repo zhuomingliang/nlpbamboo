@@ -1,0 +1,29 @@
+#!/bin/bash
+
+while getopts  "d:" flag
+do
+	case $flag in
+		d) corpus_dir=$OPTARG
+		;;
+		?) echo "Invalid option"
+		;;
+	esac
+done
+
+if [ -z ${corpus_dir} ]
+then
+	echo "You must specify corpus dir"
+	exit 1
+fi
+
+top="$(dirname $(readlink -f $0))/.."
+source $top/etc/build_settings
+
+mkdir -p $build_dir $index_dir
+
+cp $top/etc/keyword.conf ${build_dir}/training_keyword.conf
+top_enc=${top//\//\\\/}
+sed -i "s/^\s*root\s*=.*$/root = ${top_enc}/g" ${build_dir}/training_keyword.conf 
+
+$bin/kea_word_train -c ${build_dir}/training_keyword.conf -s ${corpus_dir} -o $build_dir/kea_corpus_plain_text.txt || exit 1
+$bin/kea_wordaff_train -c ${build_dir}/training_keyword.conf -f $build_dir/kea_corpus_plain_text.txt || exit 1
