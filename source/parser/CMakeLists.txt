@@ -11,6 +11,7 @@ macro(build_parser name)
 endmacro(build_parser)
 
 build_parser(custom)
+build_parser(crf_pos)
 build_parser(crf_seg)
 build_parser(ugm_seg)
 build_parser(mfm_seg)

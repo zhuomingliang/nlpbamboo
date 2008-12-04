@@ -64,19 +64,28 @@ char *bamboo_parse(void *handle)
 		*p = '\0';
 
 		for (it = vec.begin(); it < vec.end(); ++it) {
-			const char 	*token = (*it)->get_orig_token();
-			ssize_t		len = strlen(token);
+			const char 		*token = (*it)->get_orig_token();
+			ssize_t			len = strlen(token);
+			unsigned short	pos = (*it)->get_pos();
+
+			if (pos) len += sizeof(unsigned short) + 1;
 
 			if (p - t <= len) {
 				/* expand */
 				char *old = t;
-				size <<= 1;
+				while (size + t < p + len)
+					size <<= 1;
 				t = (char *)realloc(t, size);
 				p = t + (p - old);
 			}
 
 			strcpy(p, (*it)->get_orig_token());
 			p += strlen((*it)->get_orig_token());
+			if (pos) {
+				*(p++) = ' ';
+				strncpy(p, (const char *)&pos, sizeof(unsigned short));
+				p += sizeof(unsigned short);
+			}
 			*(p++) = ' ';
 			delete *it;
 		}
