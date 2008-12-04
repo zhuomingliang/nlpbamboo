@@ -21,4 +21,4 @@ echo "Generating Training file for NS entity recognition"
 $bin/ner_tool -s $corpus -t ns > ${build_dir}/pd_ns_training.txt || exit 1
 
 echo "Begin CRF Training"
-crf_learn -t -c 4.0 -f 2 -p 1 $data_dir/ns.tmpl ${build_dir}/pd_ns_training.txt ${index_dir}/crf_ner_ns.model || exit 1
+crf_learn -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_ner_ns.tmpl ${build_dir}/pd_ns_training.txt ${index_dir}/crf_ner_ns.model || exit 1

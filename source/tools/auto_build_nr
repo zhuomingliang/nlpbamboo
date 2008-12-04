@@ -15,4 +15,4 @@ $bin/pdc_normalize_4nr -v $corpus > ${build_dir}/pd_nr.txt || exit 1
 $bin/ner_nr_tool ${build_dir}/pd_nr.txt > ${build_dir}/pd_nr_training.txt || exit 1
 
 echo "Begin CRF Training"
-crf_learn -t -c 4.0 -f 2 -p 1 $data_dir/nr.tmpl ${build_dir}/pd_nr_training.txt ${index_dir}/crf_ner_nr.model || exit 1
+crf_learn -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_ner_nr.tmpl ${build_dir}/pd_nr_training.txt ${index_dir}/crf_ner_nr.model || exit 1

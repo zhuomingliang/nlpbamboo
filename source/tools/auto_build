@@ -32,8 +32,7 @@ $bin/lexicon -v -b -i ${index_dir}/break.idx -s ${build_dir}/break.txt || exit 1
 
 # Train CRF
 echo 
-echo "1). Training CRF Model. (may take 5 to 12 hours depend on your system)"
-echo "2). Training CRF2 Model. (may take dozens of hours)"
+echo "1). Training CRF Segment Model. (may take dozens of hours)"
 echo "*). Do nothing."
 read choice
 crf_learn=$(which crf_learn)
@@ -43,18 +42,9 @@ case $choice in
 		echo "crf_learn not found"
 		exit
 	fi
-	$bin/crf_tool -v ${build_dir}/normalized.txt > ${build_dir}/crf.training.txt || exit 1
-	# Train CRF1
-	crf_learn $data_dir/crf.tmpl ${build_dir}/crf.training.txt ${index_dir}/crf1.model || exit 1
-	;;
-	2)
-	if [ -z "$crf_learn" ];then
-		echo "crf_learn not found"
-		exit
-	fi
-	$bin/crf2_tool -i ${build_dir}/normalized.txt -o ${build_dir}/pd_crf2_training.txt || exit 1
-	# Train CRF2
-	crf_learn -t -c 4.0 -f 2 ${data_dir}/crf2.tmpl ${build_dir}/pd_crf2_training.txt ${index_dir}/crf_seg.model || exit 1
+	$bin/crf2_tool -i ${build_dir}/normalized.txt -o ${build_dir}/pd_crf_seg_training.txt || exit 1
+	# Train CRF Seg
+	crf_learn -t -c 4.0 -f 2 ${tmpl_dir}/crf_seg.tmpl ${build_dir}/pd_crf_seg_training.txt ${index_dir}/crf_seg.model || exit 1
 	;;
 	*) ;;
 esac

@@ -14,4 +14,4 @@ echo "Generating Training file for POS"
 $bin/pdc_pos_tool $corpus > ${build_dir}/pd_pos_training.txt || exit 1
 
 echo "Begin CRF Training"
-crf_learn -t -c 4.0 -f 2 -p 1 $data_dir/pos.tmpl ${build_dir}/pd_pos_training.txt ${index_dir}/crf_pos.model || exit 1
+crf_learn -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_pos.tmpl ${build_dir}/pd_pos_training.txt ${index_dir}/crf_pos.model || exit 1

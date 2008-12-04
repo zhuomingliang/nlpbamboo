@@ -4,13 +4,14 @@ bin=$top/bin
 data_dir=$top/data
 build_dir=$top/build
 index_dir=$top/index
+tmpl_dir=$top/template
 
-corpus="$data_dir/people-daily.txt"
+corpus="$data_dir/people-daily-bamboo-edition.txt"
 number_trailing="$data_dir/number_trailing.txt"
 user_combine="$data_dir/user_combine.txt"
 break="$data_dir/break.txt"
 
-corpus_url="http://nlpbamboo.googlecode.com/files/people-daily.txt.gz" 
+corpus_url="http://nlpbamboo.googlecode.com/files/people-daily-bamboo-edition.txt.gz" 
 number_trailing_url="http://nlpbamboo.googlecode.com/files/number_trailing.txt"
 
 ns_suffix="${data_dir}/ns_suffix.txt"
