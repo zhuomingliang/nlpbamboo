@@ -96,7 +96,7 @@ public:
 		if (verbose)
 			std::clog << "making index" << std::endl;
 		for(i = 0; ; i++) {
-			if (fscanf(fp, "%d %4096[^\n]", &val, str) == EOF) break;
+			if (fscanf(fp, "%d %4096[^\r\n]", &val, str) == EOF) break;
 			insert(str, val);
 			if (verbose && i % 500 == 0) 
 				std::clog << "\r\t\t" << i << " items processed.";
