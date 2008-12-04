@@ -46,6 +46,9 @@ CRFPosProcessor::CRFPosProcessor(IConfig *config) {
 	struct stat buf;
 
 	config->get_value("crf_pos_model", s);
+	if (*s == '\0')
+		throw std::runtime_error("crf_pos_model is null");
+
 	std::string model_param = std::string("-m ") + std::string(s);
 	if(stat(s, &buf)==0) {
 		_tagger = CRFPP::createTagger(model_param.c_str());

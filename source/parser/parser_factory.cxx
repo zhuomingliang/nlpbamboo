@@ -6,6 +6,7 @@
 #include "crf_ner_ns_parser.hxx"
 #include "crf_ner_nt_parser.hxx"
 #include "crf_seg_parser.hxx"
+#include "crf_pos_parser.hxx"
 #include "custom_parser.hxx"
 #include "keyword_parser.hxx"
 #include "ugm_seg_parser.hxx"
@@ -33,7 +34,7 @@ namespace bamboo {
 		register_parser("ugm_seg", UGMSegParser);
 		register_parser("mfm_seg", UGMSegParser);
 		register_parser("crf_seg", CRFSegParser);
-		register_parser("crf_pos", CRFSegParser);
+		register_parser("crf_pos", CRFPosParser);
 		register_parser("crf_ner_nr", CRFNRParser);
 		register_parser("crf_ner_ns", CRFNSParser);
 		register_parser("crf_ner_nt", CRFNTParser);

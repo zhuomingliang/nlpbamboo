@@ -74,7 +74,7 @@ static int _do()
 		factory = bamboo::ParserFactory::get_instance();
 		parser = factory->create(g_parser);
 		if (parser == NULL)
-			throw std::runtime_error("parser can not be found.");
+			throw std::runtime_error(std::string("parser can not be found: ") + g_parser);
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
 		if (strcmp(g_file, "-") == 0) {
 			fp = stdin;

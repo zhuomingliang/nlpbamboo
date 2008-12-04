@@ -48,7 +48,7 @@ CRFSegParser::CRFSegParser(const char *file)
 	ProcessorFactory	*factory;
 
 	finder = ConfigFinder::get_instance();
-	_config = finder->find("seg_crf.conf");
+	_config = finder->find("crf_seg.conf");
 	(*_config)["prepare_characterize"] = "1";
 
 	_config->get_value("verbose", _verbose);

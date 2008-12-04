@@ -48,7 +48,7 @@ UGMSegParser::UGMSegParser(const char *file)
 	ProcessorFactory	*factory;
 
 	finder = ConfigFinder::get_instance();
-	_config = finder->find("seg_ugm.conf");
+	_config = finder->find("ugm_seg.conf");
 	(*_config)["prepare_characterize"] = "0";
 
 	_config->get_value("verbose", _verbose);
