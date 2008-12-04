@@ -19,9 +19,9 @@ add_library(kea STATIC ${kea_src})
 target_link_libraries(kea trie lexicon processor_factory utf8 config_factory)
 
 add_executable(kea_word_train word_train.cxx)
-target_link_libraries(kea_word_train kea bamboo config_factory utf8 trie dl)
+target_link_libraries(kea_word_train kea bamboo_static config_factory utf8 trie dl)
 install(TARGETS kea_word_train DESTINATION ${BIN_INSTALL_DIR})
 
 add_executable(kea_wordaff_train word_aff_train.cxx)
-target_link_libraries(kea_wordaff_train kea bamboo config_factory utf8 trie dl)
+target_link_libraries(kea_wordaff_train kea bamboo_static config_factory utf8 trie dl)
 install(TARGETS kea_wordaff_train DESTINATION ${BIN_INSTALL_DIR})
