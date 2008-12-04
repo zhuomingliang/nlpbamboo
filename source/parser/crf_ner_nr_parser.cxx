@@ -41,8 +41,8 @@
 namespace bamboo {
 
 
-CRFNRParser::CRFNRParser(const char *file)
-:_verbose(0), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
+CRFNRParser::CRFNRParser(const char *file, bool verbose)
+:_verbose(verbose), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
 {
 	ConfigFinder * finder;
 	ProcessorFactory * factory;

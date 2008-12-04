@@ -30,7 +30,7 @@ namespace bamboo {
 
 	Parser *ParserFactory::create(const char *name, const char *cfg, bool verbose)
 	{
-#define register_parser(N, C) if (strcmp(name, (N)) == 0) return new (C)(cfg);
+#define register_parser(N, C) if (strcmp(name, (N)) == 0) return new (C)(cfg, verbose);
 		register_parser("ugm_seg", UGMSegParser);
 		register_parser("mfm_seg", UGMSegParser);
 		register_parser("crf_seg", CRFSegParser);

@@ -44,7 +44,7 @@ namespace bamboo {
 
 class CRFNTParser:public Parser {
 public:
-	CRFNTParser(const char *file);
+	CRFNTParser(const char *file, bool verbose);
 	~CRFNTParser();
 	int parse(std::vector<Token *> &out);
 protected:

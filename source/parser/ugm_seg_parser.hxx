@@ -44,7 +44,7 @@ namespace bamboo {
 
 class UGMSegParser:public Parser {
 public:
-	UGMSegParser(const char *file);
+	UGMSegParser(const char *file, bool verbose);
 	~UGMSegParser();
 	int parse(std::vector<Token *> &out);
 protected:

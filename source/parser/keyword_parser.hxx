@@ -45,7 +45,7 @@ namespace bamboo {
 
 class KeywordParser:public Parser {
 public:
-	KeywordParser(const char *file);
+	KeywordParser(const char *file, bool verbose);
 	~KeywordParser();
 	int parse(std::vector<Token *> &out);
 protected:

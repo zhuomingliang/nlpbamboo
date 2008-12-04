@@ -41,8 +41,8 @@
 namespace bamboo {
 
 
-MFMSegParser::MFMSegParser(const char *file)
-:_verbose(0), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
+MFMSegParser::MFMSegParser(const char *file, bool verbose)
+:_verbose(verbose), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
 {
 	ConfigFinder		*finder;
 	ProcessorFactory	*factory;
@@ -59,7 +59,7 @@ MFMSegParser::MFMSegParser(const char *file)
 	factory->set_config(_config);
 
 	_procs.push_back(factory->create("prepare"));
-	_procs.push_back(factory->create("maxforward"));
+	_procs.push_back(factory->create("mfm_seg"));
 	if (_use_single_combine)
 		_procs.push_back(factory->create("single_combine"));
 	if (_use_break)

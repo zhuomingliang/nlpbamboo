@@ -59,7 +59,7 @@ public:
 		if (top)
 			v.push_back(top);
 		v.push_back(file);
-		v.push_back(std::string("etc/").append(file));
+		v.push_back(std::string("./etc/").append(file));
 		v.push_back(std::string("/etc/bamboo/").append(file));
 		v.push_back(std::string("/opt/bamboo/etc/").append(file));
 		for (i = 0; i < v.size(); i++) {

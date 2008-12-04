@@ -82,9 +82,10 @@ char *bamboo_parse(void *handle)
 			strcpy(p, (*it)->get_orig_token());
 			p += strlen((*it)->get_orig_token());
 			if (pos) {
+				const char *ch = (const char *)&pos;
 				*(p++) = ' ';
-				strncpy(p, (const char *)&pos, sizeof(unsigned short));
-				p += sizeof(unsigned short);
+				if (*ch) *(p++) = *ch;
+				if (*(ch + 1)) *(p++) = *(ch + 1);
 			}
 			*(p++) = ' ';
 			delete *it;

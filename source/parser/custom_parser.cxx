@@ -39,7 +39,7 @@
 namespace bamboo {
 
 
-CustomParser::CustomParser(const char *file)
+CustomParser::CustomParser(const char *file, bool verbose)
 :_verbose(0), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
 {
 	_lazy_create_config(file);

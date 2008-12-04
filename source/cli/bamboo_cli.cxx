@@ -40,6 +40,7 @@ const char g_default_parser[] = "crf_seg";
 const char g_default_config[] = "";
 const char g_default_file[] = "-";
 const char *g_config = g_default_config, *g_file = g_default_file, *g_parser = g_default_parser;
+bool g_verbose = false;
 
 std::vector<std::string> g_override;
 
@@ -50,6 +51,7 @@ static void _help_message()
 				 "        -c|--config           configuration\n"
 				 "        -h|--help             help message\n"
 				 "        -p|--parser           parser, default: crf_seg\n"
+				 "        -v|--verbose          verbose\n"
 				 "\n"
 				 "Report bugs to detrox@gmail.com\n"
 			  << std::endl;
@@ -72,7 +74,7 @@ static int _do()
 		bamboo::ParserFactory *factory;
 
 		factory = bamboo::ParserFactory::get_instance();
-		parser = factory->create(g_parser, g_config);
+		parser = factory->create(g_parser, g_config, g_verbose);
 		if (parser == NULL)
 			throw std::runtime_error(std::string("parser can not be found: ") + g_parser);
 		std::cerr << "parsing '" << g_file << "'..." << std::endl;
@@ -101,8 +103,16 @@ static int _do()
 			for (it = vec.begin(); it < vec.end(); ++it) {
 				unsigned short pos = (*it)->get_pos();
 				std::cout << (*it)->get_orig_token();
-				if (pos)
-					std::cout << "/" << *(char *)&pos << *((char *)&pos + 1);
+				if (pos) {
+					char ch;
+					std::cout << "/";
+					ch = *(char *)&pos;
+					if (ch)
+						std::cout << ch;
+					ch = *((char *)&pos + 1);
+					if (ch)
+						std::cout << ch;
+				}
 				std::cout << " ";
 				delete *it;
 			}
@@ -128,12 +138,13 @@ int main(int argc, char *argv[])
 			{"help", no_argument, 0, 'h'},
 			{"config", required_argument, 0, 'c'},
 			{"parser", required_argument, 0, 'p'},
+			{"verbose", required_argument, 0, 'v'},
 			{"set", required_argument, 0, 's'},
 			{0, 0, 0, 0}
 		};
 		int option_index;
 		
-		c = getopt_long(argc, argv, "c:hp:s:", long_options, &option_index);
+		c = getopt_long(argc, argv, "c:hp:s:v", long_options, &option_index);
 		if (c == -1) break;
 
 		switch(c) {
@@ -148,6 +159,10 @@ int main(int argc, char *argv[])
 				break;
 			case 's':
 				g_override.push_back(optarg);
+				break;
+			case 'v':
+				g_verbose = true;
+				std::cerr << "verbose on" << std::endl;
 				break;
 		}
 	}

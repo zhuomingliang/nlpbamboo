@@ -40,8 +40,8 @@
 
 namespace bamboo {
 
-KeywordParser::KeywordParser(const char *file)
-:_verbose(0), _config(NULL), _ke(NULL)
+KeywordParser::KeywordParser(const char *file, bool verbose)
+:_verbose(verbose), _config(NULL), _ke(NULL)
 {
 	ConfigFinder * finder;
 

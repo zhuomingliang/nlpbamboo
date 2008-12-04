@@ -44,7 +44,7 @@ namespace bamboo {
 
 class MFMSegParser:public Parser {
 public:
-	MFMSegParser(const char *file);
+	MFMSegParser(const char *file, bool verbose);
 	~MFMSegParser();
 	int parse(std::vector<Token *> &out);
 protected:
