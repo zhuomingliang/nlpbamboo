@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cstdlib>
 #include <unistd.h>
@@ -7,16 +8,19 @@
 
 using namespace bamboo;
 
-#define USAGE "regress_ner -t nr|ns|nt"
+#define USAGE "regress_ner -t nr|ns|nt [-f input_file]"
 
 int main(int argc, char * argv[])
 {
-	const char * ner_type = NULL;
+	const char * ner_type = NULL, * input_file = NULL;
 	int opt;
-	while( (opt=getopt(argc, argv, "t:")) != -1) {
+	while( (opt=getopt(argc, argv, "t:f:")) != -1) {
 		switch(opt) {
 		case 't':
 			ner_type = optarg;
+			break;
+		case 'f':
+			input_file = optarg;
 			break;
 		case '?':
 			printf("%s\n", USAGE);
@@ -29,6 +33,28 @@ int main(int argc, char * argv[])
 		exit(1);
 	}
 
+	std::istream * is;
+	std::ifstream fin;
+
+	if(!input_file) {
+		is = & std::cin;
+	} else {
+		fin.open(input_file);
+		is = & fin;
+	}
+
+	std::string text = "";
+
+	while(!is->eof()) {
+		std::string line;
+		getline(*is, line);
+		text += line + "\n";
+	}
+
+	if(input_file) {
+		fin.close();
+	}
+
 	std::vector<Token *> v;
 	std::vector<Token *>::iterator it;
 
@@ -38,8 +64,7 @@ int main(int argc, char * argv[])
 	ParserFactory *factory = ParserFactory::get_instance();
 	Parser *p = factory->create(parser_name);
 
-	const char * text = "中共中央在北京召开会议，温家宝同志主持了会议。";
-	p->setopt(BAMBOO_OPTION_TEXT, const_cast<char *>(text));
+	p->setopt(BAMBOO_OPTION_TEXT, const_cast<char *>(text.c_str()));
 	p->parse(v);
 
 	for (it = v.begin(); it != v.end(); it++) {
