@@ -7,10 +7,14 @@
 
 MODULE = bamboo		PACKAGE = bamboo		
 
-void* init(cfg)
+void* init(name, cfg)
+  const char *name;
   const char *cfg;
   CODE:
-	RETVAL = (void *)bamboo_init(cfg);
+  	const char default_name[] = "crf_seg";
+  	if (*name == '\0')
+		name = default_name;
+	RETVAL = (void *)bamboo_init(name, cfg);
   OUTPUT:
     RETVAL
 
@@ -19,12 +23,19 @@ void clean(handle)
   CODE:
 	bamboo_clean(handle);
 
-SV* parse(handle, text)
+void setopt(handle, opt, arg)
+  void			*handle;
+  long			opt
+  const void	*arg;
+  CODE:
+	bamboo_setopt(handle, opt, arg);
+
+
+SV* parse(handle)
   void *handle;
-  const char *text;
   PPCODE:
+  	char *t;
     {
-	  const char *t;
-	  bamboo_parse(handle, &t, text);
+	  t = bamboo_parse(handle);
 	  XPUSHs(sv_2mortal(newSVpv(t, 0)));
 	}
