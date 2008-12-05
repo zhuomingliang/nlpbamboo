@@ -90,8 +90,8 @@ static int _do()
 		s = NULL;
 		while ((length = getline(&s, &n, fp)) > 0) {
 			vec.clear();
-			if (s[length - 1] == '\n') s[length - 1] = '\0';
-			if (s[length - 2] == '\r') s[length - 2] = '\0';
+			if (length >= 1 && s[length - 1] == '\n') s[length - 1] = '\0';
+			if (length >= 2 && s[length - 2] == '\r') s[length - 2] = '\0';
 			gettimeofday(&tv[0], &tz);
 			for (t = strtok(s, "\n"); t; t = strtok(NULL, "\n")) {
 				parser->setopt(BAMBOO_OPTION_TEXT, t);

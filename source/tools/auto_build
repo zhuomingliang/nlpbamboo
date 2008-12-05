@@ -36,7 +36,7 @@ function train_seg() {
 		fi
 		$bin/crf2_tool -i ${build_dir}/normalized.txt -o ${build_dir}/pd_crf_seg_training.txt || exit 1
 		# Train CRF Seg
-		crf_learn -p ${thread_num} -t -c 4.0 -f 2 ${tmpl_dir}/crf_seg.tmpl ${build_dir}/pd_crf_seg_training.txt ${index_dir}/crf_seg.model || exit 1
+		crf_learn -p ${thread_num} -c 4.0 -f 2 ${tmpl_dir}/crf_seg.tmpl ${build_dir}/pd_crf_seg_training.txt ${index_dir}/crf_seg.model || exit 1
 		;;
 		*) ;;
 	esac
@@ -49,7 +49,7 @@ function train_pos() {
 	$bin/pdc_pos_tool ${corpus_file} > ${build_dir}/pd_pos_training.txt || exit 1
 
 	echo "Begin CRF Training"
-	crf_learn -p ${thread_num} -t -c 4.0 -f 2 $tmpl_dir/crf_pos.tmpl ${build_dir}/pd_pos_training.txt ${index_dir}/crf_pos.model || exit 1
+	crf_learn -p ${thread_num} -c 4.0 -f 2 $tmpl_dir/crf_pos.tmpl ${build_dir}/pd_pos_training.txt ${index_dir}/crf_pos.model || exit 1
 }
 
 function train_nr() {
@@ -58,7 +58,7 @@ function train_nr() {
 	$bin/ner_nr_tool ${build_dir}/pd_nr.txt > ${build_dir}/pd_nr_training.txt || exit 1
 
 	echo "Begin CRF Training"
-	crf_learn -p ${thread_num} -t -c 4.0 -f 2 $tmpl_dir/crf_ner_nr.tmpl ${build_dir}/pd_nr_training.txt ${index_dir}/crf_ner_nr.model || exit 1
+	crf_learn -p ${thread_num} -c 4.0 -f 2 $tmpl_dir/crf_ner_nr.tmpl ${build_dir}/pd_nr_training.txt ${index_dir}/crf_ner_nr.model || exit 1
 }
 
 function train_ns() {
@@ -73,7 +73,7 @@ function train_ns() {
 	$bin/ner_tool -s ${corpus_file} -t ns > ${build_dir}/pd_ns_training.txt || exit 1
 
 	echo "Begin CRF Training"
-	crf_learn -p ${thread_num} -t -c 4.0 -f 2 $tmpl_dir/crf_ner_ns.tmpl ${build_dir}/pd_ns_training.txt ${index_dir}/crf_ner_ns.model || exit 1
+	crf_learn -p ${thread_num} -c 4.0 -f 2 $tmpl_dir/crf_ner_ns.tmpl ${build_dir}/pd_ns_training.txt ${index_dir}/crf_ner_ns.model || exit 1
 }
 
 function train_nt() {
@@ -81,7 +81,7 @@ function train_nt() {
 	$bin/ner_tool -s ${corpus_file} -t nt > ${build_dir}/pd_nt_training.txt || exit 1
 
 	echo "Begin CRF Training"
-	crf_learn -p ${thread_num} -t -c 4.0 -f 2 $tmpl_dir/crf_ner_nt.tmpl ${build_dir}/pd_nt_training.txt ${index_dir}/crf_ner_nt.model || exit 1
+	crf_learn -p ${thread_num} -c 4.0 -f 2 $tmpl_dir/crf_ner_nt.tmpl ${build_dir}/pd_nt_training.txt ${index_dir}/crf_ner_nt.model || exit 1
 }
 
 function train_keyword() {

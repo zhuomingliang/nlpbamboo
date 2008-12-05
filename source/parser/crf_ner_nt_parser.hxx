@@ -54,6 +54,7 @@ protected:
 	std::vector<TokenImpl *> * _in, * _out, * _swap;
 	std::vector<Processor *> _procs;
 	static char * _initial_settings;
+	int _output_type;
 };
 
 } //namespace bamboo

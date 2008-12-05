@@ -34,6 +34,7 @@
 #include <stdexcept>
 #include <dlfcn.h>
 #include <string>
+#include <map>
 
 #include "config_finder.hxx"
 #include "crf_ner_nr_parser.hxx"
@@ -42,7 +43,7 @@ namespace bamboo {
 
 
 CRFNRParser::CRFNRParser(const char *file, bool verbose)
-:_verbose(verbose), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1])
+:_verbose(verbose), _config(NULL), _in(&_token_fifo[0]), _out(&_token_fifo[1]), _output_type(0)
 {
 	ConfigFinder * finder;
 	ProcessorFactory * factory;
@@ -58,6 +59,8 @@ CRFNRParser::CRFNRParser(const char *file, bool verbose)
 
 	_procs.push_back(factory->create("prepare"));
 	_procs.push_back(factory->create("crf_ner_nr"));
+
+	_config->get_value("ner_output_type", _output_type);
 }
 
 CRFNRParser::~CRFNRParser()
@@ -95,10 +98,27 @@ CRFNRParser::parse(std::vector<Token *> &out)
 	}
 
 	length = _in->size();
-	for (i = 0; i < length; i++) 
-		out.push_back((*_in)[i]);	
+	std::map<std::string, Token*> uniq_token;
+	std::map<std::string, Token*>::iterator uit;
 
-	return _in->size();
+	for (i = 0; i < length; i++) {
+		if(_output_type == 0) {
+			s = (*_in)[i]->get_orig_token();
+			uit = uniq_token.lower_bound(s);
+			if(uit == uniq_token.end() || uit->first.compare(s)) {
+				uniq_token.insert(std::make_pair(s, (*_in)[i]));
+				out.push_back((*_in)[i]);
+			} else {
+				delete (*_in)[i];
+			}
+		} else {
+			out.push_back((*_in)[i]);
+		}
+	}
+
+	if(_output_type == 0) length = uniq_token.size();
+
+	return length;
 }
 
 } //namespace bamboo
