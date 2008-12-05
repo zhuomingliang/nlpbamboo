@@ -37,6 +37,6 @@ set_target_properties(bamboo_shared PROPERTIES OUTPUT_NAME "bamboo")
 set_target_properties(bamboo_shared PROPERTIES VERSION 2)
 
 install(TARGETS bamboo_static DESTINATION ${LIB_INSTALL_DIR})
-#install(TARGETS bamboo_shared DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS bamboo_shared DESTINATION ${LIB_INSTALL_DIR})
 
 add_subdirectory(tools)
