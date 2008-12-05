@@ -8,6 +8,6 @@ REGRESS = chinese_parser
 
 PG_CONFIG = pg_config
 PGXS := $(shell $(PG_CONFIG) --pgxs)
-PG_CPPFLAGS += -fPIC -DNDEBUG -I/opt/bamboo/include
-SHLIB_LINK=-L/opt/bamboo/lib -lbamboo -lstdc++
+PG_CPPFLAGS += -fPIC -DNDEBUG -I/usr/include/bamboo
+SHLIB_LINK=-L/usr/lib -lbamboo -lstdc++
 include $(PGXS)

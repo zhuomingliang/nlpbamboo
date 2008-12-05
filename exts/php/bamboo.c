@@ -79,11 +79,11 @@ PHP_MSHUTDOWN_FUNCTION(bamboo)
 
 PHP_FUNCTION(bamboo_setopt)
 {
-	int opt, size;
+	int opt, size, len;
 	const char *arg, *name;
 	void *hnd;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "is", &opt, &arg, &size) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sis", name, &len, &opt, &arg, &size) == FAILURE)
 		RETURN_NULL();
 
 	if (zend_hash_find(&bamboo_parser_handlers, name, size + 1, (void **) &hnd) == FAILURE)

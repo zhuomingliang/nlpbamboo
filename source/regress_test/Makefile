@@ -1,7 +1,7 @@
 
 CPPFLAGS = -g -fPIC -Wall $(INC) -I/opt/bamboo/include
 CC = g++ $(CPPFLAGS)
-LIBS = -L/opt/bamboo/lib -lbamboo
+LIBS = -L/opt/bamboo/lib -lbamboo -static
 
 TARGET = regress_seg regress_ner regress_keyword
 

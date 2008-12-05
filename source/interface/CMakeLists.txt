@@ -4,7 +4,7 @@ add_library(bamboo_static STATIC bamboo.cxx)
 target_link_libraries(bamboo_static bamboo_parsers)
 
 set_target_properties(bamboo_static PROPERTIES OUTPUT_NAME "bamboo")
-set_target_properties(bamboo_static PROPERTIES VERSION 2)
+#set_target_properties(bamboo_static PROPERTIES VERSION 2)
 
 add_library(bamboo_shared SHARED bamboo.cxx)
 target_link_libraries(bamboo_shared bamboo_parsers)
