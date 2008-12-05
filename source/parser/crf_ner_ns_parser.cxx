@@ -76,7 +76,7 @@ CRFNSParser::~CRFNSParser()
 int
 CRFNSParser::parse(std::vector<Token *> &out)
 {
-	size_t i, length;
+	size_t i, length, space_cnt = 0;
 	const char *s;
 
 	s = (const char *)getopt(BAMBOO_OPTION_TEXT);
@@ -103,8 +103,13 @@ CRFNSParser::parse(std::vector<Token *> &out)
 	std::map<std::string, Token*>::iterator uit;
 
 	for (i = 0; i < length; i++) {
+		s = (*_in)[i]->get_orig_token();
+		if(*s == ' ') {
+			delete (*_in)[i];
+			++space_cnt;
+			continue;
+		}
 		if(_output_type == 0) {
-			s = (*_in)[i]->get_orig_token();
 			uit = uniq_token.lower_bound(s);
 			if(uit == uniq_token.end() || uit->first.compare(s)) {
 				uniq_token.insert(std::make_pair(s, (*_in)[i]));
@@ -117,6 +122,7 @@ CRFNSParser::parse(std::vector<Token *> &out)
 		}
 	}
 
+	length -= space_cnt;
 	if(_output_type == 0) length = uniq_token.size();
 
 	return length;

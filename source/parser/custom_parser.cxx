@@ -126,7 +126,7 @@ CustomParser::parse(std::vector<Token *> &out)
 	struct timeval tv[2];
 	struct timezone tz;
 #endif
-	size_t i, length;
+	size_t i, length, space_cnt = 0;
 	const char *s;
 
 	s = (const char *)getopt(BAMBOO_OPTION_TEXT);
@@ -156,10 +156,16 @@ CustomParser::parse(std::vector<Token *> &out)
 	}
 
 	length = _in->size();
-	for (i = 0; i < length; i++) 
-		out.push_back((*_in)[i]);	
+	for (i = 0; i < length; i++) {
+		if(*((*_in)[i]->get_orig_token()) == ' ') {
+			delete (*_in)[i];
+			++space_cnt;
+			continue;
+		}
+		out.push_back((*_in)[i]);
+	}
 
-	return _in->size();
+	return length - space_cnt;
 }
 
 void CustomParser::set(std::string s) 

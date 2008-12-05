@@ -79,7 +79,7 @@ MFMSegParser::~MFMSegParser()
 int
 MFMSegParser::parse(std::vector<Token *> &out)
 {
-	size_t					i, length;
+	size_t					i, length, space_cnt = 0;
 	const char				*s;
 
 	s = (char *)getopt(BAMBOO_OPTION_TEXT);
@@ -102,10 +102,16 @@ MFMSegParser::parse(std::vector<Token *> &out)
 	}
 
 	length = _in->size();
-	for (i = 0; i < length; i++) 
-		out.push_back((*_in)[i]);	
+	for (i = 0; i < length; i++) {
+		if(*((*_in)[i]->get_orig_token()) == ' ') {
+			delete (*_in)[i];
+			++space_cnt;
+			continue;
+		}
+		out.push_back((*_in)[i]);
+	}
 
-	return _in->size();
+	return length - space_cnt;
 }
 
 } //namespace bamboo
