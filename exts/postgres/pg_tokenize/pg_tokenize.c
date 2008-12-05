@@ -36,17 +36,18 @@
 
 PG_MODULE_MAGIC;
 
-PG_FUNCTION_INFO_V1(bamboo);
-Datum bamboo(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(tokenize);
+Datum tokenize(PG_FUNCTION_ARGS);
 
 static void *handle = NULL;
+static char module[] = "crf_seg";
 
 void _PG_init(void);
 void _PG_fini(void);
 
 void _PG_init(void)
 {
-	handle = bamboo_init(NULL);
+	handle = bamboo_init(module, NULL);
 }
 
 void _PG_fini(void)
@@ -54,19 +55,24 @@ void _PG_fini(void)
 	bamboo_clean(handle);
 }
 
-Datum bamboo(PG_FUNCTION_ARGS)
+Datum tokenize(PG_FUNCTION_ARGS)
 {
 	text *in = PG_GETARG_TEXT_P(0);
 	char *s = NULL;
 	char *t = NULL;
 
-	s = (char *) palloc(VARSIZE(in) - VARHDRSZ + 1);
-	memcpy(s, VARDATA(in), VARSIZE(in) - VARHDRSZ);
-	s[VARSIZE(in) - VARHDRSZ] = '\0';
+#define VAR_STRLEN(S) (VARSIZE(S) - VARHDRSZ)
+
+	s = strndup(VARDATA(in), VAR_STRLEN(in));
+
+#undef VAR_STRLEN
 
 	if (handle == NULL) 
 		elog(ERROR, "bamboo init failed.");
-	bamboo_parse(handle, &t, s);
+
+	bamboo_setopt(handle, BAMBOO_OPTION_TEXT, s);
+	t = bamboo_parse(handle);
+	free(s);
 	
 	PG_RETURN_TEXT_P(DatumGetTextP(DirectFunctionCall1(textin, CStringGetDatum(pstrdup(t)))));
 }

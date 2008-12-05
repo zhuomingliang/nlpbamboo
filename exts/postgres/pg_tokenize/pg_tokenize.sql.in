@@ -1,0 +1,2 @@
+set search_path = public;
+create or replace function tokenize(text) returns text as '$libdir/pg_tokenize', 'tokenize' language c strict;
