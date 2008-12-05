@@ -1567,7 +1567,7 @@ void _PG_fini(void);
 
 void _PG_init(void)
 {
-	handle = bamboo_init("/etc/bamboo.cfg");
+	handle = bamboo_init("crf_seg", NULL);
 }
 
 void _PG_fini(void)
@@ -1583,7 +1583,8 @@ chineseprs_start(PG_FUNCTION_ARGS)
 
 	while(TParserGet(prs))
 		;
-	bamboo_parse(handle, &t, prs->trimmed);
+	bamboo_setopt(handle, BAMBOO_OPTION_TEXT, prs->trimmed);
+	t = bamboo_parse(handle);
 	prs->sege = strdup(t);
 	if (prs->sege == NULL) {
 		prs->sege = strdup(" ");
