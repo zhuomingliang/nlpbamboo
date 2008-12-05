@@ -21,6 +21,9 @@ KeywordExtractor::KeywordExtractor(IConfig * config)
 	seg_tool.init(_config);
 
 	_config->get_value("ke_token_aff_dict", s);
+	if(*s == 0) {
+		throw std::runtime_error("ke_token_aff_dict is null");
+	}
 	TokenAffDict & token_aff_dict = TokenAffDict::get_instance();
 	token_aff_dict.init(s);
 

@@ -54,8 +54,14 @@ public:
 	int init(IConfig * config) {
 		const char * s;
 		config->get_value("ke_token_id_dict", s);
+		if(*s == 0) {
+			throw std::runtime_error("ke_token_id_dict is null");
+		}
 		_token_id = LexiconFactory::load(s);
 		config->get_value("ke_token_df_dict", s);
+		if(*s == 0) {
+			throw std::runtime_error("ke_token_df_dict is null");
+		}
 		_token_df = LexiconFactory::load(s);
 		
 		config->get_value("ke_idf_w", _idf_w);

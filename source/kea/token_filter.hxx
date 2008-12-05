@@ -29,6 +29,9 @@ public:
 	int init(IConfig * config) {
 		const char * s;
 		config->get_value("ke_filter_dict", s);
+		if(*s == 0) {
+			throw std::runtime_error("ke_filter_dict is null");
+		}
 		_filter_dict = LexiconFactory::load(s);
 
 		config->get_value("ke_feature_min_length", _feature_min_length);
