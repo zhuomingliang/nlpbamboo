@@ -10,6 +10,7 @@ corpus="$data_dir/people-daily-bamboo-edition.txt"
 number_trailing="$data_dir/number_trailing.txt"
 user_combine="$data_dir/user_combine.txt"
 break="$data_dir/break.txt"
+ke_filter_dict="$data_dir/ke_filter.txt"
 
 corpus_url="http://nlpbamboo.googlecode.com/files/people-daily-bamboo-edition.txt.gz" 
 number_trailing_url="http://nlpbamboo.googlecode.com/files/number_trailing.txt"

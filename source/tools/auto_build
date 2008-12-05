@@ -36,7 +36,7 @@ function train_seg() {
 		fi
 		$bin/crf2_tool -i ${build_dir}/normalized.txt -o ${build_dir}/pd_crf_seg_training.txt || exit 1
 		# Train CRF Seg
-		crf_learn -t -c 4.0 -f 2 ${tmpl_dir}/crf_seg.tmpl ${build_dir}/pd_crf_seg_training.txt ${index_dir}/crf_seg.model || exit 1
+		crf_learn -p ${thread_num} -t -c 4.0 -f 2 ${tmpl_dir}/crf_seg.tmpl ${build_dir}/pd_crf_seg_training.txt ${index_dir}/crf_seg.model || exit 1
 		;;
 		*) ;;
 	esac
@@ -49,7 +49,7 @@ function train_pos() {
 	$bin/pdc_pos_tool ${corpus_file} > ${build_dir}/pd_pos_training.txt || exit 1
 
 	echo "Begin CRF Training"
-	crf_learn -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_pos.tmpl ${build_dir}/pd_pos_training.txt ${index_dir}/crf_pos.model || exit 1
+	crf_learn -p ${thread_num} -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_pos.tmpl ${build_dir}/pd_pos_training.txt ${index_dir}/crf_pos.model || exit 1
 }
 
 function train_nr() {
@@ -58,7 +58,7 @@ function train_nr() {
 	$bin/ner_nr_tool ${build_dir}/pd_nr.txt > ${build_dir}/pd_nr_training.txt || exit 1
 
 	echo "Begin CRF Training"
-	crf_learn -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_ner_nr.tmpl ${build_dir}/pd_nr_training.txt ${index_dir}/crf_ner_nr.model || exit 1
+	crf_learn -p ${thread_num} -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_ner_nr.tmpl ${build_dir}/pd_nr_training.txt ${index_dir}/crf_ner_nr.model || exit 1
 }
 
 function train_ns() {
@@ -73,7 +73,7 @@ function train_ns() {
 	$bin/ner_tool -s ${corpus_file} -t ns > ${build_dir}/pd_ns_training.txt || exit 1
 
 	echo "Begin CRF Training"
-	crf_learn -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_ner_ns.tmpl ${build_dir}/pd_ns_training.txt ${index_dir}/crf_ner_ns.model || exit 1
+	crf_learn -p ${thread_num} -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_ner_ns.tmpl ${build_dir}/pd_ns_training.txt ${index_dir}/crf_ner_ns.model || exit 1
 }
 
 function train_nt() {
@@ -81,7 +81,7 @@ function train_nt() {
 	$bin/ner_tool -s ${corpus_file} -t nt > ${build_dir}/pd_nt_training.txt || exit 1
 
 	echo "Begin CRF Training"
-	crf_learn -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_ner_nt.tmpl ${build_dir}/pd_nt_training.txt ${index_dir}/crf_ner_nt.model || exit 1
+	crf_learn -p ${thread_num} -t -c 4.0 -f 2 -p 1 $tmpl_dir/crf_ner_nt.tmpl ${build_dir}/pd_nt_training.txt ${index_dir}/crf_ner_nt.model || exit 1
 }
 
 function train_keyword() {
@@ -92,6 +92,10 @@ function train_keyword() {
 		exit 1
 	fi
 
+	[ ! -f "$ke_filter_dict" ] && touch $ke_filter_dict
+	cat $ke_filter_dict | sed -e 's/^/1 /g' > ${build_dir}/ke_filter.txt || exit 1
+	$bin/lexicon -v -b -i ${index_dir}/filter_word.idx -s ${build_dir}/ke_filter.txt || exit 1
+
 	cp $top/etc/keyword.conf ${build_dir}/training_keyword.conf
 	top_enc=${top//\//\\\/}
 	sed -i "s/^\s*root\s*=.*$/root = ${top_enc}/g" ${build_dir}/training_keyword.conf 
@@ -100,9 +104,9 @@ function train_keyword() {
 	$bin/kea_wordaff_train -c ${build_dir}/training_keyword.conf -f $build_dir/kea_corpus_plain_text.txt || exit 1
 }
 
-USAGE="auto_build -t train_type{seg,nr,ns,nt,pos,keyword} [-f corpus_file|-d corpus_dir]"
+USAGE="auto_build -t train_type{seg,nr,ns,nt,pos,keyword} [-f corpus_file|-d corpus_dir] [-p thread_num]"
 
-while getopts  "d:f:t:" flag
+while getopts  "d:f:t:p:h" flag
 do
 	case $flag in
 		d) corpus_dir=$OPTARG
@@ -111,10 +115,23 @@ do
 		;;
 		t) train_type=$OPTARG
 		;;
+		p) thread_num=$OPTARG
+		;;
+		h) echo $USAGE; exit 0
+		;;
 		?) echo "Invalid option"
 		;;
 	esac
 done
+
+if [ -z ${train_type} ]; then
+	echo $USAGE
+	exit 1
+fi
+
+if [ -z ${thread_num} ];then
+	thread_num=1
+fi
 
 top="$(dirname $(readlink -f $0))/.."
 source $top/etc/build_settings
@@ -127,11 +144,6 @@ if [ -z ${corpus_file} ]; then
 		wget -O - $corpus_url | gzip -cd > $corpus
 		[ "$?" != "0" ] && exit 1 
 	fi
-fi
-
-if [ -z ${train_type} ]; then
-	echo $USAGE
-	exit 1
 fi
 
 if [ ${train_type} == "seg" ];
