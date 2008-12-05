@@ -84,7 +84,7 @@ void PrepareRanker::rank(YCDoc & doc, std::map<int, double> & token_rank, int to
 	}
 
 	int elem_in_block = total_occ / MAX_BLOCK;
-	if(total_occ % MAX_BLOCK != 0) ++elem_in_block;
+	if(total_occ % MAX_BLOCK != 0 || elem_in_block == 0) ++elem_in_block;
 
 	int tok_id, num_occ, first_occ;
 	double weight;
