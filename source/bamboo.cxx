@@ -84,8 +84,8 @@ char *bamboo_parse(void *handle)
 			if (pos) {
 				const char *ch = (const char *)&pos;
 				*(p++) = ' ';
-				if (*ch) *(p++) = *ch;
 				if (*(ch + 1)) *(p++) = *(ch + 1);
+				if (*ch) *(p++) = *ch;
 			}
 			*(p++) = ' ';
 			delete *it;
