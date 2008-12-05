@@ -41,7 +41,7 @@ PHP_INI_ENTRY("bamboo.parsers", "crf_seg", PHP_INI_ALL, NULL)
 PHP_INI_END()
 
 
-static HashTable bamboo_parser_handlers;
+HashTable bamboo_parser_handlers;
 
 PHP_MINIT_FUNCTION(bamboo)
 {
@@ -50,7 +50,7 @@ PHP_MINIT_FUNCTION(bamboo)
 	REGISTER_LONG_CONSTANT("BAMBOO_OPTION_TEXT", BAMBOO_OPTION_TEXT, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("BAMBOO_OPTION_TITLE", BAMBOO_OPTION_TITLE, CONST_CS | CONST_PERSISTENT);
 
-	char *p, *s = strdup(INI_STR("bamboo.parsers"));
+	char *p = NULL, *s = estrdup(INI_STR("bamboo.parsers"));
 
 	if (s == NULL) return FAILURE;
 
@@ -62,50 +62,70 @@ PHP_MINIT_FUNCTION(bamboo)
 			return FAILURE;
 		}
 		zend_hash_add(&bamboo_parser_handlers,
-			p, strlen(p)+1, &h, sizeof(void *), NULL);
+			p, strlen(p) + 1, &h, sizeof(void *), NULL);
 	}
 
-	free(s);
+	efree(s);
 
     return SUCCESS;
 }
 
 PHP_MSHUTDOWN_FUNCTION(bamboo)
 {
+	char *p = NULL, *s = estrdup(INI_STR("bamboo.parsers"));
+	void **hnd;
+	for (p = strtok(s, ","); p; p = strtok(NULL, ",")) {
+		if (zend_hash_find(&bamboo_parser_handlers, p, strlen(p) + 1, (void **) &hnd) == SUCCESS)
+		{
+			bamboo_clean(*hnd);
+		}
+
+	}
+	efree(s);
 	UNREGISTER_INI_ENTRIES();
 	zend_hash_destroy(&bamboo_parser_handlers);
+	fprintf(stderr, "shutdown\n");
     return SUCCESS;
 }
 
 PHP_FUNCTION(bamboo_setopt)
 {
-	int opt, size, len;
-	const char *arg, *name;
-	void *hnd;
+	int name_len, arg_len;
+	long opt;
+	char *arg, *name;
+	void **hnd;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sis", name, &len, &opt, &arg, &size) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sls",
+		&name, &name_len, &opt, &arg, &arg_len) == FAILURE)
 		RETURN_NULL();
 
-	if (zend_hash_find(&bamboo_parser_handlers, name, size + 1, (void **) &hnd) == FAILURE)
-		RETUNR_NULL();
 
-	bamboo_setopt(hnd, opt, arg);
+	if (zend_hash_find(&bamboo_parser_handlers, name, name_len + 1, (void **) &hnd) == FAILURE)
+		RETURN_NULL();
+
+	bamboo_setopt(*hnd, opt, estrdup(arg));
+	RETURN_LONG(SUCCESS)
 }
 
 PHP_FUNCTION(bamboo_parse)
 {
-	char *t = NULL, *name = NULL;
-	int size;
-	void *hnd;
+	char *s = NULL, *t = NULL, *name = NULL;
+	int name_len;
+	void **hnd;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &size) == FAILURE)
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_len) == FAILURE)
 		RETURN_NULL();
 
-	if (zend_hash_find(&bamboo_parser_handlers, name, size + 1, (void **) &hnd) == FAILURE)
-		RETUNR_NULL();
-		
-	t = bamboo_parse(hnd);
-	if (!*t) RETURN_NULL();
-	RETURN_STRING(estrdup(t), 1);
+	if (zend_hash_find(&bamboo_parser_handlers, name, name_len + 1, (void **) &hnd) == FAILURE)
+		RETURN_NULL();
+
+	if ((t = bamboo_parse(*hnd)) == NULL)
+		RETURN_NULL();
+
+	s = estrdup(t);
+	free(t);
+
+	RETURN_STRING(s, 1);
 }
 

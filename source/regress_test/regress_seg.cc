@@ -27,10 +27,14 @@ int main()
 
 	void *handle = bamboo_init("crf_seg",NULL);
 	char *t = NULL;
-	bamboo_setopt(handle, BAMBOO_OPTION_TEXT, const_cast<char *>(text));
-	t = bamboo_parse(handle);
-	printf("==> %s\n", t);
-	free(t);
+	int c = 20;
+	while (c--) {
+		bamboo_setopt(handle, BAMBOO_OPTION_TEXT, const_cast<char *>(text));
+		printf("==> %s\n", (char *)bamboo_getopt(handle, BAMBOO_OPTION_TEXT));
+		t = bamboo_parse(handle);
+		printf("==> %s\n", t);
+		free(t);
+	}
 	bamboo_clean(handle);
 
 
