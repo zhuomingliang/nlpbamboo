@@ -26,7 +26,7 @@ void clean(handle)
 void setopt(handle, opt, arg)
   void			*handle;
   long			opt
-  const void	*arg;
+  void			*arg;
   CODE:
 	bamboo_setopt(handle, opt, arg);
 
