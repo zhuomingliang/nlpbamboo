@@ -1568,11 +1568,14 @@ void _PG_fini(void);
 void _PG_init(void)
 {
 	handle = bamboo_init("crf_seg", NULL);
+	if (handle == NULL)
+		elog(ERROR, "can not load bamboo");
 }
 
 void _PG_fini(void)
 {
-	bamboo_clean(handle);
+	if (handle)
+		bamboo_clean(handle);
 }
 
 Datum
@@ -1581,6 +1584,8 @@ chineseprs_start(PG_FUNCTION_ARGS)
 	const char *t = NULL;
 	TParser *prs = TParserInit((char*)PG_GETARG_POINTER(0), PG_GETARG_INT32(1));
 
+	if (handle == NULL)
+		elog(ERROR, "can not load bamboo");
 	while(TParserGet(prs))
 		;
 	bamboo_setopt(handle, BAMBOO_OPTION_TEXT, prs->trimmed);
