@@ -10,6 +10,7 @@ add_source(mfm_seg_parser.cxx)
 add_source(crf_ner_nr_parser.cxx)
 add_source(crf_ner_ns_parser.cxx)
 add_source(crf_ner_nt_parser.cxx)
+add_source(crf_ner_np_parser.cxx)
 add_source(keyword_parser.cxx)
 
 install(FILES parser_factory.hxx DESTINATION ${INC_INSTALL_DIR})
