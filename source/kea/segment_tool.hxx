@@ -48,22 +48,38 @@ public:
 			_fini();
 		}
 
+		bool use_ner = false;
+		std::vector<std::string> ner_chain;
+		std::vector<std::string>::iterator nit;
+
 		(*config)["prepare_characterize"] = "1";
+		(*config)["ner_output_type"] = "1";
 
 		config->get_value("verbose", _verbose);
 		config->get_value("_use_break", _use_break);
 		config->get_value("_use_single_combine", _use_single_combine);
+		config->get_value("_ner_chain", ner_chain);
+		if(ner_chain.size() > 0) use_ner = true;
 		
 		ProcessorFactory * factory;
 		factory = ProcessorFactory::get_instance();
 		factory->set_config(config);
 
-		_procs.push_back(factory->create("prepare"));
-		_procs.push_back(factory->create("crf_seg"));
-		if (_use_single_combine)
-			_procs.push_back(factory->create("single_combine"));
-		if (_use_break)
-			_procs.push_back(factory->create("break"));
+		_procs.push_back(factory->create("prepare", _verbose));
+		if(use_ner)
+			_procs.push_back(factory->create("crf_seg4ner", _verbose));
+		else
+			_procs.push_back(factory->create("crf_seg", _verbose));
+		if(use_ner) {
+			for(nit=ner_chain.begin(); nit!=ner_chain.end(); ++nit) {
+				_procs.push_back(factory->create(nit->c_str(), _verbose));
+			}
+		} else {
+			if (_use_single_combine)
+				_procs.push_back(factory->create("single_combine", _verbose));
+			if (_use_break)
+				_procs.push_back(factory->create("break", _verbose));
+		}
 
 		const char * punctuation;
 		config->get_value("ke_punctuation", punctuation);

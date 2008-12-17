@@ -10,6 +10,7 @@ PrepareRanker::PrepareRanker(IConfig * config)
 {
 	_token_dict = &TokenDict::get_instance();
 	config->get_value("ke_title_weight", _title_weight);
+	config->get_value("ke_ner_weight", _ner_weight);
 	config->get_value("ke_firstocc_w", _firstocc_w);
 	config->get_value("ke_firstocc_t", _firstocc_t);
 	config->get_value("ke_numocc_w", _numocc_w);
@@ -28,7 +29,6 @@ void PrepareRanker::rank(YCDoc & doc, std::map<int, double> & token_rank, int to
 	YCDoc::oov_map & oov_token = doc.oov_token;
 	std::map<int, int> token_num_occ, token_first_occ;
 	std::map<int, int>::iterator iter;
-	std::set<int> title_set;
 	int total_occ = 0;
 
 	std::vector<YCSentence *>::iterator ycs_it
@@ -63,8 +63,12 @@ void PrepareRanker::rank(YCDoc & doc, std::map<int, double> & token_rank, int to
 
 			token_num_occ[tok_id] += 1;
 
+			if(tok->get_pos() != 0) {
+				doc.token_ner.insert(tok_id);
+			}
+
 			if((*ycs_it)->is_title) {
-				title_set.insert(tok_id);
+				doc.token_in_title.insert(tok_id);
 			} else {
 				iter = token_first_occ.lower_bound(tok_id);
 				if(iter == token_first_occ.end()
@@ -104,8 +108,11 @@ void PrepareRanker::rank(YCDoc & doc, std::map<int, double> & token_rank, int to
 
 		weight += _numocc_w * log1p((double)num_occ / _numocc_s ) + _numocc_t;
 
-		if(title_set.count(tok_id) > 0)
+		if(doc.token_in_title.count(tok_id)>0)
 			weight += _title_weight;
+
+		if(doc.token_ner.count(tok_id) > 0)
+			weight += _ner_weight;
 
 		weight *= _token_dict->get_idf(doc.token_id_map[tok_id]);
 

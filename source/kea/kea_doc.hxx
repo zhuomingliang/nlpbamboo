@@ -5,6 +5,7 @@
 #include <cstring>
 #include <vector>
 #include <map>
+#include <set>
 
 namespace bamboo { namespace kea {
 
@@ -101,6 +102,8 @@ public:
 
 	std::vector<YCSentence *> sent_list;
 	std::map<int, char *> token_id_map;
+	std::set<int> token_in_title;
+	std::set<int> token_ner;
 	oov_map oov_token;
 	YCDoc() {}
 	~YCDoc() {

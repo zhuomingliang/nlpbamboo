@@ -53,7 +53,7 @@ public:
 	bool is_filter_word(YCToken * token) {
 		const char * word = token->get_token();
 
-		if(_rule_filter(word)) {
+		if(token->get_pos() == 0 && _rule_filter(word)) {
 			return true;
 		}
 

@@ -15,6 +15,8 @@ KeywordExtractor::KeywordExtractor(IConfig * config)
 	:_config(config),_verbose(0)
 {
 	const char * s;
+	double title_weight, ner_weight, firstocc_w, numocc_w;
+
 	_config->get_value("verbose", _verbose);
 
 	SegmentTool & seg_tool = SegmentTool::get_instance();
@@ -39,6 +41,14 @@ KeywordExtractor::KeywordExtractor(IConfig * config)
 	_tfidf_ranker = new TfidfRanker(_config);
 
 	_config->get_value("ke_top_n", _top_n);
+
+	_config->get_value("ke_title_weight", title_weight);
+	_config->get_value("ke_ner_weight", ner_weight);
+	_config->get_value("ke_firstocc_w", firstocc_w);
+	_config->get_value("ke_numocc_w", numocc_w);
+
+	_title_score = 2 * title_weight / ( firstocc_w + numocc_w );
+	_ner_score = 2 * ner_weight / ( firstocc_w + numocc_w );
 
 	_algo = graph;
 	_config->get_value("ke_algorithm", s);
@@ -89,9 +99,20 @@ int KeywordExtractor::get_keyword(const char * title, const char * text, std::ve
 	//copy(token_map.begin(), token_map.end(), back_inserter(res));
 
 	int res_size = res.size();
-	int i, N = _top_n < res_size ? _top_n : res_size;
+	int i, N = (_top_n*2) < res_size ? (_top_n*2) : res_size;
 	std::partial_sort(res.begin(), res.begin() + N, res.end(), pair_cmp());
+	for(i=0; i<N; ++i) {
+		int id = res[i].first;
+		double score = res[i].second;
+		if(doc.token_in_title.count(id) > 0)
+			score *= _title_score;
+		else if(doc.token_ner.count(id) > 0)
+			score *= _ner_score;
+		res[i].second = score;
+	}
 
+	N = _top_n < res_size ? _top_n : res_size;
+	std::partial_sort(res.begin(), res.begin() + N, res.end(), pair_cmp());
 	for(i=0; i<N; ++i) {
 		words.push_back(doc.token_id_map[res[i].first]);
 	}
