@@ -52,8 +52,8 @@ CRFPosParser::CRFPosParser(const char *file, bool verbose)
 	(*_config)["prepare_characterize"] = "1";
 
 	_config->get_value("verbose", _verbose);
-	_config->get_value("_use_break", _use_break);
-	_config->get_value("_use_single_combine", _use_single_combine);
+	_config->get_value("use_break", _use_break);
+	_config->get_value("use_single_combine", _use_single_combine);
 
 	factory = ProcessorFactory::get_instance();
 	factory->set_config(_config);
