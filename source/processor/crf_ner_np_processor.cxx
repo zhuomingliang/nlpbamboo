@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <iostream>
+#include <algorithm>
 #include "token_impl.hxx"
 #include "utf8.hxx"
 
