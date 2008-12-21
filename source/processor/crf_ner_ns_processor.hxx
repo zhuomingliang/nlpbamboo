@@ -58,7 +58,7 @@ static const char * loc_label[] = {
 class CRFNSProcessor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
-	char * _ner_type;
+	const char * _ner_type;
 	std::string _result;
 	std::string _result_orig;
 	bamboo::ILexicon * _suffix_dict;

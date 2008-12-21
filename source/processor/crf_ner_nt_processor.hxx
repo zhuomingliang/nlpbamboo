@@ -41,7 +41,7 @@ namespace bamboo {
 class CRFNTProcessor: public Processor {
 protected:
 	CRFPP::Tagger *_tagger;
-	char * _ner_type;
+	const char * _ner_type;
 	std::string _result;
 	std::string _result_orig;
 	int _ner_output_type;
