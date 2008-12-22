@@ -47,9 +47,9 @@ void _PG_fini(void);
 
 void _PG_init(void)
 {
+	handle = bamboo_init(module, NULL);
 	if (handle == NULL) 
 		elog(ERROR, "can not init tokenize");
-	handle = bamboo_init(module, NULL);
 }
 
 void _PG_fini(void)
