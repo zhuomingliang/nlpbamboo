@@ -46,7 +46,9 @@ protected:
 	bool _can_process(TokenImpl *token) 
 	{
 		_split = _lexicon->search(token->get_token());
-		if (token->get_length() >= (size_t)_min_token_length && _split);
+		if ((token->get_length() >= (size_t)_min_token_length)
+			&& (token->get_length() <= sizeof(size_t) * 8)
+			&& _split)
 			return true;
 		return false;
 	}
