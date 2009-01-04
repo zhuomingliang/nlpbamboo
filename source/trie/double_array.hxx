@@ -97,18 +97,20 @@ protected:
 	static const int _default_num_state = 1024;
 	static const int _explore_buff_size = 1024;
 
+	#pragma pack(push, 4)
 	typedef struct {
 		char magic[magic_size];
 		int num;
 		int max, min;
-		long sum;
+		long long sum;
 		int num_insert;
-	} _header_t;
+	}  __attribute__((aligned(4))) _header_t;
 
 	typedef struct {
 		int base;
 		int check;
 	} _state_t;
+	#pragma pack(pop)
 
 	int _last;
 
@@ -180,7 +182,7 @@ protected:
 		_header->num = neo;
 	}
 
-	size_t _find_accepts(int s, int *inputs, int *max, int *min)
+	int _find_accepts(int s, int *inputs, int *max, int *min)
 	{
 		int ch;
 		int *p;
@@ -206,7 +208,7 @@ protected:
 		_header->num_insert++;
 	}
 
-	virtual void _explore_finish(on_explore_finish_t cb, void *arg, int s, size_t off) 
+	virtual void _explore_finish(on_explore_finish_t cb, void *arg, int s, int off) 
 	{
 		cb(_explore_buff, _base(s), arg);
 	}
@@ -214,7 +216,7 @@ protected:
 	int _find_base(int *key, int max, int min);
 	int _relocate(int stand, int s, int *key, int max, int min);
 	int _create_transition(int s, int ch);
-	void _explore(on_explore_finish_t cb, void *arg, int s, size_t off);
+	void _explore(on_explore_finish_t cb, void *arg, int s, int off);
 private:
 	DoubleArray(DoubleArray &) {}
 

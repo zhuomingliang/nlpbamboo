@@ -171,7 +171,7 @@ int DoubleArray::search(const char *key)
 	return s?_base(s):0;
 }
 
-void DoubleArray::_explore(on_explore_finish_t cb, void *arg, int s, size_t off)
+void DoubleArray::_explore(on_explore_finish_t cb, void *arg, int s, int off)
 {
 	int *p, key[alphabet_size];
 	int t;
