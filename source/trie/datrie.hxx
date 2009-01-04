@@ -40,6 +40,7 @@ private:
 	DATrie(DATrie &trie) {}
 
 protected:
+	#pragma pack(push, 4)
 	typedef struct {
 		int num;
 		int last;
@@ -49,6 +50,7 @@ protected:
 		int *s;
 		int length;
 	} _suffix_t;
+	#pragma pack(pop)
 
 	_extra_t *_extra;
 	int *_tail;
@@ -66,7 +68,7 @@ protected:
 		_extra->num = neo;
 	}
 
-	virtual void _explore_finish(on_explore_finish_t cb, void *arg, int s, size_t off) 
+	virtual void _explore_finish(on_explore_finish_t cb, void *arg, int s, int off) 
 	{
 		int p, val;
 
@@ -104,7 +106,7 @@ public:
 	DATrie(const char *filename)
 		: DoubleArray(filename)
 	{
-		size_t start = sizeof(_header_t) + _header->num * sizeof(_state_t);
+		int start = sizeof(_header_t) + _header->num * sizeof(_state_t);
 		_extra = (_extra_t *)_mmap->start(start);
 		_tail = (int *)_mmap->start(start + sizeof(_extra_t));
 		_suffix.s = NULL;
