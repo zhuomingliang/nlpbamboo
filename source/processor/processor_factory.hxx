@@ -6,6 +6,7 @@
 #include <string>
 #include <cassert>
 
+#include "utf8.hxx"
 #include "processor.hxx"
 
 namespace bamboo {
@@ -67,7 +68,7 @@ public:
 
 		if (verbose)
 			std::cerr << "creating processor " << module << std::endl;
-		if (!(handle = dlopen(module.c_str(), RTLD_LAZY)))
+		if (!(handle = dlopen(module.c_str(), RTLD_NOW | RTLD_GLOBAL)))
 			throw std::runtime_error(std::string(dlerror()));
 		_dl_handles.push_back(handle);
 		if (!(create = (_create_processor_t)dlsym(handle, "create_processor")))
