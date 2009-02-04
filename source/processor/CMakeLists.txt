@@ -2,6 +2,13 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_source(processor_factory.cxx)
 
+# We'll link utf8 and trie statically into correspoinding processors
+# The reason is that when libbamboo.so or some shared library which is linked
+# with libbamboo.so is open by `dlopen' without RTLD_NOW | RTLD_GLBOAL flag,
+# the symbols of utf8 and trie are not loaded into its process space.
+# Therefore, you will see the 'undefined symbol' notice when it turns out \
+# to load processors.
+
 macro(build_processor name)
 	add_library(processor_${name} MODULE ${name}_processor.cxx processor.cxx)
 	target_link_libraries(processor_${name} trie_static utf8_static ${ARGN})
