@@ -4,7 +4,7 @@ add_source(processor_factory.cxx)
 
 macro(build_processor name)
 	add_library(processor_${name} MODULE ${name}_processor.cxx processor.cxx)
-	target_link_libraries(processor_${name} ${ARGN})
+	target_link_libraries(processor_${name} trie_static utf8_static ${ARGN})
 	set_target_properties(processor_${name} PROPERTIES PREFIX "" OUTPUT_NAME ${name})
 	install(TARGETS processor_${name} DESTINATION ${PROCESSOR_INSTALL_DIR})
 endmacro(build_processor)
