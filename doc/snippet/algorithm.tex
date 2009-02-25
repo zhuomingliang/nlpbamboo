@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 \def\pgfsysdriver{pgfsys-dvipdfm.def}
 
 % 加载宏包
@@ -9,11 +9,18 @@
 \usepackage{tikz}
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage[below]{placeins} % 处理浮动图像
-\usepackage{zhspacing}
-\zhspacing
+\usepackage[CJKtextspaces]{xeCJK}
 
 % 行间距
 \renewcommand{\baselinestretch}{1.2}
+
+% CJK Font
+\setCJKmainfont {Adobe Song Std}
+\setCJKsansfont {Adobe Fangsong Std}
+\setCJKmonofont {Adobe Heiti Std}
+\setCJKfamilyfont{tt} {Monaco}
+\setCJKfamilyfont{rm} {Adobe Kaiti Std}
+
 
 % 名词定义
 \def\maxforward{最大正向匹配(Maximum Forward Matching)}
@@ -74,7 +81,7 @@
 \begin{algorithm}
 	\label{alg_maxforward}
 	\dontprintsemicolon
-	\linesnumbered
+%	\linesnumbered
 	\SetKwData{Token}{token}
 	\SetKwData{MaxTokenSize}{max}
 	\SetKwData{Result}{result}
@@ -160,12 +167,12 @@
 成了从最左点到最右点的最短路问题\footnote{就数值上而言，这个问题应该被称作个最长路问题。
 但我们还是习惯性地称其为最短路问题} 
 
-\DijkstraAlgorithm是一种动态规划算法
+\DijkstraAlgorithm 是一种动态规划算法
 
 \begin{algorithm}
 	\label{alg_maxforward}
 	\dontprintsemicolon
-	\linesnumbered
+%	\linesnumbered
 	\SetKwData{Token}{token}
 	\SetKwData{MaxTokenSize}{max}
 	\SetKwData{Result}{result}
