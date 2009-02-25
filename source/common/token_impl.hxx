@@ -35,8 +35,6 @@
 #include "token.hxx"
 #include "utf8.hxx"
 
-#define TOKEN_BUFFER_SIZE 512
-
 namespace bamboo {
 
 class TokenImpl:public Token {
@@ -111,7 +109,7 @@ public:
 		
 		if (_token) 
 			free(_token);
-		_token = strndup(s, TOKEN_BUFFER_SIZE);
+		_token = strdup(s);
 		if (!_token)
 			throw std::bad_alloc();
 	}
@@ -125,7 +123,7 @@ public:
 
 		if (_orig_token) 
 			free(_orig_token);
-		_orig_token = strndup(s, TOKEN_BUFFER_SIZE);
+		_orig_token = strdup(s);
 		if (!_orig_token)
 			throw std::bad_alloc();
 	}
