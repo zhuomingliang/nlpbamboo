@@ -126,7 +126,13 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		if (state != PS_WHITESPACE) {
 			strcpy(sbc.top, uch);
 			sbc.top += step;
-			if (cch) *(dbc.top++) = cch;
+			if (sbc.top >= sbc.base + MAX_TOKEN_BUFFER)
+				state = PS_UNKNOW;
+			if (cch) {
+				*(dbc.top++) = cch;
+				if (dbc.top > dbc.base + MAX_TOKEN_BUFFER)
+					state = PS_UNKNOW;
+			}
 		}
 	}
 #undef isconcat	

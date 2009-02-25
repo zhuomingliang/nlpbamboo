@@ -34,6 +34,8 @@
 #include "datrie.hxx"
 #include "utf8.hxx"
 
+#define MAX_TOKEN_BUFFER 512
+
 namespace bamboo {
 
 
