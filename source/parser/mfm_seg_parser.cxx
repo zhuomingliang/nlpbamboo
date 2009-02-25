@@ -59,7 +59,7 @@ MFMSegParser::MFMSegParser(const char *file, bool verbose)
 	factory->set_config(_config);
 
 	_procs.push_back(factory->create("prepare"));
-	_procs.push_back(factory->create("mfm_seg"));
+	_procs.push_back(factory->create("maxforward"));
 	if (_use_single_combine)
 		_procs.push_back(factory->create("single_combine"));
 	if (_use_break)
