@@ -100,8 +100,8 @@ function train_keyword() {
 	top_enc=${top//\//\\\/}
 	sed -i "s/^\s*root\s*=.*$/root = ${top_enc}/g" ${build_dir}/training_keyword.conf 
 
-	$bin/kea_word_train -c ${build_dir}/training_keyword.conf -s ${corpus_dir} -o $build_dir/kea_corpus_plain_text.txt || exit 1
-	$bin/kea_wordaff_train -c ${build_dir}/training_keyword.conf -f $build_dir/kea_corpus_plain_text.txt || exit 1
+	$bin/word_train -c ${build_dir}/training_keyword.conf -s ${corpus_dir} -o $build_dir/kea_corpus_plain_text.txt || exit 1
+	$bin/word_aff_train -c ${build_dir}/training_keyword.conf -f $build_dir/kea_corpus_plain_text.txt || exit 1
 }
 
 USAGE="auto_build -t train_type{seg,nr,ns,nt,pos,keyword} [-f corpus_file|-d corpus_dir] [-p thread_num]"
