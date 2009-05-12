@@ -64,7 +64,7 @@ yes_require = $(if $(1), \
 apxs_flags = $(foreach src,$(1),$(eval $(src)_CFLAGS += -I$(shell $(APXS) -q INCLUDEDIR)))
 
 define INST_HEADER
-$(foreach src,$(1),$(eval 
+$(foreach src,aa,$(eval 
 install ::
 	test -d $(DESTDIR)/$(INST_INCDIR)/$(2) || mkdir -p $(DESTDIR)/$(INST_INCDIR)/$(2)
 	install -m 0644 $(1) $(DESTDIR)/$(INST_INCDIR)/$(2)
@@ -72,18 +72,18 @@ install ::
 endef
 
 define INST_BIN
-$(foreach src,$(1),$(eval 
+$(foreach src,aa,$(eval 
 install ::
-	@test -d $(DESTDIR)/$(INST_BINDIR)/$(2) || mkdir -p $(DESTDIR)/$(INST_BINDIR)/$(2)
-	install -m 0644 $(1) $(DESTDIR)/$(INST_BINDIR)/$(2)
+	test -d $(DESTDIR)/$(INST_BINDIR)/$(2) || mkdir -p $(DESTDIR)/$(INST_BINDIR)/$(2)
+	install -m 0755 $(1) $(DESTDIR)/$(INST_BINDIR)/$(2)
 ))
 endef
 
 define INST_LIB
-$(foreach src,$(1),$(eval 
+$(foreach src,aa,$(eval 
 install ::
 	test -d $(DESTDIR)/$(INST_BINDIR)/$(2) || mkdir -p $(DESTDIR)/$(INST_BINDIR)/$(2)
-	install -m 0644 $(1) $(DESTDIR)/$(INST_BINDIR)/$(2)
+	install -m 0755 $(1) $(DESTDIR)/$(INST_BINDIR)/$(2)
 ))
 endef
 

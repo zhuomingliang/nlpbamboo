@@ -26,5 +26,4 @@ endif
 # $(eval $(call SO_template,mod_cnqp_db,mod_cnqp_db))
 # $(eval $(call EXE_template,aprtest,aprtest))
 
-
-
+$(call INST_BIN, $(SRCTOP)/source/tools/pdc_normalize $(SRCTOP)/source/tools/pdc_tool $(SRCTOP)/source/tools/crf_tool $(SRCTOP)/source/tools/ngm_tool $(SRCTOP)/source/tools/switch_column $(SRCTOP)/source/tools/make_turing_data $(SRCTOP)/source/tools/auto_build $(SRCTOP)/source/tools/update_user_combine $(SRCTOP)/source/tools/convert_pos $(SRCTOP)/source/tools/pdc_pos_tool $(SRCTOP)/source/tools/pdc_normalize_4nr)
