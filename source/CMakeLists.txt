@@ -27,11 +27,11 @@ foreach(component ${components})
 	list(APPEND sources ${${component}_sources})
 endforeach(component)
 
-add_library(bamboo_static STATIC bamboo.cxx ${sources})
+add_library(bamboo_static STATIC libbamboo.cxx ${sources})
 target_link_libraries(bamboo_static dl)
 set_target_properties(bamboo_static PROPERTIES OUTPUT_NAME "bamboo")
 
-add_library(bamboo_shared SHARED bamboo.cxx)
+add_library(bamboo_shared SHARED libbamboo.cxx)
 target_link_libraries(bamboo_shared bamboo_static dl)
 set_target_properties(bamboo_shared PROPERTIES OUTPUT_NAME "bamboo")
 set_target_properties(bamboo_shared PROPERTIES VERSION 2)
