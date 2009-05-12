@@ -7280,6 +7280,14 @@ fi
 	echo "INST_BINDIR=${PREFIX}/bin" >>Make.conf
 
 
+	echo INST_ETCDIR=${PREFIX}/etc
+	echo "INST_ETCDIR=${PREFIX}/etc" >>Make.conf
+
+
+	echo INST_DATADIR=${PREFIX}/share
+	echo "INST_DATADIR=${PREFIX}/share" >>Make.conf
+
+
 
 if test x$yapache_h != xno -a x$yapache_h != x; then
 	echo YAPACHE_INC_FLAG=yes
@@ -7720,10 +7728,10 @@ endif
 
 
 
-	echo 'LDFLAGS_CONF_GCC += -Wl,-O1 -Wl,-rpath,\$$$$ORIGIN/../$LIBDIR \
-			   -Wl,--enable-new-dtags'
-	echo 'LDFLAGS_CONF_GCC += -Wl,-O1 -Wl,-rpath,\$$$$ORIGIN/../$LIBDIR \
-			   -Wl,--enable-new-dtags' >>Make.conf
+	echo 'LDFLAGS_CONF_GCC += -Wl,-O1 -Wl,-rpath,\$$$$ORIGIN/../${LIBDIR} \
+	-Wl,-rpath,${INST_LIBDIR} -Wl,--enable-new-dtags'
+	echo 'LDFLAGS_CONF_GCC += -Wl,-O1 -Wl,-rpath,\$$$$ORIGIN/../${LIBDIR} \
+	-Wl,-rpath,${INST_LIBDIR} -Wl,--enable-new-dtags' >>Make.conf
 
 
 echo "******************************************************************************"

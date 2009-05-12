@@ -9,15 +9,29 @@ SUBDIR := include kea mmap utf8 trie lexicon config processor common parser
 CFLAGS += $(foreach dir,$(SUBDIR), -I$(SRCTOP)/source/$(dir))
 CFLAGS += -I$(SRCTOP)/source/include
 
+BAMBOO_CFGDIR=$(INST_ETCDIR)/bamboo/
+BAMBOO_DATADIR=$(INST_DATADIR)/bamboo/
+
+CFLAGS += -D"BAMBOO_CFGDIR=\"$(BAMBOO_CFGDIR)\""
+
 $(foreach dir,$(SUBDIR), $(eval -include $(SRCTOP)/source/$(dir)/rule.mk))
 
-$(eval $(call LIB_template,bamboo,libbamboo $(BAMBOO_SRC)))
-$(eval $(call SO_template,libbamboo,libbamboo $(BAMBOO_SRC)))
+$(eval $(call INST_LIB_template,bamboo,libbamboo $(BAMBOO_SRC)))
+$(eval $(call INST_SO_template,libbamboo,libbamboo $(BAMBOO_SRC)))
 
 include $(SRCTOP)/source/tools/rule.mk
 
-# $(eval $(call SO_template,mod_cnqp_db,mod_cnqp_db))
-# $(eval $(call EXE_template,aprtest,aprtest))
+
+BTMP=/tmp/.__bamboo.conf.cfg
+
+install ::
+	@test -d $(DESTDIR)/$(BAMBOO_CFGDIR) || mkdir -p $(DESTDIR)/$(BAMBOO_CFGDIR)
+	for file in $(SRCTOP)/etc/*.conf; do \
+		sed -e 's,root = /opt/bamboo,root = $(BAMBOO_DATADIR),g' $$file >$(BTMP); \
+		install -m 0644 $(BTMP) $(DESTDIR)/$(BAMBOO_CFGDIR)/`basename $${file}`; \
+		rm -f $(BTMP); \
+    done
+
 
 
 

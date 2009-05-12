@@ -1,4 +1,10 @@
+pathsearch = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(PATH)))))
+QPTOP=$(call pathsearch,qptop)
+ifeq ($(QPTOP),)
 SRCTOP=.
+else
+SRCTOP := $(shell qptop)
+endif
 
 include $(SRCTOP)/Make.conf
 -include $(SRCTOP)/App.conf
@@ -56,6 +62,30 @@ yes_require = $(if $(1), \
 		$(error please spefify $(2) in your configure))
 
 apxs_flags = $(foreach src,$(1),$(eval $(src)_CFLAGS += -I$(shell $(APXS) -q INCLUDEDIR)))
+
+define INST_HEADER
+$(foreach src,$(1),$(eval 
+install ::
+	test -d $(DESTDIR)/$(INST_INCDIR)/$(2) || mkdir -p $(DESTDIR)/$(INST_INCDIR)/$(2)
+	install -m 0644 $(1) $(DESTDIR)/$(INST_INCDIR)/$(2)
+))
+endef
+
+define INST_BIN
+$(foreach src,$(1),$(eval 
+install ::
+	@test -d $(DESTDIR)/$(INST_BINDIR)/$(2) || mkdir -p $(DESTDIR)/$(INST_BINDIR)/$(2)
+	install -m 0644 $(1) $(DESTDIR)/$(INST_BINDIR)/$(2)
+))
+endef
+
+define INST_LIB
+$(foreach src,$(1),$(eval 
+install ::
+	test -d $(DESTDIR)/$(INST_BINDIR)/$(2) || mkdir -p $(DESTDIR)/$(INST_BINDIR)/$(2)
+	install -m 0644 $(1) $(DESTDIR)/$(INST_BINDIR)/$(2)
+))
+endef
 
 define ADD_CFLAGS
 $(foreach src,$(1),$(eval 
@@ -140,7 +170,7 @@ dep_strip = $(filter %.o %.do %.so,$(1)) \
 			$(patsubst lib%.a,-l%,$(notdir $(filter %.a, $(1))))
 
 get_src = $(wildcard $(CURDIR)/*.c) $(wildcard $(CURDIR)/*.cpp) \
-		  $(wildcard $(CURDIR)/*.cc)
+		  $(wildcard $(CURDIR)/*.cc) $(wildcard $(CURDIR)/*.cxx)
 
 ifneq ($(GCC_VER),2)
 define cxx_obj	
@@ -199,6 +229,18 @@ EXE += $(addprefix $(OBJDIR)/,$(1))
 $(addprefix $(OBJDIR)/,$(1)) : $(addsuffix .o,$(addprefix $(OBJDIR)/,$(2))) \
 			                   $(if $(3),$(foreach deplib,$(3),$(call lib_name,$(deplib)))) 
 	$(CXX) $(LDFLAGS) $$($(1)_LDFLAGS) -o $$@ $$(call dep_strip, $$^) $$($(1)_LDLIBS) $(LDLIBS)
+endef
+
+define INST_EXE_template
+EXE += $(addprefix $(OBJDIR)/,$(1))
+$(addprefix $(OBJDIR)/,$(1)) : $(addsuffix .o,$(addprefix $(OBJDIR)/,$(2))) \
+			                   $(if $(3),$(foreach deplib,$(3),$(call lib_name,$(deplib)))) 
+	$(CXX) $(LDFLAGS) $$($(1)_LDFLAGS) -o $$@ $$(call dep_strip, $$^) $$($(1)_LDLIBS) $(LDLIBS)
+
+install :: $(addprefix $(OBJDIR)/,$(1))
+	@test -d $(DESTDIR)/$(INST_BINDIR) || mkdir -p $(DESTDIR)/$(INST_BINDIR)
+	install -m 0755 $$< $(DESTDIR)/$(INST_BINDIR)/
+
 
 endef
 
@@ -209,6 +251,19 @@ $(addsuffix .so,$(addprefix $(OBJDIR)/,$(1))) : $(addsuffix .do,$(addprefix $(OB
 	$(CXX) $(SH_LDFLAGS) $(LDFLAGS) $$($(1)_LDFLAGS) -o $$@  $$(call dep_strip, $$^) $$($(1)_LDLIBS) $(LDLIBS)
 endef
 
+define INST_SO_template
+SO += $(addsuffix .so,$(addprefix $(OBJDIR)/,$(1)))
+$(addsuffix .so,$(addprefix $(OBJDIR)/,$(1))) : $(addsuffix .do,$(addprefix $(OBJDIR)/,$(2))) \
+			                   $(if $(3),$(foreach deplib,$(3),$(call dlib_name,$(deplib)))) 
+	$(CXX) $(SH_LDFLAGS) $(LDFLAGS) $$($(1)_LDFLAGS) -o $$@  $$(call dep_strip, $$^) $$($(1)_LDLIBS) $(LDLIBS)
+
+
+install :: $(addsuffix .so,$(addprefix $(OBJDIR)/,$(1))) 
+	@test -d $(DESTDIR)/$(INST_LIBDIR) || mkdir -p $(DESTDIR)/$(INST_LIBDIR)
+	install -m 0755 $$< $(DESTDIR)/$(INST_LIBDIR)/
+endef
+
+
 define LIB_template
 LIB += $(OBJDIR)/lib$(1).a
 LIB += $(OBJDIR)/lib$(1)_d.a
@@ -218,6 +273,20 @@ $(OBJDIR)/lib$(1)_d.a : $(addsuffix .do,$(addprefix $(OBJDIR)/,$(2)))
 	rm -f $$@; $(AR) rcs $$@ $$^
 endef
 
+define INST_LIB_template
+LIB += $(OBJDIR)/lib$(1).a
+LIB += $(OBJDIR)/lib$(1)_d.a
+$(OBJDIR)/lib$(1).a : $(addsuffix .o,$(addprefix $(OBJDIR)/,$(2)))
+	rm -f $$@; $(AR) rcs $$@ $$^
+$(OBJDIR)/lib$(1)_d.a : $(addsuffix .do,$(addprefix $(OBJDIR)/,$(2)))
+	rm -f $$@; $(AR) rcs $$@ $$^
+
+install :: $(OBJDIR)/lib$(1).a
+	@test -d $(DESTDIR)/$(INST_LIBDIR) || mkdir -p $(DESTDIR)/$(INST_LIBDIR)
+	install -m 0755 $$< $(DESTDIR)/$(INST_LIBDIR)/
+endef
+
+
 
 # include your rule.mk here
 include Make.inc
@@ -226,17 +295,6 @@ cpp_flag = $(filter -I% -D%, $(1))
 MYCFLAGS = $(sort $($(basename $(notdir $@))_CFLAGS) $(CFLAGS))
 MYCPPFLAGS = $(call cpp_flag, $(MYCFLAGS))
 
-SRCS := $(sort $(SRCS))
-
-
-.PHONY : dep
-
-dep += $(addprefix $(DEPDIR)/,$(notdir $(addsuffix .d,$(basename $(SRCS))))) \
-		$(addprefix $(DEPDIR)/,$(notdir $(addsuffix .dd,$(basename $(SRCS))))) \
-        $(addprefix $(DEPDIR)/,$(notdir $(addsuffix .d,$(basename $(filter %.c %.cpp %.cc %.cxx,$(GEN_FILES)))))) \
-        $(addprefix $(DEPDIR)/,$(notdir $(addsuffix .dd,$(basename $(filter %.c %.cpp %.cc %.cxx,$(GEN_FILES))))))
-
--include $(dep)
 
 $(OBJDIR)/%.do : %.c
 	$(c_dobj)
@@ -258,16 +316,29 @@ $(OBJDIR)/%.o : %.cc
 $(OBJDIR)/%.o : %.cxx
 	$(cxx_obj)	
 
+SRCS := $(sort $(SRCS))
 
-.PHONY : all clean dbg help  install
+
+.PHONY : dep
+
+dep += $(addprefix $(DEPDIR)/,$(notdir $(addsuffix .d,$(basename $(SRCS))))) \
+		$(addprefix $(DEPDIR)/,$(notdir $(addsuffix .dd,$(basename $(SRCS))))) \
+        $(addprefix $(DEPDIR)/,$(notdir $(addsuffix .d,$(basename $(filter %.c %.cpp %.cc %.cxx,$(GEN_FILES)))))) \
+        $(addprefix $(DEPDIR)/,$(notdir $(addsuffix .dd,$(basename $(filter %.c %.cpp %.cc %.cxx,$(GEN_FILES))))))
+
+-include $(dep)
+
+.PHONY : all clean dbg help  install info
 
 all :: $(GEN_FILES) $(LIB) $(SO) $(EXE) $(BIN)
 
 
-install :: $(INST_INCFILES) $(INST_LIBFILES) $(INST_BINFILES)
-	if test y$(INST_INCFILES) != y; then install -m 0644 $(INST_INCFILES) $(INST_INCDIR); fi
-	if test y$(INST_LIBFILES) != y; then install -m 0755 $(INST_LIBFILES) $(INST_LIBDIR); fi
-	if test y$(INST_BINFILES) != y; then install -m 0755 $(INST_BINFILES) $(INST_BINDIR); fi
+info ::
+	@echo "EXE: $(EXE)"
+	@echo "SO: $(SO)"
+	@echo "LIB: $(LIB)"
+	@echo "DEP: $(dep)"
+	@echo "SRCS: $(SRCS)"
 
 clean :
 	rm -rf $(DEPDIR)/*; 
@@ -276,8 +347,9 @@ clean :
 	rm -f config.log
 
 help ::
-	@echo "gmake -f rule.mk                  build the whole project"
-	@echo "gmake -f rule.mk dbg              enable compiler&linker's debug feature"
-	@echo "gmake -f rule.mk clean            clean the project"
-	@echo "gmake -f rule.mk install          install files
+	@echo "gmake                   build the whole project"
+	@echo "gmake  dbg              enable compiler&linker's debug feature"
+	@echo "gmake  clean            clean the project"
+	@echo "gmake  install          install files"
+	@echo "gmake  info             echo EXE LIB SO
 
