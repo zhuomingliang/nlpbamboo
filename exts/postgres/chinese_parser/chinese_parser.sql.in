@@ -1,5 +1,7 @@
 
 -- Adjust this setting to control where the objects get created.
+-- Add _ns(_nospace) config, for chinese headline generate
+
 SET search_path = pg_catalog;
 
 CREATE OR REPLACE FUNCTION chineseprs_start(internal, int4)
@@ -8,6 +10,11 @@ AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT;
 
 CREATE OR REPLACE FUNCTION chineseprs_getlexeme(internal, internal, internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT;
+
+CREATE OR REPLACE FUNCTION chineseprs_getlexeme_ns(internal, internal, internal)
 RETURNS internal
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT;
@@ -29,8 +36,16 @@ CREATE TEXT SEARCH PARSER chineseparser (
   HEADLINE = pg_catalog.prsd_headline,
   LEXTYPES = chineseprs_lextype
 );
+CREATE TEXT SEARCH PARSER chineseparser_ns (
+  START    = chineseprs_start,
+  GETTOKEN = chineseprs_getlexeme_ns,
+  END      = chineseprs_end,
+  HEADLINE = pg_catalog.prsd_headline,
+  LEXTYPES = chineseprs_lextype
+);
 
 CREATE TEXT SEARCH CONFIGURATION chinesecfg (PARSER = chineseparser);
+CREATE TEXT SEARCH CONFIGURATION chinesecfg_ns (PARSER = chineseparser_ns);
 
 CREATE TEXT SEARCH DICTIONARY chinese_stem (
   TEMPLATE = snowball,
@@ -39,3 +54,4 @@ CREATE TEXT SEARCH DICTIONARY chinese_stem (
 );
 
 ALTER TEXT SEARCH CONFIGURATION chinesecfg ADD MAPPING FOR word WITH chinese_stem;
+ALTER TEXT SEARCH CONFIGURATION chinesecfg_ns ADD MAPPING FOR word WITH chinese_stem;

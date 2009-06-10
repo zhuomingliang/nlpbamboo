@@ -1549,6 +1549,9 @@ Datum		chineseprs_start(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(chineseprs_getlexeme);
 Datum		chineseprs_getlexeme(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(chineseprs_getlexeme_ns);
+Datum		chineseprs_getlexeme_ns(PG_FUNCTION_ARGS);
+
 PG_FUNCTION_INFO_V1(chineseprs_end);
 Datum		chineseprs_end(PG_FUNCTION_ARGS);
 
@@ -1599,6 +1602,42 @@ chineseprs_start(PG_FUNCTION_ARGS)
 	PG_RETURN_POINTER(prs);
 }
 
+/* We always return type = 3 , trim space */
+Datum
+chineseprs_getlexeme_ns(PG_FUNCTION_ARGS)
+{
+	TParser *prs = (TParser*) PG_GETARG_POINTER(0);
+	char	  **t = (char **) PG_GETARG_POINTER(1);
+	int		   *tlen = (int *) PG_GETARG_POINTER(2);
+	int			type;
+
+
+	if ((prs->sege)[prs->pos] == ' ')
+	{
+		while ((prs->sege)[prs->pos] == ' ' &&
+			   prs->pos < prs->len)
+			(prs->pos)++;
+	}
+
+	*tlen = prs->pos;
+	*t = prs->sege + prs->pos;
+
+	/* word type */
+	type = 3;
+	/* go to the next white-space character */
+	while ((prs->sege)[prs->pos] != ' ' &&
+			prs->pos < prs->len)
+		(prs->pos)++;
+
+	*tlen = prs->pos - *tlen;
+
+	/* we are finished if (*tlen == 0) */
+	if (*tlen == 0)
+		type = 0;
+	
+	PG_RETURN_INT32(type);
+ 
+}
 Datum
 chineseprs_getlexeme(PG_FUNCTION_ARGS)
 {
