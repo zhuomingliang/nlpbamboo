@@ -58,11 +58,11 @@ public:
 
 		if (top)
 			v.push_back(top);
-		v.push_back(file);
-		v.push_back(std::string("./etc/").append(file));
+		if (file[0])
+			v.push_back(file);
+		v.push_back(std::string("./etc/bamboo").append(file));
 		v.push_back(std::string("/etc/bamboo/").append(file));
-		v.push_back(std::string("/opt/bamboo/etc/").append(file));
-#ifdef BAMBOO_CFGDIR		
+#ifdef BAMBOO_CFGDIR
 		v.push_back(std::string(BAMBOO_CFGDIR).append(file));
 #endif
 		for (i = 0; i < v.size(); i++) {

@@ -133,8 +133,12 @@ if [ -z ${thread_num} ];then
 	thread_num=1
 fi
 
-top="$(dirname $(readlink -f $0))/.."
-source $top/etc/build_settings
+$top=$(dirname $(readlink -f $0))
+if [ -r "$top/etc/bamboo/build_settings" ]
+	source $top/etc/build_settings
+if [ -r "/etc/bamboo/build_settings" ]
+	source /etc/bamboo/build_settings
+fi
 
 mkdir -p $data_dir $build_dir $index_dir
 
