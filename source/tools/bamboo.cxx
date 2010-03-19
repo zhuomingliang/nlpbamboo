@@ -32,6 +32,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+#include <stdio.h>
 
 #include "parser_factory.hxx"
 #include "custom_parser.hxx"
