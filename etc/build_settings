@@ -1,10 +1,10 @@
 #!/bin/bash
 
-bin=$top/bin
-data_dir=$top/data
-build_dir=$top/build
-index_dir=$top/index
-tmpl_dir=$top/template
+bin=$top/../../lib
+data_dir=$top/../../data
+build_dir=$top/../../build
+index_dir=$top/../../index
+tmpl_dir=$top/../../template
 
 corpus="$data_dir/people-daily-bamboo-edition.txt"
 number_trailing="$data_dir/number_trailing.txt"

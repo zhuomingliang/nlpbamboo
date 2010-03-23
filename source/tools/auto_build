@@ -133,13 +133,20 @@ if [ -z ${thread_num} ];then
 	thread_num=1
 fi
 
-$top=$(dirname $(readlink -f $0))
-if [ -r "$top/etc/bamboo/build_settings" ]
-	source $top/etc/build_settings
-if [ -r "/etc/bamboo/build_settings" ]
+top=$(dirname $(readlink -f $0))
+echo "$top/../../etc/build_settings"
+if [ -r "$top/../../etc/build_settings" ];
+then
+	source $top/../../etc/build_settings
+	echo "hello"
+	echo "$data_dir"
+fi
+if [ -r "/etc/bamboo/build_settings" ];
+then
 	source /etc/bamboo/build_settings
 fi
 
+echo "data_dir: $data_dir; build_dir: $build_dir; index_dir: $index_dir"
 mkdir -p $data_dir $build_dir $index_dir
 
 if [ -z ${corpus_file} ]; then
@@ -149,6 +156,9 @@ if [ -z ${corpus_file} ]; then
 		[ "$?" != "0" ] && exit 1 
 	fi
 fi
+
+cp $top/../../source/tools/pdc_normalize $top/../../lib/
+cp $top/../../source/tools/ngm_tool $top/../../lib/
 
 if [ ${train_type} == "seg" ];
 then
