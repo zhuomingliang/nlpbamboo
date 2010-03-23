@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <stdio.h>
 
 #include "bamboo.hxx"
 
