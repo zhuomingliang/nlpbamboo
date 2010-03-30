@@ -27,12 +27,15 @@ BTMP=/tmp/.__bamboo.conf.cfg
 install ::
 	@test -d $(DESTDIR)/$(BAMBOO_CFGDIR) || mkdir -p $(DESTDIR)/$(BAMBOO_CFGDIR)
 	@test -d $(DESTDIR)/$(BAMBOO_DATADIR)/template || mkdir -p $(DESTDIR)/$(BAMBOO_DATADIR)/template
+	@test -d $(DESTDIR)/$(BAMBOO_DATADIR)/processor || mkdir -p $(DESTDIR)/$(BAMBOO_DATADIR)/processor
+	@test -d $(DESTDIR)/$(BAMBOO_DATADIR)/index || mkdir -p $(DESTDIR)/$(BAMBOO_DATADIR)/index
 	for file in $(SRCTOP)/etc/*.conf; do \
 		sed -e 's,root = /opt/bamboo,root = $(BAMBOO_DATADIR),g' $$file >$(BTMP); \
 		install -m 0644 $(BTMP) $(DESTDIR)/$(BAMBOO_CFGDIR)/`basename $${file}`; \
 		rm -f $(BTMP); \
     done
 	install -m 0644 $(SRCTOP)/template/*.tmpl $(DESTDIR)/$(BAMBOO_DATADIR)/template/
+	install -m 0644 $(SRCTOP)/index/*  $(DESTDIR)/$(BAMBOO_DATADIR)/index/
 
 
 

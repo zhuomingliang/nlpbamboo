@@ -244,6 +244,8 @@ install :: $(addprefix $(OBJDIR)/,$(1))
 
 endef
 
+LDLIBS += -lcrfpp
+
 define SO_template
 SO += $(addsuffix .so,$(addprefix $(OBJDIR)/,$(1)))
 $(addsuffix .so,$(addprefix $(OBJDIR)/,$(1))) : $(addsuffix .do,$(addprefix $(OBJDIR)/,$(2))) \
@@ -263,6 +265,17 @@ install :: $(addsuffix .so,$(addprefix $(OBJDIR)/,$(1)))
 	install -m 0755 $$< $(DESTDIR)/$(INST_LIBDIR)/
 endef
 
+define INST_PROCESS_SO_template
+SO += $(addsuffix .so,$(addprefix $(OBJDIR)/,$(1)))
+$(addsuffix .so,$(addprefix $(OBJDIR)/,$(1))) : $(addsuffix .do,$(addprefix $(OBJDIR)/,$(2))) \
+			                   $(if $(3),$(foreach deplib,$(3),$(call dlib_name,$(deplib)))) 
+	$(CXX) $(SH_LDFLAGS) $(LDFLAGS) $$($(1)_LDFLAGS) -o $$@  $$(call dep_strip, $$^) $$($(1)_LDLIBS) $(LDLIBS)
+
+
+install :: $(addsuffix .so,$(addprefix $(OBJDIR)/,$(1))) 
+	@test -d $(INST_DATADIR)/bamboo/processor || mkdir -p $(INST_DATADIR)/bamboo/processor
+	install -m 0755 $$< $(INST_DATADIR)/bamboo/processor/
+endef
 
 define LIB_template
 LIB += $(OBJDIR)/lib$(1).a
