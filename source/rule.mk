@@ -29,11 +29,15 @@ install ::
 	@test -d $(DESTDIR)/$(BAMBOO_DATADIR)/template || mkdir -p $(DESTDIR)/$(BAMBOO_DATADIR)/template
 	@test -d $(DESTDIR)/$(BAMBOO_DATADIR)/processor || mkdir -p $(DESTDIR)/$(BAMBOO_DATADIR)/processor
 	@test -d $(DESTDIR)/$(BAMBOO_DATADIR)/index || mkdir -p $(DESTDIR)/$(BAMBOO_DATADIR)/index
+	@test -d $(DESTDIR)/$(BAMBOO_DATADIR)/data || mkdir -p $(DESTDIR)/$(BAMBOO_DATADIR)/data
 	for file in $(SRCTOP)/etc/*.conf; do \
 		sed -e 's,root = /opt/bamboo,root = $(BAMBOO_DATADIR),g' $$file >$(BTMP); \
 		install -m 0644 $(BTMP) $(DESTDIR)/$(BAMBOO_CFGDIR)/`basename $${file}`; \
 		rm -f $(BTMP); \
     done
+	sed -e 's,$$top/../../lib,$(INST_BINDIR),g' -e 's,$$top/../../,$(BAMBOO_DATADIR),g' $(SRCTOP)/etc/build_settings >$(BTMP); \
+	install -m 0644 $(BTMP) $(DESTDIR)/$(BAMBOO_CFGDIR)/build_settings ;\
+	rm -f $(BTMP)
 	install -m 0644 $(SRCTOP)/template/*.tmpl $(DESTDIR)/$(BAMBOO_DATADIR)/template/
 	install -m 0644 $(SRCTOP)/index/*  $(DESTDIR)/$(BAMBOO_DATADIR)/index/
 

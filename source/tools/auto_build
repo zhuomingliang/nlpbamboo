@@ -141,9 +141,9 @@ then
 	echo "hello"
 	echo "$data_dir"
 fi
-if [ -r "/etc/bamboo/build_settings" ];
+if [ -r "/usr/local/etc/bamboo/build_settings" ];
 then
-	source /etc/bamboo/build_settings
+	source /usr/local/etc/bamboo/build_settings
 fi
 
 echo "data_dir: $data_dir; build_dir: $build_dir; index_dir: $index_dir"
