@@ -140,8 +140,7 @@ then
 	source $top/../../etc/build_settings
 	echo "hello"
 	echo "$data_dir"
-fi
-if [ -r "/usr/local/etc/bamboo/build_settings" ];
+elif [ -r "/usr/local/etc/bamboo/build_settings" ];
 then
 	source /usr/local/etc/bamboo/build_settings
 fi
