@@ -1,7 +1,7 @@
 #!/bin/bash
 
-top="$(dirname $(readlink -f $0))/.."
-source $top/etc/build_settings
+top="$(dirname $(readlink -f $0))"
+source $top/../../etc/build_settings
 
 [ ! -f "$user_combine" ] && touch $user_combine
 
