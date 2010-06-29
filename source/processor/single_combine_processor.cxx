@@ -132,7 +132,7 @@ void SingleCombineProcessor::process(std::vector<TokenImpl *> &in, std::vector<T
 		if (!match)
 			match = _number_trailing_combine(i, size, in, out);
 
-		if (!match && length == 1) 
+		if (!match && length <= 2) 
 			match = _single_combine(i, size, in, out);
 		
 		if (match) {
