@@ -32,5 +32,4 @@ if (CRFPP_FOUND)
 	build_tool(ner_tool utf8_static)
 endif (CRFPP_FOUND)
 
-install(FILES build_settings DESTINATION ${ETC_INSTALL_DIR})
 install(PROGRAMS ${tools} DESTINATION ${BIN_INSTALL_DIR})

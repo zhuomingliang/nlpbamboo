@@ -1,2 +1,2 @@
-install(DIRECTORY postgres php DESTINATION ${EXT_INSTALL_DIR})
+install(DIRECTORY postgres php DESTINATION ${EXT_INSTALL_DIR} PATTERN ".svn" EXCLUDE)
 
