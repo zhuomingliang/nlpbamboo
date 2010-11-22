@@ -158,8 +158,10 @@ public:
 	size_t get_orig_length() 
 	{
 		if (_orig_token) {
-			if (_orig_length == 0) 
+			if (_orig_length == 0) {
 				_orig_length = utf8::length(_orig_token);
+            }
+            return _orig_length;
 		} else {
 			return get_length();
 		}
@@ -167,10 +169,12 @@ public:
 	size_t get_orig_bytes() 
 	{
 		if (_orig_token) {
-			if (_orig_bytes == 0) 
+			if (_orig_bytes == 0) {
 				_orig_bytes = strlen(_orig_token);
+            }
+            return _orig_bytes;
 		} else {
-			return get_orig_bytes();
+			return get_bytes();
 		}
 	}
 	unsigned short get_pos() const 
