@@ -8,6 +8,6 @@ then
 
 sudo make install
 
-the generated binary will be install to /opt/bamboo directory,
+the generated binary will be install to /usr/local/bamboo directory,
 the library will be install to /usr/local/lib directory. So check
 your ldconfig setting and your build script accordingly.
