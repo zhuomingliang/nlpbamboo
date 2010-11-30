@@ -11,8 +11,8 @@ if test -z "$BAMBOO_INCLUDE"; then
 	AC_MSG_ERROR(Can not find bamboo.hxx. Please specify correct Bamboo installation path)
 fi
 
-for i in $PHP_BAMBOO/lib /usr/lib /usr/local/lib; do
-	if test -r "$i/libbamboo.so.2"; then
+for i in $PHP_BAMBOO/lib /usr/lib /usr/local/lib /usr/lib64 /usr/local/lib64; do
+	if test -r "$i/libbamboo.so"; then
 		BAMBOO_LIBRARY=$i
 		AC_DEFINE(HAVE_LIBBAMBOO,1,[Whether to have libbamboo])
 	fi
