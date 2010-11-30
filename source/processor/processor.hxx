@@ -39,7 +39,7 @@ namespace bamboo {
 
 
 #define PROCESSOR_MAGIC /* Nothing */
-#define PROCESSOR_MODULE(NAME) extern "C" {Processor *create_processor(IConfig *config) {return new NAME(config);}}
+#define PROCESSOR_MODULE(NAME) /* Nothing */
 
 class Processor {
 protected:
