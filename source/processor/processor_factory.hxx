@@ -1,7 +1,6 @@
 #ifndef PROCESSOR_FACTORY_HXX
 #define PROCESSOR_FACTORY_HXX
 
-#include <dlfcn.h>
 #include <vector>
 #include "iconfig.hxx"
 #include "processor.hxx"

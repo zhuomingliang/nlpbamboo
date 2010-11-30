@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <dlfcn.h>
 #include "iconfig.hxx"
 #include "simple_config.hxx"
 #include "token_impl.hxx"

@@ -1,4 +1,3 @@
-#include <dlfcn.h>
 #include <vector>
 #include <string>
 #include "processor_factory.hxx"

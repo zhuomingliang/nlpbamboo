@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <iostream>
 #include <stdexcept>
-#include <dlfcn.h>
 
 #include "custom_parser.hxx"
 
