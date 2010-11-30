@@ -1,6 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
-rootdir = /opt/$(PACKAGE)
+rootdir = $(prefix)/$(PACKAGE)
+bindir = $(rootdir)/bin
 
 nobase_root_DATA = \
 				   etc/build_settings\
@@ -119,7 +120,6 @@ pkginclude_HEADERS = \
 				  source/parser/parser_factory.hxx\
 				  source/common/token.hxx
 
-bindir = $(rootdir)/bin
 bin_SCRIPTS = \
 				   source/tools/auto_build\
 				   source/tools/check_build\

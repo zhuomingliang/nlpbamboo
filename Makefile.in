@@ -42,7 +42,7 @@ bin_PROGRAMS = bamboo$(EXEEXT) config$(EXEEXT) crf2_tool$(EXEEXT) \
 	lexicon$(EXEEXT) ner_nr_tool$(EXEEXT) ner_tool$(EXEEXT) \
 	word_aff_train$(EXEEXT) word_train$(EXEEXT)
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(pkginclude_HEADERS) \
+DIST_COMMON = README $(am__configure_deps) $(pkginclude_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/configure config.guess config.sub depcomp \
 	install-sh ltmain.sh missing
@@ -284,7 +284,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
-rootdir = /opt/$(PACKAGE)
+rootdir = $(prefix)/$(PACKAGE)
 nobase_root_DATA = \
 				   etc/build_settings\
 				   etc/bamboo.cfg\

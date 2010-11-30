@@ -13,7 +13,7 @@ using namespace std;
 using namespace bamboo;
 
 void print_usage() {
-    cout << "crf2_tool -c config_file -i input_file -o output_file" << endl;
+    cout << "crf2_tool -i input_file -o output_file" << endl;
 }
 
 const char *get_crf2_tag(int attr) {
@@ -35,12 +35,8 @@ int main(int argc, char **argv) {
     int opt;
     char *input_filename = NULL;
     char *output_filename = NULL;
-    char *config_filename = NULL;
-    while ((opt = getopt(argc, argv, "c:i:o:h")) != -1) {
+    while ((opt = getopt(argc, argv, "i:o:h")) != -1) {
         switch (opt) {
-	case 'c':
-	    config_filename = optarg;
-	    break;
         case 'i':
             input_filename = optarg;
             break;
@@ -67,7 +63,8 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    SimpleConfig config(config_filename);
+    SimpleConfig config;
+    config["concat_hyphen"] = "1";
     config["prepare_characterize"] = "1"; 
     ProcessorFactory *processor_factory = ProcessorFactory::get_instance();
     processor_factory->set_config(&config);

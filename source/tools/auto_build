@@ -34,7 +34,7 @@ function train_seg() {
 			echo "crf_learn not found"
 			exit
 		fi
-		$bin/crf2_tool -c ${config_file} -i ${build_dir}/normalized.txt -o ${build_dir}/pd_crf_seg_training.txt || exit 1
+		$bin/crf2_tool -i ${build_dir}/normalized.txt -o ${build_dir}/pd_crf_seg_training.txt || exit 1
 		# Train CRF Seg
 		crf_learn -p ${thread_num} -c 4.0 -f 2 ${tmpl_dir}/crf_seg.tmpl ${build_dir}/pd_crf_seg_training.txt ${index_dir}/crf_seg.model || exit 1
 		;;
@@ -134,7 +134,6 @@ if [ -z ${thread_num} ];then
 fi
 
 top=$(dirname $(readlink -f $0))
-config_file=$top/etc/conf_seg.conf
 echo "$top/../../etc/build_settings"
 if [ -r "$top/../../etc/build_settings" ];
 then
