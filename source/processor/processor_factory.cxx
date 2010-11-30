@@ -21,7 +21,6 @@
 
 namespace bamboo {
 	ProcessorFactory* ProcessorFactory::_instance = NULL;
-	std::vector<void *> ProcessorFactory::_dl_handles;
     Processor *ProcessorFactory::create(const char *name, bool verbose)
 	{		
         if (_config == NULL)
