@@ -2,6 +2,7 @@
 #define PROCESSOR_FACTORY_HXX
 
 #include <vector>
+#include <dlfcn.h>
 #include "iconfig.hxx"
 #include "processor.hxx"
 
