@@ -112,7 +112,7 @@ const char * CRFNPProcessor::_get_label(const char * token) {
 
 	for(cch=0;;s+=step,cch=0) {
 		step = utf8::first(s, uch);
-		cch = utf8::sbc2dbc(uch, step);
+		cch = utf8::dbc2sbc(uch, step);
 
 		if(*uch == 0) break;
 

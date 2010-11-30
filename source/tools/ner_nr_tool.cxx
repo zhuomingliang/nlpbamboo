@@ -36,7 +36,7 @@ size_t utf8_to_vec(const char *s, std::vector<std::string> &vec) {
 	vec.clear();
 	for(cch=0;;s+=step,cch=0) {
 		step = utf8::first(s, uch);
-		cch = utf8::sbc2dbc(uch, step);
+		cch = utf8::dbc2sbc(uch, step);
 		if(cch!=0 && !isspace(cch)) {
 			buf += cch;
 		} else if(cch!=0 && isspace(cch)) {

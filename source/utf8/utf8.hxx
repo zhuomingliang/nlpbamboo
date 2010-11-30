@@ -142,10 +142,10 @@ public:
 		return t - begin;
 	}
 
-	static char sbc2dbc(const char *str, size_t len) 
+	static char dbc2sbc(const char *str, size_t len) 
 	{
 		/* Reference: http://zh.wikipedia.org/wiki/%E5%85%A8%E8%A7%92 */
-		register unsigned char uch1, uch2, uch3, dbc;
+		register unsigned char uch1, uch2, uch3, sbc;
 
 		if ((unsigned char)*str < 128) return *str;
 		if (len != 3) return 0;
@@ -155,16 +155,16 @@ public:
 		uch3 = str[2];
 
 		if(uch1 == 0xE3 && uch2 == 0x80 && uch3 == 0x80) {
-			dbc = 0x20;
+			sbc = 0x20;
 		} else if(uch1 == 0xEF && uch2 == 0xBC && uch3 >= 0x81 && uch3 <= 0xBF) {
-			dbc = uch3 - 0x60;
+			sbc = uch3 - 0x60;
 		} else if(uch1 == 0xEF && uch2 == 0xBD && uch3 >= 0x80 && uch3 <= 0x9E) {
-			dbc = uch3 - 0x20;
+			sbc = uch3 - 0x20;
 		} else {
-			dbc = 0x0;
+			sbc = 0x0;
 		}
 
-		return dbc;
+		return sbc;
 	}
 };
 

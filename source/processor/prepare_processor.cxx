@@ -74,7 +74,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 
 	for (cch = '\0', state = PS_UNKNOW; ; s += step, cch = '\0') {
 		step = utf8::first(s, uch);
-		cch = utf8::sbc2dbc(uch, step);
+		cch = utf8::dbc2sbc(uch, step);
 		parent = state;
 
 #define isconcat(c) ((c) == '-' || (c) == '_')

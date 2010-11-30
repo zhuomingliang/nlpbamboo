@@ -79,7 +79,7 @@ protected:
 		const char * p = token;
 		for(; *p; p+=step) {
 			step = utf8::first(p, uch);
-			cch = utf8::sbc2dbc(uch, step);
+			cch = utf8::dbc2sbc(uch, step);
 			if(ispunct(cch) || isdigit(cch)) {
 				return true;
 			}
