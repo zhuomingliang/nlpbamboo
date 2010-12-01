@@ -41,6 +41,8 @@ host_triplet = @host@
 bin_PROGRAMS = bamboo$(EXEEXT) config$(EXEEXT) crf2_tool$(EXEEXT) \
 	lexicon$(EXEEXT) ner_nr_tool$(EXEEXT) ner_tool$(EXEEXT) \
 	word_aff_train$(EXEEXT) word_train$(EXEEXT)
+noinst_PROGRAMS = utf8_test$(EXEEXT)
+TESTS = utf8_test$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(pkginclude_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -105,7 +107,7 @@ libbamboo_la_OBJECTS = $(am_libbamboo_la_OBJECTS)
 libbamboo_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libbamboo_la_LDFLAGS) $(LDFLAGS) -o $@
-PROGRAMS = $(bin_PROGRAMS)
+PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am_bamboo_OBJECTS = bamboo.$(OBJEXT)
 bamboo_OBJECTS = $(am_bamboo_OBJECTS)
 bamboo_DEPENDENCIES = libbamboo.la
@@ -124,6 +126,9 @@ ner_nr_tool_DEPENDENCIES = libbamboo.la
 am_ner_tool_OBJECTS = ner_tool.$(OBJEXT)
 ner_tool_OBJECTS = $(am_ner_tool_OBJECTS)
 ner_tool_DEPENDENCIES = libbamboo.la
+am_utf8_test_OBJECTS = utf8_test.$(OBJEXT)
+utf8_test_OBJECTS = $(am_utf8_test_OBJECTS)
+utf8_test_DEPENDENCIES = libbamboo.la
 am_word_aff_train_OBJECTS = word_aff_train.$(OBJEXT)
 word_aff_train_OBJECTS = $(am_word_aff_train_OBJECTS)
 word_aff_train_DEPENDENCIES = libbamboo.la
@@ -146,16 +151,19 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libbamboo_la_SOURCES) $(bamboo_SOURCES) $(config_SOURCES) \
 	$(crf2_tool_SOURCES) $(lexicon_SOURCES) $(ner_nr_tool_SOURCES) \
-	$(ner_tool_SOURCES) $(word_aff_train_SOURCES) \
-	$(word_train_SOURCES)
+	$(ner_tool_SOURCES) $(utf8_test_SOURCES) \
+	$(word_aff_train_SOURCES) $(word_train_SOURCES)
 DIST_SOURCES = $(libbamboo_la_SOURCES) $(bamboo_SOURCES) \
 	$(config_SOURCES) $(crf2_tool_SOURCES) $(lexicon_SOURCES) \
 	$(ner_nr_tool_SOURCES) $(ner_tool_SOURCES) \
-	$(word_aff_train_SOURCES) $(word_train_SOURCES)
+	$(utf8_test_SOURCES) $(word_aff_train_SOURCES) \
+	$(word_train_SOURCES)
 DATA = $(nobase_root_DATA)
 HEADERS = $(pkginclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
+am__tty_colors = \
+red=; grn=; lgn=; blu=; std=
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -413,6 +421,8 @@ word_aff_train_SOURCES = source/tools/word_aff_train.cxx
 word_aff_train_LDADD = libbamboo.la
 word_train_SOURCES = source/tools/word_train.cxx
 word_train_LDADD = libbamboo.la
+utf8_test_SOURCES = test/utf8_test.cxx
+utf8_test_LDADD = libbamboo.la
 all: all-am
 
 .SUFFIXES:
@@ -527,6 +537,15 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 bamboo$(EXEEXT): $(bamboo_OBJECTS) $(bamboo_DEPENDENCIES) 
 	@rm -f bamboo$(EXEEXT)
 	$(CXXLINK) $(bamboo_OBJECTS) $(bamboo_LDADD) $(LIBS)
@@ -545,6 +564,9 @@ ner_nr_tool$(EXEEXT): $(ner_nr_tool_OBJECTS) $(ner_nr_tool_DEPENDENCIES)
 ner_tool$(EXEEXT): $(ner_tool_OBJECTS) $(ner_tool_DEPENDENCIES) 
 	@rm -f ner_tool$(EXEEXT)
 	$(CXXLINK) $(ner_tool_OBJECTS) $(ner_tool_LDADD) $(LIBS)
+utf8_test$(EXEEXT): $(utf8_test_OBJECTS) $(utf8_test_DEPENDENCIES) 
+	@rm -f utf8_test$(EXEEXT)
+	$(CXXLINK) $(utf8_test_OBJECTS) $(utf8_test_LDADD) $(LIBS)
 word_aff_train$(EXEEXT): $(word_aff_train_OBJECTS) $(word_aff_train_DEPENDENCIES) 
 	@rm -f word_aff_train$(EXEEXT)
 	$(CXXLINK) $(word_aff_train_OBJECTS) $(word_aff_train_LDADD) $(LIBS)
@@ -649,6 +671,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ugm_seg_parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ugm_seg_processor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf8.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf8_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/word_aff_train.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/word_train.Po@am__quote@
 
@@ -1114,6 +1137,20 @@ ner_tool.obj: source/tools/ner_tool.cxx
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ner_tool.obj `if test -f 'source/tools/ner_tool.cxx'; then $(CYGPATH_W) 'source/tools/ner_tool.cxx'; else $(CYGPATH_W) '$(srcdir)/source/tools/ner_tool.cxx'; fi`
 
+utf8_test.o: test/utf8_test.cxx
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT utf8_test.o -MD -MP -MF $(DEPDIR)/utf8_test.Tpo -c -o utf8_test.o `test -f 'test/utf8_test.cxx' || echo '$(srcdir)/'`test/utf8_test.cxx
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/utf8_test.Tpo $(DEPDIR)/utf8_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/utf8_test.cxx' object='utf8_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o utf8_test.o `test -f 'test/utf8_test.cxx' || echo '$(srcdir)/'`test/utf8_test.cxx
+
+utf8_test.obj: test/utf8_test.cxx
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT utf8_test.obj -MD -MP -MF $(DEPDIR)/utf8_test.Tpo -c -o utf8_test.obj `if test -f 'test/utf8_test.cxx'; then $(CYGPATH_W) 'test/utf8_test.cxx'; else $(CYGPATH_W) '$(srcdir)/test/utf8_test.cxx'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/utf8_test.Tpo $(DEPDIR)/utf8_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/utf8_test.cxx' object='utf8_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o utf8_test.obj `if test -f 'test/utf8_test.cxx'; then $(CYGPATH_W) 'test/utf8_test.cxx'; else $(CYGPATH_W) '$(srcdir)/test/utf8_test.cxx'; fi`
+
 word_aff_train.o: source/tools/word_aff_train.cxx
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT word_aff_train.o -MD -MP -MF $(DEPDIR)/word_aff_train.Tpo -c -o word_aff_train.o `test -f 'source/tools/word_aff_train.cxx' || echo '$(srcdir)/'`source/tools/word_aff_train.cxx
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/word_aff_train.Tpo $(DEPDIR)/word_aff_train.Po
@@ -1245,6 +1282,98 @@ GTAGS:
 
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
+
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list=' $(TESTS) '; \
+	$(am__tty_colors); \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *[\ \	]$$tst[\ \	]*) \
+		xpass=`expr $$xpass + 1`; \
+		failed=`expr $$failed + 1`; \
+		col=$$red; res=XPASS; \
+	      ;; \
+	      *) \
+		col=$$grn; res=PASS; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *[\ \	]$$tst[\ \	]*) \
+		xfail=`expr $$xfail + 1`; \
+		col=$$lgn; res=XFAIL; \
+	      ;; \
+	      *) \
+		failed=`expr $$failed + 1`; \
+		col=$$red; res=FAIL; \
+	      ;; \
+	      esac; \
+	    else \
+	      skip=`expr $$skip + 1`; \
+	      col=$$blu; res=SKIP; \
+	    fi; \
+	    echo "$${col}$$res$${std}: $$tst"; \
+	  done; \
+	  if test "$$all" -eq 1; then \
+	    tests="test"; \
+	    All=""; \
+	  else \
+	    tests="tests"; \
+	    All="All "; \
+	  fi; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="$$All$$all $$tests passed"; \
+	    else \
+	      if test "$$xfail" -eq 1; then failures=failure; else failures=failures; fi; \
+	      banner="$$All$$all $$tests behaved as expected ($$xfail expected $$failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all $$tests failed"; \
+	    else \
+	      if test "$$xpass" -eq 1; then passes=pass; else passes=passes; fi; \
+	      banner="$$failed of $$all $$tests did not behave as expected ($$xpass unexpected $$passes)"; \
+	    fi; \
+	  fi; \
+	  dashes="$$banner"; \
+	  skipped=""; \
+	  if test "$$skip" -ne 0; then \
+	    if test "$$skip" -eq 1; then \
+	      skipped="($$skip test was not run)"; \
+	    else \
+	      skipped="($$skip tests were not run)"; \
+	    fi; \
+	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$skipped"; \
+	  fi; \
+	  report=""; \
+	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
+	    report="Please report to $(PACKAGE_BUGREPORT)"; \
+	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$report"; \
+	  fi; \
+	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+	  if test "$$failed" -eq 0; then \
+	    echo "$$grn$$dashes"; \
+	  else \
+	    echo "$$red$$dashes"; \
+	  fi; \
+	  echo "$$banner"; \
+	  test -z "$$skipped" || echo "$$skipped"; \
+	  test -z "$$report" || echo "$$report"; \
+	  echo "$$dashes$$std"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
 
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
@@ -1397,6 +1526,7 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(DATA) \
 		$(HEADERS)
@@ -1434,7 +1564,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool mostlyclean-am
+	clean-libtool clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -1508,28 +1638,28 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
 	uninstall-libLTLIBRARIES uninstall-nobase_rootDATA \
 	uninstall-pkgincludeHEADERS
 
-.MAKE: install-am install-strip
+.MAKE: check-am install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am am--refresh check check-am clean \
-	clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool ctags dist dist-all dist-bzip2 dist-gzip \
-	dist-hook dist-lzma dist-shar dist-tarZ dist-xz dist-zip \
-	distcheck distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-binSCRIPTS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-nobase_rootDATA install-pdf install-pdf-am \
-	install-pkgincludeHEADERS install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-binSCRIPTS \
-	uninstall-libLTLIBRARIES uninstall-nobase_rootDATA \
-	uninstall-pkgincludeHEADERS
+.PHONY: CTAGS GTAGS all all-am am--refresh check check-TESTS check-am \
+	clean clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool clean-noinstPROGRAMS ctags dist dist-all \
+	dist-bzip2 dist-gzip dist-hook dist-lzma dist-shar dist-tarZ \
+	dist-xz dist-zip distcheck distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags \
+	distcleancheck distdir distuninstallcheck dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-binSCRIPTS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-nobase_rootDATA \
+	install-pdf install-pdf-am install-pkgincludeHEADERS \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-binSCRIPTS uninstall-libLTLIBRARIES \
+	uninstall-nobase_rootDATA uninstall-pkgincludeHEADERS
 
 
 dist-hook:

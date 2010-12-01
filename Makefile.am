@@ -166,3 +166,9 @@ word_aff_train_LDADD = libbamboo.la
 
 word_train_SOURCES = source/tools/word_train.cxx
 word_train_LDADD = libbamboo.la
+
+noinst_PROGRAMS = utf8_test
+utf8_test_SOURCES = test/utf8_test.cxx
+utf8_test_LDADD = libbamboo.la
+
+TESTS = utf8_test
