@@ -13,6 +13,7 @@ break="$data_dir/break.txt"
 ke_filter_dict="$data_dir/ke_filter.txt"
 
 corpus_url="http://nlpbamboo.googlecode.com/files/people-daily-bamboo-edition.txt.gz" 
+crf_seg_text_model_url="http://nlpbamboo.googlecode.com/files/crf_seg.model.txt.gz"
 number_trailing_url="http://nlpbamboo.googlecode.com/files/number_trailing.txt"
 
 ns_suffix="${data_dir}/ns_suffix.txt"
