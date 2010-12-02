@@ -1,8 +1,4 @@
-#include <iostream>
-#include <string>
-#include <cstddef>
 #include "utf8.hxx"
-using namespace std;
 using namespace bamboo;
 
 bool test_dbc2sbc() {
@@ -11,17 +7,21 @@ bool test_dbc2sbc() {
 
 	char uch[8];
     size_t step;
-	for (const char *dbc_ptr = dbcs, *sbc_ptr = sbcs; ; dbc_ptr += step, ++sbc_ptr) {
+    const char *dbc_ptr = dbcs, *sbc_ptr = sbcs;
+	for (; *dbc_ptr && *sbc_ptr; dbc_ptr += step, ++sbc_ptr) {
 		step = utf8::first(dbc_ptr, uch);
 		char cch = utf8::dbc2sbc(uch, step);
         if (cch != *sbc_ptr) {
             return false;
         }
     }
-    return true;
+    if (*dbc_ptr || *sbc_ptr) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 int main(int argc, char **argv) {
-    bool dbc2sbc_test_passed = test_dbc2sbc();
-    return dbc2sbc_test_passed ? EXIT_SUCCESS : EXIT_FAILURE;
+    return test_dbc2sbc() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
