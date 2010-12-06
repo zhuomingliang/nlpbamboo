@@ -58,52 +58,54 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		PS_PUNCT,
 		PS_WHITESPACE,
 		PS_IDENT,
-		PS_END
-	} state, parent;
+        PS_BEGIN,   // sentinel state before first char
+		PS_END,     // sentinel state after last char
+	} state, last_state;
 
 	struct {
 		char *base;
 		char *top;
-	} sbc, dbc;
+	} dbc, sbc;
 
 	s = token->get_token();
-	sbc.base = new char [token->get_bytes() + 1];
-	sbc.top = sbc.base;
 	dbc.base = new char [token->get_bytes() + 1];
 	dbc.top = dbc.base;
+	sbc.base = new char [token->get_bytes() + 1];
+	sbc.top = sbc.base;
 
-	for (cch = '\0', state = PS_UNKNOW; ; s += step, cch = '\0') {
+    //bool first_token = true;
+	for (last_state = PS_BEGIN; ; s += step) {
 		step = utf8::first(s, uch);
 		cch = utf8::dbc2sbc(uch, step);
-		parent = state;
 
 #define isconcat(c) ((c) == '-' || (c) == '_')
 
 		/* state transitions */
 		if (isalpha(cch)) state = PS_ALPHA;
-		else if (cch == '.' && state == PS_NUMBER) state = PS_NUMBER;
+		else if (cch == '.' && last_state == PS_NUMBER) state = PS_NUMBER;
 		else if (isdigit(cch)) state = PS_NUMBER;
 		else if (_concat && isconcat(cch)) state = PS_IDENT;
 		else if (ispunct(cch)) state = PS_PUNCT;
 		else if (isspace(cch)) state = PS_WHITESPACE;
 		else if (*uch == '\0') state = PS_END;
 		else state = PS_UNKNOW;
-
 		
-		if ((parent == PS_ALPHA || parent == PS_NUMBER)
+		if (state != last_state
+            && (last_state == PS_ALPHA || last_state == PS_NUMBER)
 			&& (state == PS_ALPHA || state == PS_NUMBER || state == PS_IDENT)
-			&& state != parent) {
-			parent = state = PS_IDENT;
-		} else if (parent == PS_IDENT && (state == PS_ALPHA || state == PS_NUMBER || state == PS_IDENT))
+		) {
+			last_state = state = PS_IDENT;
+		} else if (last_state == PS_IDENT && (state == PS_ALPHA || state == PS_NUMBER)) {
 			state = PS_IDENT;
+        }
 
-		if (state != parent || ( _characterize && state == PS_UNKNOW) 
+		if (state != last_state || ( _characterize && state == PS_UNKNOW) 
 		   || state == PS_PUNCT)
 		{
-			if (parent == PS_WHITESPACE)
-				*(sbc.top++) = ' ';
-			if (sbc.top > sbc.base) {
-				switch (parent) {
+			if (last_state == PS_WHITESPACE)
+				*(dbc.top++) = ' ';
+			if (dbc.top > dbc.base) {
+				switch (last_state) {
 					case PS_IDENT: /* no break here */
 					case PS_ALPHA: attr = TokenImpl::attr_alpha; break;
 					case PS_NUMBER: attr = TokenImpl::attr_number; break;
@@ -111,33 +113,32 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 					case PS_PUNCT: attr = TokenImpl::attr_punct; break;
 					default: attr = TokenImpl::attr_unknow; break;
 				}
-				*(sbc.top) = '\0';
 				*(dbc.top) = '\0';
-				if (dbc.top > dbc.base)
-					out.push_back(new TokenImpl(dbc.base, sbc.base, attr));
+				*(sbc.top) = '\0';
+				if (sbc.top > sbc.base)
+					out.push_back(new TokenImpl(sbc.base, dbc.base, attr));
 				else
-					out.push_back(new TokenImpl(sbc.base, attr));
-				sbc.top = sbc.base;
+					out.push_back(new TokenImpl(dbc.base, attr));
 				dbc.top = dbc.base;
+				sbc.top = sbc.base;
 			}
 			if (state == PS_END) break;
 		}
 
 		if (state != PS_WHITESPACE) {
-			strcpy(sbc.top, uch);
-			sbc.top += step;
-			if (sbc.top >= sbc.base + MAX_TOKEN_BUFFER)
+			strcpy(dbc.top, uch);
+			dbc.top += step;
+			if (dbc.top >= dbc.base + MAX_TOKEN_BUFFER)
 				state = PS_UNKNOW;
 			if (cch) {
-				*(dbc.top++) = cch;
-				if (dbc.top > dbc.base + MAX_TOKEN_BUFFER)
-					state = PS_UNKNOW;
+				*(sbc.top++) = cch;
 			}
 		}
+        last_state = state;
 	}
 #undef isconcat	
-	delete []sbc.base;
 	delete []dbc.base;
+	delete []sbc.base;
 }
 
 
