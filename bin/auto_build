@@ -44,9 +44,9 @@ function train_seg() {
 			echo "crf_learn not found"
 			exit
 		fi
-		wget -O "crf_seg.model.txt.gz" "$crf_seg_text_model_url" || exit 1
-        gunzip "crf_seg.model.txt.gz" || exit 1
-        crf_learn -C crf_seg.model.txt ${index_dir}/crf_seg.model || exit 1
+		wget -O - $crf_seg_text_model_url | gzip -cd > ${build_dir}/crf_seg.model.txt
+		[ "$?" != "0" ] && exit 1 
+        crf_learn -C ${build_dir}/crf_seg.model.txt ${index_dir}/crf_seg.model || exit 1
         ;;
 		*) ;;
 	esac
@@ -143,19 +143,9 @@ if [ -z ${thread_num} ];then
 	thread_num=1
 fi
 
-top=$(dirname $(readlink -f $0))
-echo "$top/../../etc/build_settings"
-if [ -r "$top/../../etc/build_settings" ];
-then
-	source $top/../../etc/build_settings
-	echo "hello"
-	echo "$data_dir"
-elif [ -r "/usr/local/etc/bamboo/build_settings" ];
-then
-	source /usr/local/etc/bamboo/build_settings
-fi
+top="$(dirname $(readlink -f $0))/.."
+source $top/etc/build_settings
 
-echo "data_dir: $data_dir; build_dir: $build_dir; index_dir: $index_dir"
 mkdir -p $data_dir $build_dir $index_dir
 
 if [ -z ${corpus_file} ]; then
@@ -165,9 +155,6 @@ if [ -z ${corpus_file} ]; then
 		[ "$?" != "0" ] && exit 1 
 	fi
 fi
-
-cp $top/../../source/tools/pdc_normalize $top/../../lib/
-cp $top/../../source/tools/ngm_tool $top/../../lib/
 
 if [ ${train_type} == "seg" ];
 then
