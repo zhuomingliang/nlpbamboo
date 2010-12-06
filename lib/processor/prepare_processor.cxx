@@ -73,7 +73,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 	sbc.base = new char [token->get_bytes() + 1];
 	sbc.top = sbc.base;
 
-    //bool first_token = true;
+    bool first_token = true;
 	for (last_state = PS_BEGIN; ; s += step) {
 		step = utf8::first(s, uch);
 		cch = utf8::dbc2sbc(uch, step);
@@ -102,7 +102,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		if (state != last_state || ( _characterize && state == PS_UNKNOW) 
 		   || state == PS_PUNCT)
 		{
-			if (last_state == PS_WHITESPACE)
+			if (last_state == PS_WHITESPACE && !first_token)
 				*(dbc.top++) = ' ';
 			if (dbc.top > dbc.base) {
 				switch (last_state) {
@@ -119,6 +119,9 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 					out.push_back(new TokenImpl(sbc.base, dbc.base, attr));
 				else
 					out.push_back(new TokenImpl(dbc.base, attr));
+                if (first_token) {
+                    first_token = false;
+                }
 				dbc.top = dbc.base;
 				sbc.top = sbc.base;
 			}
