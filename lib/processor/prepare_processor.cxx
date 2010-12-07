@@ -73,8 +73,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 	sbc.base = new char [token->get_bytes() + 1];
 	sbc.top = sbc.base;
 
-    bool first_token = true;
-	for (last_state = PS_BEGIN; ; s += step) {
+    	for (last_state = PS_BEGIN; ; s += step) {
 		step = utf8::first(s, uch);
 		cch = utf8::dbc2sbc(uch, step);
 
@@ -100,10 +99,8 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
         }
 
 		if (state != last_state || ( _characterize && state == PS_UNKNOW) 
-		   || state == PS_PUNCT)
+		   || state == PS_PUNCT || state == PS_WHITESPACE)
 		{
-			if (last_state == PS_WHITESPACE && !first_token)
-				*(dbc.top++) = ' ';
 			if (dbc.top > dbc.base) {
 				switch (last_state) {
 					case PS_IDENT: /* no break here */
@@ -119,24 +116,20 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 					out.push_back(new TokenImpl(sbc.base, dbc.base, attr));
 				else
 					out.push_back(new TokenImpl(dbc.base, attr));
-                if (first_token) {
-                    first_token = false;
-                }
+                
 				dbc.top = dbc.base;
 				sbc.top = sbc.base;
 			}
 			if (state == PS_END) break;
 		}
 
-		if (state != PS_WHITESPACE) {
-			strcpy(dbc.top, uch);
-			dbc.top += step;
-			if (dbc.top >= dbc.base + MAX_TOKEN_BUFFER)
-				state = PS_UNKNOW;
-			if (cch) {
-				*(sbc.top++) = cch;
-			}
-		}
+        strcpy(dbc.top, uch);
+        dbc.top += step;
+        if (dbc.top >= dbc.base + MAX_TOKEN_BUFFER)
+            state = PS_UNKNOW;
+        if (cch) {
+            *(sbc.top++) = cch;
+        }
         last_state = state;
 	}
 #undef isconcat	

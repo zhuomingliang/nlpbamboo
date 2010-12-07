@@ -52,6 +52,7 @@ public:
 		attr_alpha,
 		attr_cword,
 		attr_punct,
+        attr_whitespace,
 	};
 	TokenImpl()
 		:_orig_token(NULL), _token(NULL), _attr(attr_unknow), _length(0), 
