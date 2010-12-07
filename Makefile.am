@@ -23,6 +23,6 @@ BUILD_DIRS = etc template exts
 all-local:
 	if [ $(top_srcdir) != $(top_builddir) ]; then \
 		for subdir in $(BUILD_DIRS); do \
-		  cp -rpu $(top_srcdir)/$$subdir $(top_builddir); \
+		  rsync -avC $(top_srcdir)/$$subdir $(top_builddir); \
 		done \
 	fi
