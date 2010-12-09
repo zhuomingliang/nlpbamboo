@@ -30,9 +30,9 @@
 use strict;
 use Data::Dumper;
 use Getopt::Std;
-use utf8;
-use Encode qw/encode decode/;
 use vars '$opt_l', '$opt_v','$opt_v', '$opt_h';
+
+binmode STDOUT, ":utf8";
 
 ################################################################################
 #
@@ -53,16 +53,16 @@ sub normalize
 	my $file = shift @_;
 	my $long = shift @_;
 	my $count = 0;
-	open FH, "<$file" or die "can not open $file";
+	open FH, "<:utf8", $file or die "can not open $file";
 	print STDERR "Normalizing $file: \n" if ($opt_v);
 	while (<FH>) {
+        s/\x{3000}/x{0020}/g; # remove Chinese space char
 		s/^\s+|\s+$//g;
-		$_ = decode('UTF-8', $_);
 		(undef, $_) = split(/\s+/, $_, 2);
 		s/\/\w+//g; # remove attr
 		s/\[|\]\w+//g if (!$long); # remove combined word
 		s/\[([^]]+)\]\w+/sprintf("%s", collapse($1))/seg if ($long);
-		print encode('UTF-8', "$_\n");
+		print "$_\n";
 		$count++;
 		print STDERR "\r\t\t$count items processed." if ($opt_v && $count % 500 == 0);
 	}
