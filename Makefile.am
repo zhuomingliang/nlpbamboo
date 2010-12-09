@@ -4,7 +4,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIRS = doc lib test etc template exts
 
-doc_DATA = README ChangeLog AUTHORS COPYING INSTALL
+docdir = $(prefix)/share/doc/@PACKAGE@
+doc_DATA = README AUTHORS COPYING INSTALL ChangeLog
 
 dist-hook:
 	for subdir in $(EXTRA_DIRS); do \
@@ -22,7 +23,8 @@ BUILD_DIRS = etc template exts
 
 all-local:
 	if [ $(top_srcdir) != $(top_builddir) ]; then \
+		rsync -avC $(top_srcdir)/bin $(top_builddir); \
 		for subdir in $(BUILD_DIRS); do \
-		  rsync -avC $(top_srcdir)/$$subdir $(top_builddir); \
+		  rsync -avC --delete $(top_srcdir)/$$subdir $(top_builddir); \
 		done \
 	fi

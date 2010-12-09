@@ -231,7 +231,7 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = @docdir@
+docdir = $(prefix)/share/doc/@PACKAGE@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -266,7 +266,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = lib bin
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIRS = doc lib test etc template exts
-doc_DATA = README ChangeLog AUTHORS COPYING INSTALL
+doc_DATA = README AUTHORS COPYING INSTALL ChangeLog
 utf8_test_SOURCES = test/utf8_test.cxx
 utf8_test_LDADD = lib/libbamboo.la
 BUILD_DIRS = etc template exts 
@@ -937,8 +937,9 @@ dist-hook:
 
 all-local:
 	if [ $(top_srcdir) != $(top_builddir) ]; then \
+		rsync -avC $(top_srcdir)/bin $(top_builddir); \
 		for subdir in $(BUILD_DIRS); do \
-		  cp -rpu $(top_srcdir)/$$subdir $(top_builddir); \
+		  rsync -avC --delete $(top_srcdir)/$$subdir $(top_builddir); \
 		done \
 	fi
 
