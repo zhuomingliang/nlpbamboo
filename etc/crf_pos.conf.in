@@ -1,8 +1,9 @@
 # common:
-root = /opt/bamboo
-max_token_length = 8
+root = @BAMBOO_ROOT@
 verbose = 1
-unigram_lexicon = $root/index/unigram.idx
+
+crf_pos_model = $root/index/crf_pos.model
+crf_seg_model = $root/index/crf_seg.model
 maxforward_combination_lexicon = $root/index/user_combine.idx
 number_trailing_lexicon = $root/index/number_trailing.idx
 single_combination_lexicon = $root/index/user_combine.idx

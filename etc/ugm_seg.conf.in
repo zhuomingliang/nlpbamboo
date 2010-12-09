@@ -1,5 +1,5 @@
 # common:
-root = /opt/bamboo
+root = @BAMBOO_ROOT@
 max_token_length = 8
 verbose = 1
 unigram_lexicon = $root/index/unigram.idx

@@ -1,5 +1,5 @@
 # common:
-root = /opt/bamboo
+root = @BAMBOO_ROOT@
 max_token_length = 8
 verbose = 1
 
@@ -8,5 +8,4 @@ ner_output_type = 0
 
 # models and lexicons
 crf_seg_model = $root/index/crf_seg.model
-crf_ner_ns_model = $root/index/crf_ner_ns.model
-crf_ner_ns_suffix = $root/index/ns_suffix.idx
+crf_ner_nt_model = $root/index/crf_ner_nt.model
