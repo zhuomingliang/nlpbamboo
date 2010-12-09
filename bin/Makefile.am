@@ -2,11 +2,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib/include -I$(top_srcdir)/lib/common -I$(top_src
 
 LDADD = ../lib/libbamboo.la
 
-bin_SCRIPTS = auto_build
-
-bin_PROGRAMS = bamboo
-bamboo_SOURCES = bamboo.cxx
-
 noinst_PROGRAMS = \
 			   bamboo\
 			   config\
