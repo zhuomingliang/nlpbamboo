@@ -7,19 +7,19 @@ function train_seg() {
 	fi
 
 	[ ! -f "$user_combine" ] && touch $user_combine
-	[ ! -f "$break" ] && touch $break
+	[ ! -f "$user_break" ] && touch $user_break
 
 	# Build Lexicon
 	cat $user_combine | sed -e 's/^/1 /g' > ${build_dir}/user_combine.txt || exit 1
 	cat $number_trailing | sed -e 's/^/1 /g' > ${build_dir}/number_trailing.txt || exit 1
-	cat $break | sed -e 's/^/1 /g' > ${build_dir}/break.txt || exit 1
+	cat $user_break | sed -e 's/^/1 /g' > ${build_dir}/user_break.txt || exit 1
 
 	$bin/pdc_normalize -v ${corpus_file} > ${build_dir}/normalized.txt || exit 1
 	$bin/ngm_tool -n1 -v ${build_dir}/normalized.txt > ${build_dir}/unigram.txt || exit 1
 	$bin/lexicon -v -b -i ${index_dir}/unigram.idx -s ${build_dir}/unigram.txt || exit 1
 	$bin/lexicon -v -b -i ${index_dir}/user_combine.idx -s ${build_dir}/user_combine.txt || exit 1
 	$bin/lexicon -v -b -i ${index_dir}/number_trailing.idx -s ${build_dir}/number_trailing.txt || exit 1
-	$bin/lexicon -v -b -i ${index_dir}/break.idx -s ${build_dir}/break.txt || exit 1
+	$bin/lexicon -v -b -i ${index_dir}/break.idx -s ${build_dir}/user_break.txt || exit 1
 
 
 	# Train CRF
@@ -144,7 +144,7 @@ if [ -z ${thread_num} ];then
 fi
 
 top="$(dirname $(readlink -f $0))/.."
-source $top/etc/build_settings
+source auto_build_settings
 
 mkdir -p $data_dir $build_dir $index_dir
 
