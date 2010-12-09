@@ -21,7 +21,10 @@ TESTS = utf8_test
 
 BUILD_DIRS = etc template exts 
 
-all-local:
+all-local: copy_build_dirs etc_config_files
+
+.PHONY: copy_build_dirs
+copy_build_dirs:
 	if [ $(top_srcdir) != $(top_builddir) ]; then \
 		rsync -avC $(top_srcdir)/bin $(top_builddir); \
 		for subdir in $(BUILD_DIRS); do \
@@ -29,5 +32,8 @@ all-local:
 		done \
 	fi
 
-etc/%: etc/%.in
-	sed -e 's,@BAMBOO_ROOT@,$(top_builddir),g' < $@ > $^
+.PHONY: etc_config_files
+etc_config_files: $(top_builddir)/etc/bamboo.cfg $(top_builddir)/etc/crf_ner_np.conf $(top_builddir)/etc/crf_ner_nr.conf $(top_builddir)/etc/crf_ner_ns.conf $(top_builddir)/etc/crf_ner_nt.conf $(top_builddir)/etc/crf_pos.conf $(top_builddir)/etc/crf_seg.conf $(top_builddir)/etc/keyword.conf $(top_builddir)/etc/mfm_seg.conf $(top_builddir)/etc/ugm_seg.conf
+
+%: %.in
+	sed -e 's,@BAMBOO_ROOT@,$(abs_top_builddir),g' < $^ > $@
