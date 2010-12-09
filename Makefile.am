@@ -28,3 +28,6 @@ all-local:
 		  rsync -avC --delete $(top_srcdir)/$$subdir $(top_builddir); \
 		done \
 	fi
+
+etc/%: etc/%.in
+	sed -e 's,@BAMBOO_ROOT@,$(top_builddir),g' < $@ > $^
