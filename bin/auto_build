@@ -144,7 +144,7 @@ if [ -z ${thread_num} ];then
 fi
 
 top="$(dirname $(readlink -f $0))/.."
-source auto_build_settings
+source $top/bin/auto_build_settings
 
 mkdir -p $data_dir $build_dir $index_dir
 
