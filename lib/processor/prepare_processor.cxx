@@ -84,7 +84,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		else if (cch == '.' && last_state == PS_NUMBER) state = PS_NUMBER;
 		else if (isdigit(cch)) state = PS_NUMBER;
 		else if (_concat && isconcat(cch)) state = PS_IDENT;
-		else if (ispunct(cch)) state = PS_PUNCT;
+		else if ( ispunct(cch) || !strcmp(uch, '。') || !strcmp(uch, '、') || !strcmp(uch, '《') || !strcmp(uch, '》') || !strcmp(uch, '•') ) state = PS_PUNCT;
 		else if (isspace(cch)) state = PS_WHITESPACE;
 		else if (*uch == '\0') state = PS_END;
 		else state = PS_UNKNOW;
@@ -106,7 +106,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 					case PS_IDENT: /* no break here */
 					case PS_ALPHA: attr = TokenImpl::attr_alpha; break;
 					case PS_NUMBER: attr = TokenImpl::attr_number; break;
-					case PS_WHITESPACE: /* no break here */
+					case PS_WHITESPACE: attr = TokenImpl::attr_whitespace; break;
 					case PS_PUNCT: attr = TokenImpl::attr_punct; break;
 					default: attr = TokenImpl::attr_unknow; break;
 				}

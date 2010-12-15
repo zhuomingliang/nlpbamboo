@@ -107,7 +107,9 @@ void CRFSegProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImp
 
 			out.push_back(cur_tok);
 			continue;
-		} else if (cur_tok->get_attr() != TokenImpl::attr_whitespace) {
+		} 
+		bool append = cur_tok->get_attr() != TokenImpl::attr_whitespace;
+		if (append) {
 			const char *data[] = {tok_str, _get_crf2_tag(cur_tok->get_attr())};
 			_tagger->add(2, data);
 		}
@@ -117,7 +119,7 @@ void CRFSegProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImp
                 || *tok_str=='?' 
                 || *tok_str==';' 
                 || !strcmp(tok_str, "。")) {
-			offset = i - _tagger->size() + 1;
+			offset = i - _tagger->size() + ( append ? 1 : 0 );
 			_crf2_tagger(in, offset, out);
 			_tagger->clear();
 		}
