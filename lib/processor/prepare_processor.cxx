@@ -84,7 +84,7 @@ void PrepareProcessor::_process(TokenImpl *token, std::vector<TokenImpl *> &out)
 		else if (cch == '.' && last_state == PS_NUMBER) state = PS_NUMBER;
 		else if (isdigit(cch)) state = PS_NUMBER;
 		else if (_concat && isconcat(cch)) state = PS_IDENT;
-		else if ( ispunct(cch) || !strcmp(uch, '。') || !strcmp(uch, '、') || !strcmp(uch, '《') || !strcmp(uch, '》') || !strcmp(uch, '•') ) state = PS_PUNCT;
+		else if ( ispunct(cch) || !strcmp(uch, "。") || !strcmp(uch, "、") || !strcmp(uch, "《") || !strcmp(uch, "》") || !strcmp(uch, "•") ) state = PS_PUNCT;
 		else if (isspace(cch)) state = PS_WHITESPACE;
 		else if (*uch == '\0') state = PS_END;
 		else state = PS_UNKNOW;
