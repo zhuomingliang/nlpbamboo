@@ -8,27 +8,13 @@
 #include "simple_config.hxx"
 #include "token_impl.hxx"
 #include "processor_factory.hxx"
+#include "prepare_processor.hxx"
 
 using namespace std;
 using namespace bamboo;
 
 void print_usage() {
     cout << "crf2_tool -i input_file -o output_file" << endl;
-}
-
-const char *get_crf2_tag(int attr) {
-    switch(attr) {
-    case TokenImpl::attr_number:
-        return "ASCII";
-    case TokenImpl::attr_alpha:
-        return "ASCII";
-    case TokenImpl::attr_punct:
-        return "PUNC";
-    case TokenImpl::attr_cword:
-        return "CN";
-    default:
-        return "CN";
-    }
 }
 
 int main(int argc, char **argv) {
@@ -105,7 +91,7 @@ int main(int argc, char **argv) {
                    last_tag = tag; 
                     const char *word = out[pos]->get_token();
                     int attr = out[pos]->get_attr();
-                    const char *type = get_crf2_tag(attr);
+                    const char *type = PrepareProcessor::get_crf2_tag(attr);
                     ofs << word << " " << type << " " << tag << endl;
 		    if (!has_output) {
 			has_output = true;

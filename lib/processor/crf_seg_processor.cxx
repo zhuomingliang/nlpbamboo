@@ -29,6 +29,7 @@
 #include "lexicon_factory.hxx"
 #include "crf_seg_processor.hxx"
 #include "utf8.hxx"
+#include "prepare_processor.hxx"
 #include <cassert>
 #include <cstdio>
 #include <stdexcept>
@@ -74,20 +75,6 @@ CRFSegProcessor::~CRFSegProcessor()
 	delete _tagger;
 }
 
-inline const char *CRFSegProcessor::_get_crf2_tag(int attr) {
-	switch(attr) {
-	case TokenImpl::attr_number:
-	case TokenImpl::attr_alpha:
-		return "ASCII";
-	case TokenImpl::attr_punct:
-		return "PUNC";
-	case TokenImpl::attr_cword:
-		return "CN";
-	default:
-		return "CN";
-	}
-}
-
 void CRFSegProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImpl *> &out) {
 	size_t i, offset, size = in.size();
 
@@ -110,7 +97,7 @@ void CRFSegProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImp
 		} 
 		bool append = cur_tok->get_attr() != TokenImpl::attr_whitespace;
 		if (append) {
-			const char *data[] = {tok_str, _get_crf2_tag(cur_tok->get_attr())};
+			const char *data[] = {tok_str, PrepareProcessor::get_crf2_tag(cur_tok->get_attr())};
 			_tagger->add(2, data);
 		}
 

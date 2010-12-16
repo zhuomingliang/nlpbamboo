@@ -52,6 +52,19 @@ protected:
 public:
 	PrepareProcessor(IConfig *config);
 	~PrepareProcessor() {};
+	static const char *get_crf2_tag(int attr) {
+		switch(attr) {
+		case TokenImpl::attr_number:
+		case TokenImpl::attr_alpha:
+			return "ASCII";
+		case TokenImpl::attr_punct:
+			return "PUNC";
+		case TokenImpl::attr_cword:
+			return "CN";
+		default:
+			return "CN";
+		}
+	}
 };
 
 } //namespace bamboo
