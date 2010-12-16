@@ -116,25 +116,42 @@ void CRFSegProcessor::_crf2_tagger(std::vector<TokenImpl *> &in, size_t offset, 
 	_result.clear();
 	_result_orig.clear();
 
+	int attr;
 	for (size_t i = 0; i < _tagger->size(); ++i) {
 		TokenImpl *cur_tok = in[offset+i];
 		const char * tag = _tagger->y2(i);
-		if(_output_type==1) {
+		if (_output_type == 1) {
 			cur_tok->set_pos(tag);
 			out.push_back(cur_tok);
 		} else {
+			attr = cur_tok->get_attr();
+			switch (attr) {
+			case TokenImpl::attr_unknow:
+				attr = TokenImpl::attr_cword;
+				break;
+			case TokenImpl::attr_alpha:
+			case TokenImpl::attr_number:
+			case TokenImpl::attr_punct:
+				tag = "S";
+				break;
+			}
+			if (*tag == 'S' && _result_orig.size() > 0) {
+				out.push_back(new TokenImpl(_result.c_str(), _result_orig.c_str(), attr));
+				_result.clear();
+				_result_orig.clear();
+			}
 			_result.append(_tagger->x(i, 0));
 			_result_orig.append(cur_tok->get_orig_token());
-			int attr = cur_tok->get_attr();
-			if(attr==TokenImpl::attr_unknow) attr = TokenImpl::attr_cword;
-			if(attr==TokenImpl::attr_alpha || attr==TokenImpl::attr_number || attr==TokenImpl::attr_punct)	tag = "S";
-			if (*tag=='S' || *tag=='E') {
+			if (*tag == 'S' || *tag == 'E') {
 				out.push_back(new TokenImpl(_result.c_str(), _result_orig.c_str(), attr));
 				_result.clear();
 				_result_orig.clear();
 			}
 			delete cur_tok;
 		}
+	}
+	if (_result_orig.size() > 0) {
+		out.push_back(new TokenImpl(_result.c_str(), _result_orig.c_str(), attr));
 	}
 
 #ifdef DEBUG
