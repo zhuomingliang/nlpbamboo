@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="JCRFPP" default="compile" basedir=".">
+	<property file="build.properties" />
+	<property name="project.name" value="JCRFPP" />
+	<property name="project.version" value="1.0" />
+
+	<property name="src.dir" value="src" />
+	<property name="lib.dir" value="lib" />
+		
+	<property name="build.dir" value="build" />
+	
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="dist.dir" value="${build.dir}/dist" />
+
+	<path id="project.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- Clean up -->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<!-- Compile Java source -->
+	<target name="compile">
+		<delete dir="${classes.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" nowarn="on">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<delete dir="${dist.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${project.name}-${project.version}.jar" basedir="${classes.dir}" />
+	</target>
+	
+	<target name="learn" depends="compile">
+		<java classname="com.qunar.nlp.segment.Pdc2CrfppTrain" failonerror="true" fork="true">
+			<arg value="${raw_repository_path}" />
+			<arg value="${normalized_repository_path}" />
+			<arg value="${raw_repository_charset}" />
+			<arg value="${normalized_repository_charset}" />
+			<classpath refid="project.classpath" />
+		</java>
+		<exec executable="${crf_learn_path}">
+			<arg value="-t" />
+			<arg value="-p" />
+			<arg value="${crf_learn_thread_num}" />
+			<arg value="-C" />
+			<arg value="${crf_learn_cost}" />
+			<arg value="-f" />
+			<arg value="${crf_learn_freq}" />
+			<arg value="${crf_template_file}" />
+			<arg value="${normalized_repository_path}" /> 
+			<arg value="${crfpp_text_model_path}" />
+		</exec>
+	</target>
+</project>

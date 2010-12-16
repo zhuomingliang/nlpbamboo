@@ -1,0 +1,49 @@
+Q & A
+
+Q: 使用JCRFPP需要什么样的先决条件？
+A: JCRFPP不使用Bamboo，但它与Bamboo相同，依赖于CRF++的安装，但它实际上只依赖于CRF++的可执行程序crf_learn，除此之外，它没有任何其他的依赖关系。
+
+Q: JCRFPP是如何使用CRF++的？
+A: JCRFPP分词的核心依然是利用CRF++的crf_learn的结果，但它用Java语言重写了CRF++的Decoder部分，即利用CRF++的训练结果--语料模型的过程，这部分逻辑见：com.qunar.nlp.crf这个package。在CRF++的训练数据集上测试的结果与CRF++的完全一致。
+
+Q: JCRFPP是如何利用CRF++的crf_learn的？
+A： CRF++的crf_learn的训练结果是二进制格式文件，很难被跨平台的Java程序直接利用，但crf_learn提供了一个"-t"选项，它可以在得到二进制格式模型的同时得到文本格式的模型，这个文本格式的模型将作为JCRFPP的惟一输入。文本格式的模型文件的文件名是在二进制模型文件名的末尾加上“.txt"后缀。
+
+Q: JCRFPP用什么数据结构保存语料模型的内部参数？
+A: CRF++和Bamboo是利用基于double array实现的trie（见：http://linux.thai.net/~thep/datrie/datrie.html）来保存模型参数的，JCRFPP现在是用Trove（http://trove.starlight-systems.com/）来存储的，它很好地完成了我们的任务，无论速度还是内存占用都相当出色。
+
+Q：JCRFPP的具体使用过程是怎么样的？
+A: 和Bamboo一样，先要经过对人工标注语料的CRF训练过程，然后利用训练得到的模型进行分词。具体来说：
+    1）利用根目录的build.xml里提供的learn任务得到文本格式的CRF模型，具体来说：
+        a）在根目录的build.properties配置文件中配置各种参数，包括：
+            crf_learn_path: 这是CRF++的crf_learn可执行文件的路径，如果安装过CRF++，直接配置crf_learn即可；
+            raw_repository_file: 这是人工标注的《人民日报》格式的原始语料文件的路径；
+            normalized_repository_file: 这是对原始语料文件进行规范化处理后的结果文件路径；
+            crf_template_file: 这是CRF++训练时的模板文件；
+            crfpp_model_file: 这是crf_learn训练后得到的二进制模型文件路径；
+        b）在命令行执行：ant learn即可，生成的文本格式CRF模型文件在与上面配置的crfpp_model_file同一目录下，文件名是二进制模型文件名的末尾加上'.txt'。
+    2）利用步骤1得到的分词模型进行分词，具体来说：
+        a) 根据config/config.properties.sample编辑自己的配置文件，特别包括：
+            text_model_filename： 步骤1中训练得到的文本格式CRF模型文件的路径；
+            text_model_file_charset: text_model_filename的字符编码，默认UTF-8；
+            text_model_is_gzipped: text_model_filename是否是gzip压缩，默认为true；
+            use_combine: 是否利用combine步骤进行分词后处理，默认为true；只有在本选项为true时下面两个词典选项才有意义；
+            combine_lexicon_filename: 用户自定义的combine词典文件路径；
+            number_trailing_lexicon_filename: 常见量词词典文件路径。
+        b) 参照如下代码片断使用com.qunar.nlp.BambooChineseSegmentor进行实际的分词：
+        
+            String configFilename = ... // 分词配置文件
+            BambooChineseSegmentor segmentor = new BambooChineseSegmentor(configFilename);
+            String line;
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            while ((line = br.readLine()) != null) {
+                List<Token> tokens = segmentor.segment(line); // 实际分词
+                for (Token token : tokens) {
+                    System.print(token.toString() + " ");
+                }
+                System.println();
+            }
+            br.close();
+            
+        c) 如果想在Lucene中使用JBamboo，com.qunar.nlp.segment.lucene.BambooLuceneTokenizer类提供了Tokenizer的实现。
+    

@@ -1,0 +1,30 @@
+##以下为分词模型文件参数
+
+#文本模型文件路径
+text_model_filename = /home/xuqy/Desktop/crf_seg.model.txt
+
+#文本模型文件字符编码
+text_model_file_charset = UTF-8
+
+#文本模型文件是否经过gzip压缩
+text_model_is_gzipped = false
+
+##以下为BambooPostprocessor用到的参数
+
+#是否经过combine步骤，如果为false，则后续参数无效
+use_combine = false
+
+#combine词典文件路径
+combine_lexicon_filename = lexicon/combine_lexicon.txt
+
+#数字后缀词典文件路径
+number_trailing_lexicon_filename = /home/xuqy/Desktop/number_trailing.txt
+
+#是否前向combine
+forward_combine = true
+#是否后向combine
+backward_combine = true
+#是否左右combine
+neighbor_comine = true
+#是否合并连续的相同单字
+koko_combine = false
