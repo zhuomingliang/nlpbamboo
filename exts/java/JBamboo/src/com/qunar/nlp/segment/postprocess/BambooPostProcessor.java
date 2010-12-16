@@ -69,7 +69,9 @@ public class BambooPostProcessor implements Postprocessor {
 				}
 			}
 		} finally {
-			br.close();
+			if (br != null) {
+				br.close();
+			}
 		}
 		return lexicon;
 	}
