@@ -97,7 +97,7 @@ void CRFSegProcessor::process(std::vector<TokenImpl *> &in, std::vector<TokenImp
 		} 
 		bool append = cur_tok->get_attr() != TokenImpl::attr_whitespace;
 		if (append) {
-			const char *data[] = {tok_str, PrepareProcessor::get_crf2_tag(cur_tok->get_attr())};
+			const char *data[] = { tok_str, PrepareProcessor::get_crf2_tag(cur_tok) };
 			_tagger->add(2, data);
 		}
 

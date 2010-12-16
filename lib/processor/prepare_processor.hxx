@@ -52,8 +52,8 @@ protected:
 public:
 	PrepareProcessor(IConfig *config);
 	~PrepareProcessor() {};
-	static const char *get_crf2_tag(int attr) {
-		switch(attr) {
+	static const char *get_crf2_tag(const TokenImpl *token) {
+		switch(token->get_attr()) {
 		case TokenImpl::attr_number:
 		case TokenImpl::attr_alpha:
 			return "ASCII";

@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
         if (line.size() == 0)
             continue;
         istringstream iss(line);
-	bool has_output = false;
+		bool has_output = false;
         while (iss >> segment) {
             in.clear();
             in.push_back(new TokenImpl(segment.c_str()));
@@ -82,27 +82,26 @@ int main(int argc, char **argv) {
                     } else if (pos + 1 == out.size()) {
                         tag = "E";
                     } else if (last_tag == "B") {
-                       tag = "B1";
+                    	tag = "B1";
                     } else if (last_tag == "B1") {
-                       tag = "B2";
+                    	tag = "B2";
                     } else {
-                       tag = "M";
+                    	tag = "M";
                     }
-                   last_tag = tag; 
+                   	last_tag = tag; 
                     const char *word = out[pos]->get_token();
-                    int attr = out[pos]->get_attr();
-                    const char *type = PrepareProcessor::get_crf2_tag(attr);
+                    const char *type = PrepareProcessor::get_crf2_tag(out[pos]);
                     ofs << word << " " << type << " " << tag << endl;
-		    if (!has_output) {
-			has_output = true;
-		    }
+					if (!has_output) {
+						has_output = true;
+					}
                     delete out[pos];
                 }
             }
         }
-	if (has_output) {
-	    ofs << endl;
-	}
+		if (has_output) {
+	    	ofs << endl;
+		}
     }
     ofs.close();
     ifs.close();
