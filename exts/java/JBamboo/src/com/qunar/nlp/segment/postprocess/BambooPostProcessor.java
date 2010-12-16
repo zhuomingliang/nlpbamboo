@@ -127,7 +127,7 @@ public class BambooPostProcessor implements Postprocessor {
 				} else if (kokoCombine && i > 0 && in.get(i - 1) != null
 						&& in.get(i - 1).getLength() == 1
 						&& token.toString().equals(in.get(i - 1).toString())) {
-					match = LEFT | MIDDLE | RIGHT;
+					match = LEFT | MIDDLE;
 					combinedToken = new BambooToken(context, in.get(i - 1)
 							.getBeginIndex(), token.getEndIndex());
 				}
