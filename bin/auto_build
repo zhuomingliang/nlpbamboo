@@ -25,7 +25,6 @@ function train_seg() {
 	# Train CRF
 	echo 
 	echo "1). Training CRF Segment Model. (may take dozens of hours)"
-    echo "2). Using pre-trained CRF Segment Model."
 	echo "*). Do nothing."
 	read choice
 	crf_learn=$(which crf_learn)
@@ -39,15 +38,6 @@ function train_seg() {
 		# Train CRF Seg
 		crf_learn -p ${thread_num} -c 4.0 -f 2 ${tmpl_dir}/crf_seg.tmpl ${build_dir}/pd_crf_seg_training.txt ${index_dir}/crf_seg.model || exit 1
 		;;
-        2)
-        if [ -z "$crf_learn" ];then
-			echo "crf_learn not found"
-			exit
-		fi
-		wget -O - $crf_seg_text_model_url | gzip -cd > ${build_dir}/crf_seg.model.txt
-		[ "$?" != "0" ] && exit 1 
-        crf_learn -C ${build_dir}/crf_seg.model.txt ${index_dir}/crf_seg.model || exit 1
-        ;;
 		*) ;;
 	esac
 
@@ -175,4 +165,3 @@ elif [ ${train_type} == "keyword" ];
 then
 	train_keyword
 fi
-
